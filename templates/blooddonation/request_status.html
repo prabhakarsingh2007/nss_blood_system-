@@ -1,0 +1,131 @@
+{% extends 'blooddonation/base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-10 px-4">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div>
+            <h2 class="text-4xl font-black text-slate-900 tracking-tight">Request <span class="text-red-600">Status</span></h2>
+            <p class="text-slate-500 font-medium mt-2">Track your blood requests and donor assignments in real-time.</p>
+        </div>
+
+        {% if not user.is_authenticated %}
+        <div class="w-full md:w-96">
+            <form method="get" class="relative group">
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-red-500 to-rose-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+                <div class="relative flex bg-white rounded-2xl p-1.5 border border-slate-100 shadow-sm">
+                    <input id="phone" type="text" name="phone" value="{{ request.GET.phone }}" 
+                           placeholder="Search by Phone Number..."
+                           class="w-full bg-transparent pl-4 pr-2 py-2 text-sm font-semibold focus:outline-none text-slate-900">
+                    <button type="submit" class="bg-slate-900 text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-red-600 transition-colors">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="bg-white border border-slate-100 rounded-[2rem] shadow-xl shadow-slate-200/50 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100">
+                        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Request Details</th>
+                        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Blood Group</th>
+                        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Location</th>
+                        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
+                        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Donor Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for item in requests %}
+                    <tr class="hover:bg-slate-50/80 transition-colors group">
+                        <td class="px-6 py-6">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-red-600 mb-1">
+                                    {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
+                                        #{{ item.request_code }}
+                                    {% else %}
+                                        #PENDING-ID
+                                    {% endif %}
+                                </span>
+                                <span class="text-lg font-bold text-slate-900">{{ item.requester_name }}</span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-6">
+                            <div class="flex items-center gap-3">
+                                <span class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-black text-sm">
+                                    {{ item.blood_group }}
+                                </span>
+                                <span class="text-slate-500 font-bold text-sm">{{ item.units }} Units</span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-6">
+                            <div class="flex flex-col">
+                                <span class="text-slate-900 font-bold text-sm">{{ item.city }}</span>
+                                <span class="text-slate-400 text-xs font-medium italic">
+                                    {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
+                                        {{ item.hospital_name }}
+                                    {% else %}
+                                        Hospital hidden
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-6">
+                            {% with s=item.status %}
+                            <span class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider
+                                {% if s == 'PENDING' %} bg-amber-50 text-amber-600
+                                {% elif s == 'APPROVED' %} bg-blue-50 text-blue-600
+                                {% elif s == 'COMPLETED' %} bg-green-50 text-green-600
+                                {% else %} bg-slate-100 text-slate-500 {% endif %}">
+                                {{ item.get_status_display }}
+                            </span>
+                            {% endwith %}
+                        </td>
+
+                        <td class="px-6 py-6 text-right">
+                            {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
+                                {% with donor=item.assigned_donor|default:item.fulfilled_by %}
+                                    {% if donor %}
+                                        <div class="flex flex-col items-end gap-2">
+                                            <span class="text-slate-900 font-bold text-sm">{{ donor.phone }}</span>
+                                            <a href="https://wa.me/{{ donor.phone }}" target="_blank" 
+                                               class="flex items-center gap-2 px-3 py-1.5 bg-green-500 text-white text-[10px] font-black rounded-lg hover:bg-green-600 transition-all uppercase tracking-widest shadow-lg shadow-green-100">
+                                                <span>WhatsApp</span>
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-slate-400 text-[10px] font-black uppercase italic">Assigning...</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <div class="flex items-center justify-end text-slate-300">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-20 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-4">
+                                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-3xl">🔍</div>
+                                <p class="text-slate-400 font-bold">No requests found matching your search.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="mt-6 text-center text-xs text-slate-400 font-medium">
+        <span class="text-red-500">*</span> For security, donor contact and hospital info are only revealed after admin approval.
+    </p>
+</div>
+{% endblock %}

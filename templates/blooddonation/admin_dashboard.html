@@ -1,0 +1,311 @@
+{% extends 'blooddonation/base.html' %}
+
+{% block content %}
+<section class="admin-hero card">
+    <div>
+        <h2>Admin Control Center</h2>
+        <p>Manage donors, requests, emergency cases, and communication from one place.</p>
+        <div style="margin-top: 14px;">
+            <a href="#manage-camps" class="btn">Create Blood Camp</a>
+            <a href="#mass-message" class="btn btn-alt" style="margin-left: 8px;">Publish Alert</a>
+        </div>
+    </div>
+</section>
+
+<div class="admin-layout">
+    <aside class="card admin-sidebar">
+        <h3>Admin Options</h3>
+        <a href="#overview">Dashboard Overview</a>
+        <a href="#mass-message">Mass Message</a>
+        <a href="#manage-camps">Manage Blood Camps</a>
+        <a href="#verify-donors">Verify Donors</a>
+        <a href="#verify-requests">Verify Requests</a>
+        <a href="#blood-groups">Blood Group Control</a>
+
+        <h4>Dashboard Filters</h4>
+        <form method="get" class="inline-form" style="display:block;">
+            <p>
+                <label for="city-filter">City</label>
+                <select id="city-filter" name="city">
+                    <option value="">All Cities</option>
+                    {% for city in cities %}
+                    <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
+                <label for="blood-group-filter">Blood Group</label>
+                <select id="blood-group-filter" name="blood_group">
+                    <option value="">All Blood Groups</option>
+                    {% for value, label in blood_groups %}
+                    <option value="{{ value }}" {% if selected_blood_group == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            <button type="submit" class="btn">Apply Filters</button>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-alt" style="margin-top:8px; display:inline-block;">Reset</a>
+        </form>
+    </aside>
+
+    <div class="admin-main">
+        <section id="overview" class="grid">
+            <article class="card metric-card"><h3>Total Approved Donors</h3><p>{{ total_donors }}</p></article>
+            <article class="card metric-card"><h3>Total Requests</h3><p>{{ total_requests }}</p></article>
+            <article class="card metric-card"><h3>Pending Requests</h3><p>{{ pending_requests }}</p></article>
+            <article class="card metric-card metric-alert"><h3>Emergency Pending</h3><p>{{ emergency_requests }}</p></article>
+        </section>
+
+        <section class="card section-card" style="border: 1px solid #fecaca; background: #fff7f7;">
+            <div style="display:flex; justify-content:space-between; gap:16px; align-items:center; flex-wrap:wrap;">
+                <div>
+                    <h3 style="margin-bottom: 6px;">Blood Camp Management</h3>
+                    <p style="margin:0;">Create a new camp, see upcoming events, and manage donor registrations from one place.</p>
+                </div>
+                <a href="#manage-camps" class="btn">Add Blood Camp</a>
+            </div>
+        </section>
+
+        <section class="grid section-card">
+            <article class="card">
+                <h3>Requests Per Day (Last 7 Days)</h3>
+                <canvas id="requestsPerDayChart" height="120"></canvas>
+            </article>
+            <article class="card">
+                <h3>Approved Donors by Blood Group</h3>
+                <canvas id="donorsByGroupChart" height="120"></canvas>
+            </article>
+        </section>
+
+        <section id="mass-message" class="form-card">
+            <h3>Mass Message</h3>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="broadcast_create">
+                {{ broadcast_form.as_p }}
+                <button type="submit" class="btn">Publish Alert</button>
+            </form>
+        </section>
+
+        <section id="manage-camps" class="form-card">
+            <h3>Create Blood Camp</h3>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="camp_create">
+                {{ camp_form.as_p }}
+                <button type="submit" class="btn">Create Camp</button>
+            </form>
+        </section>
+
+        <section class="card section-card">
+            <h3>Recent Blood Camps</h3>
+            <table class="table table-admin">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Registered Donors</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for camp in camps %}
+                    <tr>
+                        <td><a href="{% url 'camp_detail' camp.id %}">{{ camp.title }}</a></td>
+                        <td>{{ camp.date|date:'d M Y' }}</td>
+                        <td>{{ camp.location }}</td>
+                        <td>{{ camp.registered_count }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No camps created yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section id="blood-groups" class="card section-card">
+            <h3>All Blood Groups Summary</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Blood Group</th>
+                        <th>Total Donors</th>
+                        <th>Active Donors</th>
+                        <th>Pending Requests</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in blood_group_summary %}
+                    <tr>
+                        <td>{{ item.label }}</td>
+                        <td>{{ item.donor_count }}</td>
+                        <td>{{ item.active_donor_count }}</td>
+                        <td>{{ item.pending_request_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+<section id="verify-donors" class="card section-card">
+<h3>Verify Donors</h3>
+<table class="table table-admin">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Blood Group</th>
+            <th>City</th>
+            <th>OTP</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for donor in donors %}
+        <tr>
+            <td>{{ donor.full_name }}</td>
+            <td>{{ donor.blood_group }}</td>
+            <td>{{ donor.city }}</td>
+            <td><span class="status-badge {% if donor.otp_verified %}ok{% else %}pending{% endif %}">{% if donor.otp_verified %}Verified{% else %}Pending{% endif %}</span></td>
+            <td><span class="status-badge {% if donor.verification_status == 'APPROVED' %}ok{% elif donor.verification_status == 'REJECTED' %}danger{% else %}pending{% endif %}">{{ donor.get_verification_status_display }}</span></td>
+            <td>
+                <form method="post" class="inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="donor_verify">
+                    <input type="hidden" name="donor_id" value="{{ donor.id }}">
+                    <select name="verification_status">
+                        <option value="PENDING">Pending</option>
+                        <option value="APPROVED">Approve</option>
+                        <option value="REJECTED">Reject</option>
+                    </select>
+                    <button type="submit" class="btn">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No donor registrations yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</section>
+
+<section id="verify-requests" class="card section-card">
+<h3>Verify Requests</h3>
+
+<table class="table table-admin">
+    <thead>
+        <tr>
+            <th>Requester</th>
+            <th>Blood Group</th>
+            <th>Units</th>
+            <th>City</th>
+            <th>Emergency</th>
+            <th>OTP</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in requests %}
+        <tr>
+            <td>{{ item.requester_name }}</td>
+            <td>{{ item.blood_group }}</td>
+            <td>{{ item.units }}</td>
+            <td>{{ item.city }}</td>
+            <td><span class="status-badge {% if item.is_emergency %}danger{% else %}ok{% endif %}">{% if item.is_emergency %}Yes{% else %}No{% endif %}</span></td>
+            <td><span class="status-badge {% if item.otp_verified %}ok{% else %}pending{% endif %}">{% if item.otp_verified %}Verified{% else %}Pending{% endif %}</span></td>
+            <td><span class="status-badge {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}ok{% elif item.status == 'REJECTED' %}danger{% else %}pending{% endif %}">{{ item.get_status_display }}</span></td>
+            <td>
+                <form method="post" class="inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="request_status">
+                    <input type="hidden" name="request_id" value="{{ item.id }}">
+                    <select name="status">
+                        <option value="PENDING">Pending</option>
+                        <option value="APPROVED">Approved</option>
+                        <option value="REJECTED">Rejected</option>
+                        <option value="COMPLETED">Completed</option>
+                    </select>
+                    <button type="submit" class="btn">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8">No requests submitted yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</section>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const requestsPerDayLabels = JSON.parse('{{ requests_per_day_labels_json|escapejs }}');
+    const requestsPerDayData = JSON.parse('{{ requests_per_day_values_json|escapejs }}');
+    const donorsByGroupLabels = JSON.parse('{{ donors_by_group_labels_json|escapejs }}');
+    const donorsByGroupData = JSON.parse('{{ donors_by_group_values_json|escapejs }}');
+
+    const requestsPerDayCtx = document.getElementById('requestsPerDayChart');
+    if (requestsPerDayCtx) {
+        new Chart(requestsPerDayCtx, {
+            type: 'line',
+            data: {
+                labels: requestsPerDayLabels,
+                datasets: [{
+                    label: 'Requests',
+                    data: requestsPerDayData,
+                    borderColor: '#dc2626',
+                    backgroundColor: 'rgba(220, 38, 38, 0.15)',
+                    fill: true,
+                    tension: 0.35
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
+            }
+        });
+    }
+
+    const donorsByGroupCtx = document.getElementById('donorsByGroupChart');
+    if (donorsByGroupCtx) {
+        new Chart(donorsByGroupCtx, {
+            type: 'bar',
+            data: {
+                labels: donorsByGroupLabels,
+                datasets: [{
+                    label: 'Approved Donors',
+                    data: donorsByGroupData,
+                    backgroundColor: '#0f766e'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

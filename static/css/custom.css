@@ -1,0 +1,292 @@
+:root {
+    --primary: #9b1c1c;
+    --accent: #ffd7d7;
+    --text: #1f2937;
+    --bg: #fff7f7;
+    --card: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Segoe UI, sans-serif;
+    color: var(--text);
+    background: radial-gradient(circle at top right, #ffe8e8, var(--bg));
+}
+
+.container {
+    width: min(1100px, 92%);
+    margin: 0 auto;
+}
+
+.site-header {
+    background: var(--card);
+    border-bottom: 1px solid #f5caca;
+    position: sticky;
+    top: 0;
+}
+
+.nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+}
+
+.brand {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+nav a {
+    color: var(--text);
+    text-decoration: none;
+    margin-left: 16px;
+}
+
+.hero {
+    text-align: center;
+    padding: 48px 0 28px;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.btn {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    border: 0;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.btn-alt {
+    background: #374151;
+}
+
+.grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.card,
+.form-card {
+    background: var(--card);
+    border: 1px solid #f3d5d5;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ebebeb;
+    padding: 10px;
+    text-align: left;
+}
+
+.alert {
+    background: var(--accent);
+    border-left: 4px solid var(--primary);
+    padding: 10px;
+    margin: 14px 0;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+}
+
+@media (max-width: 700px) {
+    .nav-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    nav a {
+        margin: 0 8px;
+    }
+}
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.admin-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(120deg, #fff 0%, #ffeaea 100%);
+}
+
+.admin-hero h2 {
+    margin: 0 0 6px;
+}
+
+.admin-hero p {
+    margin: 0;
+    color: #4b5563;
+}
+
+.admin-sidebar {
+    position: sticky;
+    top: 86px;
+}
+
+.admin-sidebar a {
+    display: block;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: var(--text);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 6px 8px;
+}
+
+.admin-sidebar a:hover {
+    border-color: #f0c0c0;
+    background: #fff2f2;
+}
+
+.blood-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.pill {
+    border: 1px solid #e5b9b9;
+    border-radius: 999px;
+    padding: 4px 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 13px;
+}
+
+.pill.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.admin-main .section-card {
+    margin-top: 16px;
+}
+
+.metric-card {
+    background: linear-gradient(140deg, #fff, #fff4f4);
+}
+
+.metric-card h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+}
+
+.metric-card p {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    color: #7f1d1d;
+}
+
+.metric-alert {
+    border-color: #f4a0a0;
+}
+
+.table-admin th {
+    background: #fff1f1;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.table-admin td {
+    vertical-align: middle;
+}
+
+.status-badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.ok {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.inline-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.inline-form select {
+    margin: 0;
+    min-width: 130px;
+}
+
+.inline-form .btn {
+    margin: 0;
+    padding: 8px 12px;
+}
+
+@media (max-width: 900px) {
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-sidebar {
+        position: static;
+    }
+
+    .admin-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .inline-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
