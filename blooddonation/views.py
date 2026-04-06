@@ -1,9 +1,8 @@
 from datetime import timedelta
-import json
 
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Count
 from django.db.models.functions import TruncDate
@@ -398,8 +397,11 @@ def donate_request(request, request_id):
     return redirect("donor_dashboard")
 
 
-@user_passes_test(lambda user: user.is_staff)
+@login_required
 def admin_dashboard(request):
+    if not request.user.is_staff:
+        return redirect("dashboard_router")
+
     broadcast_form = BroadcastMessageForm()
     camp_form = BloodCampForm()
     selected_blood_group = request.GET.get("blood_group", "")
@@ -578,9 +580,9 @@ def admin_dashboard(request):
         "selected_blood_group": selected_blood_group,
         "selected_city": selected_city,
         "blood_group_summary": blood_group_summary,
-        "requests_per_day_labels_json": json.dumps(requests_per_day_labels),
-        "requests_per_day_values_json": json.dumps(requests_per_day_values),
-        "donors_by_group_labels_json": json.dumps(donors_by_group_labels),
-        "donors_by_group_values_json": json.dumps(donors_by_group_values),
+        "requests_per_day_labels": requests_per_day_labels,
+        "requests_per_day_values": requests_per_day_values,
+        "donors_by_group_labels": donors_by_group_labels,
+        "donors_by_group_values": donors_by_group_values,
     }
     return render(request, "blooddonation/admin_dashboard.html", context)

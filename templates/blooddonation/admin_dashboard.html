@@ -15,12 +15,12 @@
 <div class="admin-layout">
     <aside class="card admin-sidebar">
         <h3>Admin Options</h3>
-        <a href="#overview">Dashboard Overview</a>
-        <a href="#mass-message">Mass Message</a>
-        <a href="#manage-camps">Manage Blood Camps</a>
-        <a href="#verify-donors">Verify Donors</a>
-        <a href="#verify-requests">Verify Requests</a>
-        <a href="#blood-groups">Blood Group Control</a>
+        <a href="#overview" class="admin-nav-link">Dashboard Overview</a>
+        <a href="#mass-message" class="admin-nav-link">Mass Message</a>
+        <a href="#manage-camps" class="admin-nav-link">Manage Blood Camps</a>
+        <a href="#verify-donors" class="admin-nav-link">Verify Donors</a>
+        <a href="#verify-requests" class="admin-nav-link">Verify Requests</a>
+        <a href="#blood-groups" class="admin-nav-link">Blood Group Control</a>
 
         <h4>Dashboard Filters</h4>
         <form method="get" class="inline-form" style="display:block;">
@@ -48,14 +48,14 @@
     </aside>
 
     <div class="admin-main">
-        <section id="overview" class="grid">
+        <section id="overview" class="grid admin-panel" data-admin-panel="overview">
             <article class="card metric-card"><h3>Total Approved Donors</h3><p>{{ total_donors }}</p></article>
             <article class="card metric-card"><h3>Total Requests</h3><p>{{ total_requests }}</p></article>
             <article class="card metric-card"><h3>Pending Requests</h3><p>{{ pending_requests }}</p></article>
             <article class="card metric-card metric-alert"><h3>Emergency Pending</h3><p>{{ emergency_requests }}</p></article>
         </section>
 
-        <section class="card section-card" style="border: 1px solid #fecaca; background: #fff7f7;">
+        <section class="card section-card admin-panel" data-admin-panel="overview" style="border: 1px solid #fecaca; background: #fff7f7;">
             <div style="display:flex; justify-content:space-between; gap:16px; align-items:center; flex-wrap:wrap;">
                 <div>
                     <h3 style="margin-bottom: 6px;">Blood Camp Management</h3>
@@ -65,7 +65,7 @@
             </div>
         </section>
 
-        <section class="grid section-card">
+        <section class="grid section-card admin-panel" data-admin-panel="overview">
             <article class="card">
                 <h3>Requests Per Day (Last 7 Days)</h3>
                 <canvas id="requestsPerDayChart" height="120"></canvas>
@@ -76,7 +76,7 @@
             </article>
         </section>
 
-        <section id="mass-message" class="form-card">
+        <section id="mass-message" class="form-card admin-panel" data-admin-panel="mass-message" hidden>
             <h3>Mass Message</h3>
             <form method="post">
                 {% csrf_token %}
@@ -86,7 +86,7 @@
             </form>
         </section>
 
-        <section id="manage-camps" class="form-card">
+        <section id="manage-camps" class="form-card admin-panel" data-admin-panel="manage-camps" hidden>
             <h3>Create Blood Camp</h3>
             <form method="post">
                 {% csrf_token %}
@@ -96,7 +96,7 @@
             </form>
         </section>
 
-        <section class="card section-card">
+        <section class="card section-card admin-panel" data-admin-panel="manage-camps" hidden>
             <h3>Recent Blood Camps</h3>
             <table class="table table-admin">
                 <thead>
@@ -124,7 +124,7 @@
             </table>
         </section>
 
-        <section id="blood-groups" class="card section-card">
+        <section id="blood-groups" class="card section-card admin-panel" data-admin-panel="blood-groups" hidden>
             <h3>All Blood Groups Summary</h3>
             <table class="table">
                 <thead>
@@ -148,7 +148,7 @@
             </table>
         </section>
 
-<section id="verify-donors" class="card section-card">
+<section id="verify-donors" class="card section-card admin-panel" data-admin-panel="verify-donors" hidden>
 <h3>Verify Donors</h3>
 <table class="table table-admin">
     <thead>
@@ -192,7 +192,7 @@
 </table>
 </section>
 
-<section id="verify-requests" class="card section-card">
+<section id="verify-requests" class="card section-card admin-panel" data-admin-panel="verify-requests" hidden>
 <h3>Verify Requests</h3>
 
 <table class="table table-admin">
@@ -245,11 +245,58 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ requests_per_day_labels|json_script:"requests-per-day-labels" }}
+{{ requests_per_day_values|json_script:"requests-per-day-values" }}
+{{ donors_by_group_labels|json_script:"donors-by-group-labels" }}
+{{ donors_by_group_values|json_script:"donors-by-group-values" }}
 <script>
-    const requestsPerDayLabels = JSON.parse('{{ requests_per_day_labels_json|escapejs }}');
-    const requestsPerDayData = JSON.parse('{{ requests_per_day_values_json|escapejs }}');
-    const donorsByGroupLabels = JSON.parse('{{ donors_by_group_labels_json|escapejs }}');
-    const donorsByGroupData = JSON.parse('{{ donors_by_group_values_json|escapejs }}');
+    const adminNavLinks = document.querySelectorAll('.admin-nav-link');
+    const adminPanels = document.querySelectorAll('.admin-panel');
+
+    const getActivePanelName = () => {
+        const hashValue = (window.location.hash || '#overview').slice(1);
+        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'blood-groups'];
+        return knownPanels.includes(hashValue) ? hashValue : 'overview';
+    };
+
+    const setActiveAdminLink = (panelName) => {
+        const activeHash = `#${panelName}`;
+        adminNavLinks.forEach((link) => {
+            const isActive = link.getAttribute('href') === activeHash;
+            link.classList.toggle('active', isActive);
+        });
+    };
+
+    const setActiveAdminPanel = (panelName) => {
+        adminPanels.forEach((panel) => {
+            panel.hidden = panel.dataset.adminPanel !== panelName;
+        });
+    };
+
+    adminNavLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const panelName = link.getAttribute('href').replace('#', '');
+            window.location.hash = panelName;
+            setActiveAdminLink(panelName);
+            setActiveAdminPanel(panelName);
+        });
+    });
+
+    window.addEventListener('hashchange', () => {
+        const panelName = getActivePanelName();
+        setActiveAdminLink(panelName);
+        setActiveAdminPanel(panelName);
+    });
+
+    const initialPanelName = getActivePanelName();
+    setActiveAdminLink(initialPanelName);
+    setActiveAdminPanel(initialPanelName);
+
+    const requestsPerDayLabels = JSON.parse(document.getElementById('requests-per-day-labels').textContent);
+    const requestsPerDayData = JSON.parse(document.getElementById('requests-per-day-values').textContent);
+    const donorsByGroupLabels = JSON.parse(document.getElementById('donors-by-group-labels').textContent);
+    const donorsByGroupData = JSON.parse(document.getElementById('donors-by-group-values').textContent);
 
     const requestsPerDayCtx = document.getElementById('requestsPerDayChart');
     if (requestsPerDayCtx) {
