@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-8">
+    
+    <!-- Printable Certificate Frame -->
+    <div class="bg-white border-[12px] border-double border-neutral-200 p-8 sm:p-14 rounded-3xl shadow-md text-center space-y-10 print:border-neutral-400 print:shadow-none relative overflow-hidden premium-card">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-brand-50/10 rounded-full filter blur-2xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-32 h-32 bg-amber-50/15 rounded-full filter blur-2xl pointer-events-none"></div>
+
+        <!-- Logo Header -->
+        <div class="space-y-1.5">
+            <p class="text-[10px] uppercase tracking-[0.25em] font-black text-neutral-400">National Service Scheme</p>
+            <p class="text-xs font-bold tracking-wide text-neutral-600 uppercase">Rashtriya Seva Yojana</p>
+            <div class="w-12 h-[2px] bg-gradient-to-r from-brand-500 to-rose-600 mx-auto my-3"></div>
+        </div>
+
+        <!-- Certificate Title -->
+        <div class="space-y-2.5">
+            <h1 class="text-3xl font-black text-brand-600 tracking-tight uppercase leading-none">Certificate of Appreciation</h1>
+            <p class="text-[11px] text-neutral-400 italic font-semibold">This is proudly presented to</p>
+        </div>
+
+        <!-- Donor Name -->
+        <div class="py-4">
+            <h2 class="text-3xl font-black text-neutral-900 border-b border-t border-neutral-100 py-4 inline-block px-12 tracking-tight">
+                {{ donation.donor.full_name }}
+            </h2>
+        </div>
+
+        <!-- Appreciation Body -->
+        <div class="space-y-4 max-w-md mx-auto text-neutral-600 text-xs leading-relaxed font-medium">
+            <p>
+                for voluntarily donating blood on <strong class="text-neutral-900 font-bold">{{ donation.date|date:'d F Y' }}</strong>
+                at <strong class="text-neutral-900 font-bold">{{ donation.request.hospital_name }}</strong>.
+            </p>
+            <p class="text-[10px] text-neutral-400 italic">
+                In sincere recognition of this selfless contribution to saving lives in times of emergency.
+            </p>
+        </div>
+
+        <!-- Metadata Section -->
+        <div class="grid grid-cols-3 gap-4 pt-8 border-t border-neutral-100 text-left text-[10px] text-neutral-500 font-semibold">
+            <div>
+                <p class="uppercase font-bold tracking-wider text-neutral-400">Certificate ID</p>
+                <p class="text-neutral-800 font-bold mt-1 font-mono text-[9px] uppercase">{{ donation.certificate_id }}</p>
+            </div>
+            <div>
+                <p class="uppercase font-bold tracking-wider text-neutral-400">Issued Date</p>
+                <p class="text-neutral-800 font-bold mt-1">{{ issued_date|date:'d M Y' }}</p>
+            </div>
+            <div>
+                <p class="uppercase font-bold tracking-wider text-neutral-400">Verified By</p>
+                <p class="text-neutral-800 font-bold mt-1">
+                    {% if donation.verified_by %}{{ donation.verified_by.get_full_name|default:donation.verified_by.username }}{% else %}NSS Coordinator{% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Signature Lines -->
+        <div class="flex justify-between items-center pt-8 text-[10px] text-neutral-400 font-bold">
+            <div class="space-y-1.5">
+                <div class="w-32 border-t border-neutral-200 mx-auto"></div>
+                <p>Coordinator, NSS</p>
+            </div>
+            <div class="relative w-8 h-8 rounded-full bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-500 font-bold shadow-sm">
+                <span>🩸</span>
+            </div>
+            <div class="space-y-1.5">
+                <div class="w-32 border-t border-neutral-200 mx-auto"></div>
+                <p>Director, NSS</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions block -->
+    <div class="mt-8 flex gap-3 justify-center no-print">
+        <button onclick="window.print()" class="px-5 py-2.5 bg-neutral-900 text-white text-xs font-bold rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm flex items-center gap-1.5">
+            <span>Download / Print Certificate</span>
+        </button>
+        <a href="{% url 'donor_dashboard' %}" class="px-5 py-2.5 border border-neutral-200 text-neutral-600 text-xs font-bold rounded-xl hover:bg-neutral-50 transition-colors">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+    /* Print override layout helper */
+    @media print {
+        header, footer, .no-print, .messages {
+            display: none !important;
+        }
+        body, main {
+            background-color: #ffffff !important;
+            margin: 0;
+            padding: 0;
+        }
+        .max-w-2xl {
+            max-width: 100% !important;
+        }
+    }
+</style>
+{% endblock %}

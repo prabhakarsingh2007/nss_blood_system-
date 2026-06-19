@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-10">
+    <!-- Profile Banner Summary -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-neutral-200/40 pb-6">
+        <div>
+            <h2 class="text-3xl font-black text-neutral-900 tracking-tight">User Dashboard</h2>
+            <p class="text-xs text-neutral-400 font-semibold mt-0.5">Track and manage your submitted blood request campaigns.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="{% url 'request_form' %}" class="px-4 py-2.5 bg-neutral-900 text-white text-xs font-bold rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+                New Blood Request
+            </a>
+        </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Metric Card 1 -->
+        <article class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 premium-card">
+            <p class="text-[9px] uppercase font-bold tracking-wider text-neutral-400">Total Requests</p>
+            <p class="text-3xl font-black text-neutral-950 mt-1.5 tracking-tight">{{ total_requests }}</p>
+        </article>
+
+        <!-- Metric Card 2 -->
+        <article class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 premium-card">
+            <p class="text-[9px] uppercase font-bold tracking-wider text-neutral-400">Pending</p>
+            <p class="text-3xl font-black text-neutral-950 mt-1.5 tracking-tight">{{ pending_requests }}</p>
+        </article>
+
+        <!-- Metric Card 3 -->
+        <article class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 premium-card">
+            <p class="text-[9px] uppercase font-bold tracking-wider text-neutral-400">Approved</p>
+            <p class="text-3xl font-black text-neutral-950 mt-1.5 tracking-tight">{{ approved_requests }}</p>
+        </article>
+
+        <!-- Metric Card 4 -->
+        <article class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 premium-card">
+            <p class="text-[9px] uppercase font-bold tracking-wider text-neutral-400">Completed</p>
+            <p class="text-3xl font-black text-neutral-950 mt-1.5 tracking-tight">{{ completed_requests }}</p>
+        </article>
+    </section>
+
+    <!-- Roster Grid -->
+    <section class="bg-white border border-neutral-200/40 rounded-2xl overflow-hidden shadow-sm shadow-zinc-100/50 premium-card">
+        <div class="px-5 py-4 bg-neutral-50/50 border-b border-neutral-100">
+            <h3 class="text-xs font-bold text-neutral-950 uppercase tracking-wider">My Blood Requests History</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-neutral-50/50 border-b border-neutral-100 text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
+                        <th class="px-6 py-4">Request ID</th>
+                        <th class="px-6 py-4">Requested Date</th>
+                        <th class="px-6 py-4">Blood Group</th>
+                        <th class="px-6 py-4">Units Required</th>
+                        <th class="px-6 py-4">District / City</th>
+                        <th class="px-6 py-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neutral-100 text-xs">
+                    {% for item in my_requests %}
+                    <tr class="hover:bg-neutral-50/50 transition-colors">
+                        <td class="px-6 py-4 font-mono font-bold text-brand-600">
+                            {% if item.request_code %}
+                                #{{ item.request_code }}
+                            {% else %}
+                                #PENDING
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-neutral-500 font-medium">{{ item.requested_at|date:'d M Y' }}</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-brand-50 text-brand-600 border border-brand-100 font-black text-xs shadow-sm">
+                                {{ item.blood_group }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-neutral-600 font-bold">{{ item.units }} Units</td>
+                        <td class="px-6 py-4 text-neutral-500 font-medium">{{ item.city }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider
+                                {% if item.status == 'PENDING' %} bg-amber-50 text-amber-700 border border-amber-100
+                                {% elif item.status == 'APPROVED' %} bg-blue-50 text-blue-700 border border-blue-100
+                                {% elif item.status == 'COMPLETED' %} bg-emerald-50 text-emerald-700 border border-emerald-100
+                                {% else %} bg-neutral-100 text-neutral-500 border border-neutral-200 {% endif %}">
+                                {{ item.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-neutral-450 font-medium italic">You have not submitted any requests yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}

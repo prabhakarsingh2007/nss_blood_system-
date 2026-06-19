@@ -62,7 +62,7 @@ def home(request):
         "active_requests": BloodRequest.objects.filter(status="PENDING").count(),
         "broadcast_messages": BroadcastMessage.objects.filter(is_active=True)[:5],
     }
-    return render(request, "blooddonation/home.html", context)
+    return render(request, "home.html", context)
 
 
 def search_donors(request):
@@ -74,7 +74,7 @@ def search_donors(request):
         "selected_blood_group": blood_group,
         "selected_city": city,
     }
-    return render(request, "blooddonation/search.html", context)
+    return render(request, "search.html", context)
 
 
 def donor_list(request):
@@ -102,7 +102,7 @@ def donor_list(request):
         "blood_group": blood_group,
         "city": city,
     }
-    return render(request, "blooddonation/donor_list.html", context)
+    return render(request, "donors/donor_list.html", context)
 
 
 def register(request):
@@ -115,7 +115,7 @@ def register(request):
             return redirect("user_dashboard")
     else:
         form = UserRegisterForm()
-    return render(request, "blooddonation/register.html", {"form": form})
+    return render(request, "auth/register.html", {"form": form})
 
 
 def login_view(request):
@@ -140,7 +140,7 @@ def login_view(request):
     else:
         form = AuthenticationForm()
 
-    return render(request, "blooddonation/login.html", {"form": form})
+    return render(request, "auth/login.html", {"form": form})
 
 
 def logout_view(request):
@@ -168,14 +168,14 @@ def user_dashboard(request):
         "approved_requests": my_requests.filter(status="APPROVED").count(),
         "completed_requests": my_requests.filter(status="COMPLETED").count(),
     }
-    return render(request, "blooddonation/user_dashboard.html", context)
+    return render(request, "user_dashboard.html", context)
 
 
 def donor_register(request):
     profile = DonorProfile.objects.filter(user=request.user).first() if request.user.is_authenticated else None
 
     if not request.user.is_authenticated:
-        return render(request, "blooddonation/donor_register.html", {"form": None, "public_page": True})
+        return render(request, "donors/donor_register.html", {"form": None, "public_page": True})
 
     if request.method == "POST":
         form = DonorProfileForm(request.POST, instance=profile)
@@ -191,7 +191,7 @@ def donor_register(request):
             return redirect("donor_verify_otp")
     else:
         form = DonorProfileForm(instance=profile)
-    return render(request, "blooddonation/donor_register.html", {"form": form, "public_page": False})
+    return render(request, "donors/donor_register.html", {"form": form, "public_page": False})
 
 
 @login_required
@@ -217,7 +217,7 @@ def donor_verify_otp(request):
     else:
         form = OtpVerifyForm()
 
-    return render(request, "blooddonation/donor_verify_otp.html", {"form": form})
+    return render(request, "donors/donor_verify_otp.html", {"form": form})
 
 
 def request_form(request):
@@ -238,7 +238,7 @@ def request_form(request):
             "city": request.GET.get("city", ""),
         }
         form = BloodRequestForm(initial=initial_data)
-    return render(request, "blooddonation/request_form.html", {"form": form})
+    return render(request, "requests/request_form.html", {"form": form})
 
 
 def request_verify_otp(request):
@@ -263,7 +263,7 @@ def request_verify_otp(request):
     else:
         form = OtpVerifyForm()
 
-    return render(request, "blooddonation/request_verify_otp.html", {"form": form})
+    return render(request, "requests/request_verify_otp.html", {"form": form})
 
 
 def request_status(request):
@@ -314,7 +314,7 @@ def request_status(request):
         "phone_verified": phone_verified,
         "phone": phone,
     }
-    return render(request, "blooddonation/request_status.html", context)
+    return render(request, "requests/request_status.html", context)
 
 
 def camp_list(request):
@@ -324,7 +324,7 @@ def camp_list(request):
         .annotate(registered_count=Count("registrations", distinct=True))
         .order_by("date", "created_at")
     )
-    return render(request, "blooddonation/camp_list.html", {"camps": camps, "today": today})
+    return render(request, "camps/camp_list.html", {"camps": camps, "today": today})
 
 
 def camp_detail(request, camp_id):
@@ -347,7 +347,7 @@ def camp_detail(request, camp_id):
     registrations = camp.registrations.select_related("donor").order_by("registered_at")
     return render(
         request,
-        "blooddonation/camp_detail.html",
+        "camps/camp_detail.html",
         {
             "camp": camp,
             "registrations": registrations,
@@ -402,7 +402,7 @@ def donor_dashboard(request):
 
     return render(
         request,
-        "blooddonation/donor_dashboard.html",
+        "donors/donor_dashboard.html",
         {
             "profile": profile,
             "past_donations": past_donations,
@@ -677,7 +677,7 @@ def admin_dashboard(request):
         "donors_by_group_labels": donors_by_group_labels,
         "donors_by_group_values": donors_by_group_values,
     }
-    return render(request, "blooddonation/admin_dashboard.html", context)
+    return render(request, "admin_dashboard.html", context)
 
 
 @login_required
@@ -699,4 +699,4 @@ def donation_certificate(request, history_id):
         "donation": donation_history,
         "issued_date": timezone.localtime(donation_history.verified_at) if donation_history.verified_at else timezone.localtime(),
     }
-    return render(request, "blooddonation/certificate.html", context)
+    return render(request, "certificates/certificate.html", context)

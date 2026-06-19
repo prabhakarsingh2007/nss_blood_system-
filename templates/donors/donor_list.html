@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-neutral-200/40 pb-5">
+        <div>
+            <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Active Donors</h2>
+            <p class="text-xs text-neutral-400 font-semibold mt-0.5">Filters: Blood Group = <strong class="text-neutral-700 font-bold">{{ blood_group|default:'Any' }}</strong>, City = <strong class="text-neutral-700 font-bold">{{ city|default:'Any' }}</strong></p>
+        </div>
+        <a class="px-4 py-2 border border-neutral-200 text-neutral-600 text-xs font-bold rounded-xl hover:bg-neutral-50 transition-all hover:scale-[1.01] active:scale-[0.99] text-center" href="{% url 'search_donors' %}">
+            Back to Search
+        </a>
+    </div>
+
+    <div class="bg-white border border-neutral-200/40 rounded-2xl overflow-hidden shadow-sm shadow-zinc-100/50 premium-card">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-neutral-50/50 border-b border-neutral-100 text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
+                        <th class="px-6 py-4">Name</th>
+                        <th class="px-6 py-4">Blood Group</th>
+                        <th class="px-6 py-4">District</th>
+                        <th class="px-6 py-4">Availability</th>
+                        <th class="px-6 py-4 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neutral-100 text-xs">
+                    {% for donor in donors %}
+                    <tr class="hover:bg-neutral-50/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-neutral-850">{{ donor.full_name }}</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-brand-50 text-brand-600 font-black text-xs border border-brand-100 shadow-sm">
+                                {{ donor.blood_group }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-neutral-500 font-semibold">{{ donor.city }}</td>
+                        <td class="px-6 py-4">
+                            {% if donor.is_available %}
+                            <span class="px-2.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">Available</span>
+                            {% else %}
+                            <span class="px-2.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider bg-neutral-100 text-neutral-500 border border-neutral-200">Not Available</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <a class="px-3.5 py-2 bg-neutral-900 text-white text-[10px] font-bold rounded-lg hover:bg-neutral-800 transition-colors inline-block shadow-sm" href="{% url 'request_form' %}?blood_group={{ donor.blood_group }}&city={{ donor.city }}">
+                                Request Blood
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-16 text-center text-neutral-400 font-medium italic">No active, approved donors found matching your criteria. Try expanding your search area.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

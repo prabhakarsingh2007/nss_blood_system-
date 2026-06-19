@@ -1,0 +1,592 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Styling to support JavaScript active state toggles in the sidebar */
+    .admin-nav-link.active {
+        background-color: #fafaf9; /* neutral-50 */
+        color: #e11d48 !important; /* brand-500 */
+        border-left: 3px solid #e11d48;
+        padding-left: 0.5rem;
+    }
+</style>
+
+<div class="space-y-8">
+    <!-- Hero Header Banner -->
+    <section class="rounded-3xl border border-neutral-200/40 bg-white/60 backdrop-blur-sm p-6 md:p-8 shadow-sm">
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-50/10 via-white to-orange-50/10 -z-10"></div>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
+            <div>
+                <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Admin Control Center</h2>
+                <p class="text-xs text-neutral-400 font-semibold mt-0.5">Manage donors, emergency requests, coordinate blood camps, and track donation histories.</p>
+            </div>
+            <div class="flex gap-2 shrink-0">
+                <a href="#manage-camps" class="px-4 py-2.5 bg-neutral-900 text-white text-xs font-bold rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+                    Create Blood Camp
+                </a>
+                <a href="#mass-message" class="px-4 py-2.5 bg-white text-neutral-700 text-xs font-bold border border-neutral-200 rounded-xl hover:border-brand-500 hover:text-brand-600 transition-all hover:scale-[1.01] active:scale-[0.99]">
+                    Publish Alert
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Sidebar Navigation & Filters -->
+        <aside class="lg:col-span-3 space-y-6">
+            <!-- Sidebar Options -->
+            <div class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 space-y-4 premium-card">
+                <h3 class="text-neutral-900 font-extrabold text-[10px] uppercase tracking-wider border-b border-neutral-100 pb-2.5">Admin Options</h3>
+                <nav class="space-y-1">
+                    <a href="#overview" class="admin-nav-link flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-600 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2"></path></svg>
+                        <span>Overview</span>
+                    </a>
+                    <a href="#mass-message" class="admin-nav-link flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-600 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                        <span>Mass Message</span>
+                    </a>
+                    <a href="#manage-camps" class="admin-nav-link flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-600 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span>Manage Camps</span>
+                    </a>
+                    <a href="#verify-donors" class="admin-nav-link flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-600 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <span>Verify Donors</span>
+                    </a>
+                    <a href="#verify-requests" class="admin-nav-link flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-600 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        <span>Verify Requests</span>
+                    </a>
+                    <a href="#verify-donations" class="admin-nav-link flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-600 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z"></path></svg>
+                        <span>Verify Donations</span>
+                    </a>
+                    <a href="#blood-groups" class="admin-nav-link flex items-center gap-2 px-3 py-2 text-xs font-bold text-neutral-600 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                        <span>Blood Directory</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Filters Card -->
+            <div class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 space-y-4 premium-card">
+                <h3 class="text-neutral-900 font-extrabold text-[10px] uppercase tracking-wider border-b border-neutral-100 pb-2.5">Dashboard Filters</h3>
+                <form method="get" class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label for="city-filter" class="block text-[9px] font-bold text-neutral-450 uppercase tracking-wider">City</label>
+                        <select id="city-filter" name="city" class="w-full bg-neutral-50/50 border border-neutral-200 text-neutral-900 font-semibold rounded-lg block p-2.5 text-xs focus:ring-2 focus:ring-brand-500/10 focus:border-brand-500 cursor-pointer">
+                            <option value="">All Cities</option>
+                            {% for city in cities %}
+                            <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label for="blood-group-filter" class="block text-[9px] font-bold text-neutral-450 uppercase tracking-wider">Blood Group</label>
+                        <select id="blood-group-filter" name="blood_group" class="w-full bg-neutral-50/50 border border-neutral-200 text-neutral-900 font-semibold rounded-lg block p-2.5 text-xs focus:ring-2 focus:ring-brand-500/10 focus:border-brand-500 cursor-pointer">
+                            <option value="">All Blood Groups</option>
+                            {% for value, label in blood_groups %}
+                            <option value="{{ value }}" {% if selected_blood_group == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-2 bg-neutral-900 text-white font-bold text-xs rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm mt-1">
+                        Apply Filters
+                    </button>
+                    <a href="{% url 'admin_dashboard' %}" class="block text-center w-full py-2 border border-neutral-200 text-neutral-600 font-bold text-xs rounded-xl hover:bg-neutral-55 transition-colors">
+                        Reset Filters
+                    </a>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Display Panel -->
+        <div class="lg:col-span-9 space-y-6">
+            
+            <!-- OVERVIEW PANEL -->
+            <section id="overview" class="grid grid-cols-2 md:grid-cols-4 gap-4 admin-panel" data-admin-panel="overview">
+                <article class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 premium-card">
+                    <h3 class="text-[9px] uppercase font-bold tracking-wider text-neutral-400">Total Donors</h3>
+                    <p class="text-3xl font-black text-neutral-950 mt-1 tracking-tight">{{ total_donors }}</p>
+                </article>
+                <article class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 premium-card">
+                    <h3 class="text-[9px] uppercase font-bold tracking-wider text-neutral-400">Total Requests</h3>
+                    <p class="text-3xl font-black text-neutral-950 mt-1 tracking-tight">{{ total_requests }}</p>
+                </article>
+                <article class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 premium-card">
+                    <h3 class="text-[9px] uppercase font-bold tracking-wider text-neutral-400">Pending Requests</h3>
+                    <p class="text-3xl font-black text-neutral-950 mt-1 tracking-tight">{{ pending_requests }}</p>
+                </article>
+                <article class="bg-white border border-brand-200/80 rounded-2xl p-5 shadow-sm shadow-brand-500/[0.01] premium-card">
+                    <h3 class="text-[9px] uppercase font-bold tracking-wider text-brand-500">Emergency Pending</h3>
+                    <p class="text-3xl font-black text-brand-600 mt-1 tracking-tight">{{ emergency_requests }}</p>
+                </article>
+            </section>
+
+            <!-- Chart section inside Overview -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6 admin-panel" data-admin-panel="overview">
+                <div class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 premium-card">
+                    <h3 class="text-xs font-bold text-neutral-900 border-b border-neutral-100 pb-2.5 mb-4">Requests Per Day (Last 7 Days)</h3>
+                    <canvas id="requestsPerDayChart" height="150"></canvas>
+                </div>
+                <div class="bg-white border border-neutral-200/40 rounded-2xl p-5 shadow-sm shadow-zinc-100/50 premium-card">
+                    <h3 class="text-xs font-bold text-neutral-900 border-b border-neutral-100 pb-2.5 mb-4">Approved Donors by Blood Group</h3>
+                    <canvas id="donorsByGroupChart" height="150"></canvas>
+                </div>
+            </section>
+
+            <!-- MASS MESSAGE PANEL -->
+            <section id="mass-message" class="bg-white border border-neutral-200/40 rounded-2xl p-6 md:p-8 space-y-5 shadow-sm shadow-zinc-100/50 admin-panel" data-admin-panel="mass-message" hidden>
+                <div class="border-b border-neutral-100 pb-2.5">
+                    <h3 class="text-base font-bold text-neutral-950">Publish Alert Message</h3>
+                    <p class="text-[10px] text-neutral-400 font-semibold">Write a notification to display on the emergency notice board.</p>
+                </div>
+                <form method="post" class="space-y-4 admin-forms">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="broadcast_create">
+                    {{ broadcast_form.as_p }}
+                    <button type="submit" class="px-5 py-2.5 bg-neutral-900 text-white font-bold text-xs rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+                        Publish Alert
+                    </button>
+                </form>
+            </section>
+
+            <!-- CREATE CAMPS PANEL -->
+            <section id="manage-camps" class="bg-white border border-neutral-200/40 rounded-2xl p-6 md:p-8 space-y-5 shadow-sm shadow-zinc-100/50 admin-panel" data-admin-panel="manage-camps" hidden>
+                <div class="border-b border-neutral-100 pb-2.5">
+                    <h3 class="text-base font-bold text-neutral-950">Schedule Blood Camp</h3>
+                    <p class="text-[10px] text-neutral-400 font-semibold">Coordinate and schedule a blood camp in Bihar districts.</p>
+                </div>
+                <form method="post" class="space-y-4 admin-forms">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="camp_create">
+                    {{ camp_form.as_p }}
+                    <button type="submit" class="px-5 py-2.5 bg-neutral-900 text-white font-bold text-xs rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+                        Schedule Camp
+                    </button>
+                </form>
+            </section>
+
+            <!-- RECENT CAMPS LIST inside camps panel -->
+            <section class="bg-white border border-neutral-200/40 rounded-2xl overflow-hidden shadow-sm shadow-zinc-100/50 admin-panel" data-admin-panel="manage-camps" hidden>
+                <div class="px-4 py-3 bg-neutral-50/50 border-b border-neutral-100">
+                    <h4 class="text-xs font-bold text-neutral-950">Scheduled Blood Camps</h4>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-neutral-50/50 border-b border-neutral-100 text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
+                                <th class="px-4 py-3">Title</th>
+                                <th class="px-4 py-3">Schedule Date</th>
+                                <th class="px-4 py-3">Venue Location</th>
+                                <th class="px-4 py-3">Registers</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-neutral-100 text-xs">
+                            {% for camp in camps %}
+                            <tr class="hover:bg-neutral-50/50 transition-colors">
+                                <td class="px-4 py-3.5 font-bold text-neutral-800"><a href="{% url 'camp_detail' camp.id %}" class="hover:underline">{{ camp.title }}</a></td>
+                                <td class="px-4 py-3.5 text-neutral-500 font-semibold">{{ camp.date|date:'d M Y' }}</td>
+                                <td class="px-4 py-3.5 text-neutral-500 font-medium">{{ camp.location }}</td>
+                                <td class="px-4 py-3.5 font-black text-neutral-700">{{ camp.registered_count }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="px-4 py-8 text-center text-neutral-400 italic">No camps created yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- BLOOD GROUPS SUMMARY PANEL -->
+            <section id="blood-groups" class="bg-white border border-neutral-200/40 rounded-2xl overflow-hidden shadow-sm shadow-zinc-100/50 admin-panel" data-admin-panel="blood-groups" hidden>
+                <div class="px-4 py-3 bg-neutral-50/50 border-b border-neutral-100">
+                    <h3 class="text-xs font-bold text-neutral-950">Blood Groups Directory Stats</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-neutral-50/50 border-b border-neutral-100 text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
+                                <th class="px-6 py-3">Blood Group</th>
+                                <th class="px-6 py-3">Total Registered Donors</th>
+                                <th class="px-6 py-3">Active Eligible Donors</th>
+                                <th class="px-6 py-3">Pending Requests</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-neutral-100">
+                            {% for item in blood_group_summary %}
+                            <tr class="hover:bg-neutral-50/50 transition-colors">
+                                <td class="px-6 py-3 font-bold text-neutral-800">{{ item.label }}</td>
+                                <td class="px-6 py-3 text-neutral-600 font-semibold">{{ item.donor_count }}</td>
+                                <td class="px-6 py-3 text-emerald-600 font-bold">{{ item.active_donor_count }}</td>
+                                <td class="px-6 py-3 text-brand-600 font-bold">{{ item.pending_request_count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VERIFY DONORS PANEL -->
+            <section id="verify-donors" class="bg-white border border-neutral-200/40 rounded-2xl overflow-hidden shadow-sm shadow-zinc-100/50 admin-panel" data-admin-panel="verify-donors" hidden>
+                <div class="px-4 py-3 bg-neutral-50/50 border-b border-neutral-100">
+                    <h3 class="text-xs font-bold text-neutral-950">Approve Registered Donors</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-neutral-50/50 border-b border-neutral-100 text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
+                                <th class="px-4 py-3">Volunteer Name</th>
+                                <th class="px-4 py-3">Group</th>
+                                <th class="px-4 py-3">District</th>
+                                <th class="px-4 py-3">OTP Code</th>
+                                <th class="px-4 py-3">Current Status</th>
+                                <th class="px-4 py-3 text-right">Verification Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-neutral-100 text-xs">
+                            {% for donor in donors %}
+                            <tr class="hover:bg-neutral-50/50 transition-colors">
+                                <td class="px-4 py-3.5 font-bold text-neutral-850">{{ donor.full_name }}</td>
+                                <td class="px-4 py-3.5 text-neutral-600 font-bold">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-neutral-55 text-neutral-800 font-bold border border-neutral-200/60 shadow-sm text-[11px]">{{ donor.blood_group }}</span>
+                                </td>
+                                <td class="px-4 py-3.5 text-neutral-500 font-semibold">{{ donor.city }}</td>
+                                <td class="px-4 py-3.5">
+                                    {% if donor.otp_verified %}
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100">Verified</span>
+                                    {% else %}
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-100">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3.5">
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase
+                                        {% if donor.verification_status == 'APPROVED' %} bg-emerald-50 text-emerald-700 border border-emerald-100
+                                        {% elif donor.verification_status == 'REJECTED' %} bg-brand-50 text-brand-700 border border-brand-100
+                                        {% else %} bg-amber-50 text-amber-700 border border-amber-100 {% endif %}">
+                                        {{ donor.get_verification_status_display }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-right">
+                                    <form method="post" class="inline-flex items-center gap-2">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="donor_verify">
+                                        <input type="hidden" name="donor_id" value="{{ donor.id }}">
+                                        <select name="verification_status" class="bg-neutral-50 border border-neutral-200 text-neutral-900 rounded p-1 text-[10px] font-medium outline-none cursor-pointer">
+                                            <option value="PENDING" {% if donor.verification_status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                            <option value="APPROVED" {% if donor.verification_status == 'APPROVED' %}selected{% endif %}>Approve</option>
+                                            <option value="REJECTED" {% if donor.verification_status == 'REJECTED' %}selected{% endif %}>Reject</option>
+                                        </select>
+                                        <button type="submit" class="px-3 py-1 bg-neutral-900 text-white font-bold text-[9px] rounded hover:bg-neutral-800 transition-colors shadow-sm">
+                                            Update
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-neutral-400 italic font-semibold">No donor profiles submitted yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VERIFY REQUESTS PANEL -->
+            <section id="verify-requests" class="bg-white border border-neutral-200/40 rounded-2xl overflow-hidden shadow-sm shadow-zinc-100/50 admin-panel" data-admin-panel="verify-requests" hidden>
+                <div class="px-4 py-3 bg-neutral-50/50 border-b border-neutral-100">
+                    <h3 class="text-xs font-bold text-neutral-950">Verify & Approve Emergency Requests</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-neutral-50/50 border-b border-neutral-100 text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
+                                <th class="px-4 py-3">Requester</th>
+                                <th class="px-4 py-3">Group</th>
+                                <th class="px-4 py-3">Units</th>
+                                <th class="px-4 py-3">District</th>
+                                <th class="px-4 py-3">Priority</th>
+                                <th class="px-4 py-3">OTP</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-neutral-100 text-xs">
+                            {% for item in requests %}
+                            <tr class="hover:bg-neutral-50/50 transition-colors">
+                                <td class="px-4 py-3.5 font-bold text-neutral-850">{{ item.requester_name }}</td>
+                                <td class="px-4 py-3.5 text-neutral-600 font-bold">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-neutral-55 text-neutral-800 font-bold border border-neutral-200/60 shadow-sm text-[11px]">{{ item.blood_group }}</span>
+                                </td>
+                                <td class="px-4 py-3.5 text-neutral-500 font-semibold">{{ item.units }} Units</td>
+                                <td class="px-4 py-3.5 text-neutral-500 font-medium">{{ item.city }}</td>
+                                <td class="px-4 py-3.5">
+                                    {% if item.is_emergency %}
+                                    <span class="px-2.5 py-0.5 rounded text-[8px] font-bold uppercase bg-brand-50 text-brand-700 border border-brand-100">Emergency</span>
+                                    {% else %}
+                                    <span class="px-2.5 py-0.5 rounded text-[8px] font-bold uppercase bg-neutral-100 text-neutral-500 border border-neutral-200">Routine</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3.5">
+                                    {% if item.otp_verified %}
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100">Verified</span>
+                                    {% else %}
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-100">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3.5">
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase
+                                        {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %} bg-emerald-50 text-emerald-700 border border-emerald-100
+                                        {% elif item.status == 'REJECTED' %} bg-brand-50 text-brand-700 border border-brand-100
+                                        {% else %} bg-amber-50 text-amber-700 border border-amber-100 {% endif %}">
+                                        {{ item.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-right">
+                                    <form method="post" class="inline-flex items-center gap-2">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="request_status">
+                                        <input type="hidden" name="request_id" value="{{ item.id }}">
+                                        <select name="status" class="bg-neutral-50 border border-neutral-200 text-neutral-900 rounded p-1 text-[10px] font-medium outline-none cursor-pointer">
+                                            <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                            <option value="APPROVED" {% if item.status == 'APPROVED' %}selected{% endif %}>Approved</option>
+                                            <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                                            <option value="COMPLETED" {% if item.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                                        </select>
+                                        <button type="submit" class="px-3 py-1 bg-neutral-900 text-white font-bold text-[9px] rounded hover:bg-neutral-800 transition-colors shadow-sm">
+                                            Update
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="px-4 py-8 text-center text-neutral-400 font-semibold italic">No blood requests submitted yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- NSS VERIFY DONATIONS PANEL -->
+            <section id="verify-donations" class="bg-white border border-neutral-200/40 rounded-2xl overflow-hidden shadow-sm shadow-zinc-100/50 admin-panel" data-admin-panel="verify-donations" hidden>
+                <div class="px-4 py-3 bg-neutral-50/50 border-b border-neutral-100">
+                    <h3 class="text-xs font-bold text-neutral-950">Verify Volunteer Donations & Generate Appreciation Certificates</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-neutral-50/50 border-b border-neutral-100 text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
+                                <th class="px-4 py-3">Donation Date</th>
+                                <th class="px-4 py-3">Volunteer Donor</th>
+                                <th class="px-4 py-3">Request Code</th>
+                                <th class="px-4 py-3">Blood Group</th>
+                                <th class="px-4 py-3">NSS Audit Status</th>
+                                <th class="px-4 py-3">Appreciation ID</th>
+                                <th class="px-4 py-3 text-right">Verification Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-neutral-100 text-xs">
+                            {% for history in recent_donations %}
+                            <tr class="hover:bg-neutral-50/50 transition-colors">
+                                <td class="px-4 py-3.5 text-neutral-500 font-medium">{{ history.date|date:'d M Y' }}</td>
+                                <td class="px-4 py-3.5 font-bold text-neutral-850">{{ history.donor.full_name }}</td>
+                                <td class="px-4 py-3.5 text-neutral-600 font-mono">#{{ history.request.request_code }}</td>
+                                <td class="px-4 py-3.5 font-black text-neutral-700">{{ history.request.blood_group }}</td>
+                                <td class="px-4 py-3.5">
+                                    {% if history.nss_verified %}
+                                    <span class="px-2.5 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100">Audit Complete</span>
+                                    {% else %}
+                                    <span class="px-2.5 py-0.5 rounded text-[8px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-100">Audit Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3.5 font-mono text-neutral-500 font-semibold">{{ history.certificate_id|default:'-' }}</td>
+                                <td class="px-4 py-3.5 text-right">
+                                    {% if history.status != 'SUCCESS' %}
+                                    <span class="text-neutral-400 text-[10px] italic">Only success eligible</span>
+                                    {% elif history.nss_verified %}
+                                    <a class="px-3.5 py-1.5 border border-brand-200 text-brand-600 text-[10px] font-bold rounded-lg hover:bg-brand-50 hover:text-brand-700 transition-colors inline-block" href="{% url 'donation_certificate' history.id %}" target="_blank">
+                                        View Certificate
+                                    </a>
+                                    {% else %}
+                                    <form method="post" class="inline-block">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="nss_verify_donation">
+                                        <input type="hidden" name="history_id" value="{{ history.id }}">
+                                        <button type="submit" class="px-3.5 py-1.5 bg-neutral-900 text-white font-bold text-[10px] rounded-lg hover:bg-neutral-800 transition-colors shadow-sm">
+                                            Verify & Issue
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="px-4 py-8 text-center text-neutral-400 font-semibold italic">No donation records found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ requests_per_day_labels|json_script:"requests-per-day-labels" }}
+{{ requests_per_day_values|json_script:"requests-per-day-values" }}
+{{ donors_by_group_labels|json_script:"donors-by-group-labels" }}
+{{ donors_by_group_values|json_script:"donors-by-group-values" }}
+
+<script>
+    const adminNavLinks = document.querySelectorAll('.admin-nav-link');
+    const adminPanels = document.querySelectorAll('.admin-panel');
+
+    const getActivePanelName = () => {
+        const hashValue = (window.location.hash || '#overview').slice(1);
+        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'verify-donations', 'blood-groups'];
+        return knownPanels.includes(hashValue) ? hashValue : 'overview';
+    };
+
+    const setActiveAdminLink = (panelName) => {
+        const activeHash = `#${panelName}`;
+        adminNavLinks.forEach((link) => {
+            const isActive = link.getAttribute('href') === activeHash;
+            link.classList.toggle('active', isActive);
+        });
+    };
+
+    const setActiveAdminPanel = (panelName) => {
+        adminPanels.forEach((panel) => {
+            panel.hidden = panel.dataset.adminPanel !== panelName;
+        });
+    };
+
+    adminNavLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const panelName = link.getAttribute('href').replace('#', '');
+            window.location.hash = panelName;
+            setActiveAdminLink(panelName);
+            setActiveAdminPanel(panelName);
+        });
+    });
+
+    window.addEventListener('hashchange', () => {
+        const panelName = getActivePanelName();
+        setActiveAdminLink(panelName);
+        setActiveAdminPanel(panelName);
+    });
+
+    const initialPanelName = getActivePanelName();
+    setActiveAdminLink(initialPanelName);
+    setActiveAdminPanel(initialPanelName);
+
+    // Initialize ChartJS
+    const requestsPerDayLabels = JSON.parse(document.getElementById('requests-per-day-labels').textContent);
+    const requestsPerDayData = JSON.parse(document.getElementById('requests-per-day-values').textContent);
+    const donorsByGroupLabels = JSON.parse(document.getElementById('donors-by-group-labels').textContent);
+    const donorsByGroupData = JSON.parse(document.getElementById('donors-by-group-values').textContent);
+
+    const requestsPerDayCtx = document.getElementById('requestsPerDayChart');
+    if (requestsPerDayCtx) {
+        new Chart(requestsPerDayCtx, {
+            type: 'line',
+            data: {
+                labels: requestsPerDayLabels,
+                datasets: [{
+                    label: 'Requests',
+                    data: requestsPerDayData,
+                    borderColor: '#e11d48', // brand-500
+                    backgroundColor: 'rgba(225, 29, 72, 0.03)',
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#e11d48'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0, color: '#a3a3a3' }, grid: { color: '#f5f5f4' } },
+                    x: { ticks: { color: '#a3a3a3' }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    const donorsByGroupCtx = document.getElementById('donorsByGroupChart');
+    if (donorsByGroupCtx) {
+        new Chart(donorsByGroupCtx, {
+            type: 'bar',
+            data: {
+                labels: donorsByGroupLabels,
+                datasets: [{
+                    label: 'Donors',
+                    data: donorsByGroupData,
+                    backgroundColor: '#1c1917', // neutral-900
+                    borderRadius: 6,
+                    barThickness: 16
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0, color: '#a3a3a3' }, grid: { color: '#f5f5f4' } },
+                    x: { ticks: { color: '#a3a3a3' }, grid: { display: false } }
+                }
+            }
+        });
+    }
+</script>
+
+<style>
+    /* Injected Django input styling consistency */
+    .admin-forms input[type="text"],
+    .admin-forms textarea,
+    .admin-forms select {
+        width: 100%;
+        background-color: #fafaf9;
+        border: 1px solid #e7e5e4;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #1c1917;
+        outline: none;
+        transition: all 0.2s ease;
+        margin-top: 4px;
+        margin-bottom: 12px;
+    }
+    .admin-forms input[type="text"]:focus,
+    .admin-forms textarea:focus,
+    .admin-forms select:focus {
+        border-color: #e11d48;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.08);
+    }
+    .admin-forms textarea {
+        height: 6rem;
+        resize: none;
+    }
+    .admin-forms input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        accent-color: #e11d48;
+        border-radius: 0.25rem;
+        border: 1px solid #e7e5e4;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
