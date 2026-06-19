@@ -244,6 +244,16 @@ class DonationHistory(models.Model):
     request = models.ForeignKey(BloodRequest, on_delete=models.CASCADE, related_name="donation_histories")
     date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_SUCCESS)
+    nss_verified = models.BooleanField(default=False)
+    verified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="nss_verified_donations",
+    )
+    verified_at = models.DateTimeField(blank=True, null=True)
+    certificate_id = models.CharField(max_length=20, blank=True, null=True, default=None, unique=True)
 
     class Meta:
         ordering = ["-date"]
@@ -253,3 +263,26 @@ class DonationHistory(models.Model):
 
     def __str__(self) -> str:
         return f"{self.donor.full_name} - {self.request.request_code} ({self.status})"
+
+    @property
+    def has_certificate(self) -> bool:
+        return self.nss_verified and bool(self.certificate_id)
+
+    def _generate_certificate_id(self) -> str:
+        year = timezone.now().year
+        while True:
+            candidate = f"NSS-{year}-{get_random_string(4, allowed_chars='0123456789')}"
+            if not DonationHistory.objects.filter(certificate_id=candidate).exists():
+                return candidate
+
+    def verify_by_nss(self, verifier):
+        if self.nss_verified:
+            return False
+
+        self.nss_verified = True
+        self.verified_by = verifier
+        self.verified_at = timezone.now()
+        if not self.certificate_id:
+            self.certificate_id = self._generate_certificate_id()
+        self.save(update_fields=["nss_verified", "verified_by", "verified_at", "certificate_id"])
+        return True

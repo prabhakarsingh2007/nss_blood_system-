@@ -20,6 +20,7 @@
         <a href="#manage-camps" class="admin-nav-link">Manage Blood Camps</a>
         <a href="#verify-donors" class="admin-nav-link">Verify Donors</a>
         <a href="#verify-requests" class="admin-nav-link">Verify Requests</a>
+        <a href="#verify-donations" class="admin-nav-link">NSS Verify Donations</a>
         <a href="#blood-groups" class="admin-nav-link">Blood Group Control</a>
 
         <h4>Dashboard Filters</h4>
@@ -175,9 +176,9 @@
                     <input type="hidden" name="action" value="donor_verify">
                     <input type="hidden" name="donor_id" value="{{ donor.id }}">
                     <select name="verification_status">
-                        <option value="PENDING">Pending</option>
-                        <option value="APPROVED">Approve</option>
-                        <option value="REJECTED">Reject</option>
+                        <option value="PENDING" {% if donor.verification_status == 'PENDING' %}selected{% endif %}>Pending</option>
+                        <option value="APPROVED" {% if donor.verification_status == 'APPROVED' %}selected{% endif %}>Approve</option>
+                        <option value="REJECTED" {% if donor.verification_status == 'REJECTED' %}selected{% endif %}>Reject</option>
                     </select>
                     <button type="submit" class="btn">Update</button>
                 </form>
@@ -224,10 +225,10 @@
                     <input type="hidden" name="action" value="request_status">
                     <input type="hidden" name="request_id" value="{{ item.id }}">
                     <select name="status">
-                        <option value="PENDING">Pending</option>
-                        <option value="APPROVED">Approved</option>
-                        <option value="REJECTED">Rejected</option>
-                        <option value="COMPLETED">Completed</option>
+                        <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                        <option value="APPROVED" {% if item.status == 'APPROVED' %}selected{% endif %}>Approved</option>
+                        <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                        <option value="COMPLETED" {% if item.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
                     </select>
                     <button type="submit" class="btn">Update</button>
                 </form>
@@ -236,6 +237,59 @@
         {% empty %}
         <tr>
             <td colspan="8">No requests submitted yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</section>
+
+<section id="verify-donations" class="card section-card admin-panel" data-admin-panel="verify-donations" hidden>
+<h3>NSS Verify Donations & Generate Certificates</h3>
+<table class="table table-admin">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Donor</th>
+            <th>Request Code</th>
+            <th>Blood Group</th>
+            <th>NSS Status</th>
+            <th>Certificate ID</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for history in recent_donations %}
+        <tr>
+            <td>{{ history.date|date:'d M Y' }}</td>
+            <td>{{ history.donor.full_name }}</td>
+            <td>{{ history.request.request_code }}</td>
+            <td>{{ history.request.blood_group }}</td>
+            <td>
+                {% if history.nss_verified %}
+                <span class="status-badge ok">Verified</span>
+                {% else %}
+                <span class="status-badge pending">Pending</span>
+                {% endif %}
+            </td>
+            <td>{{ history.certificate_id|default:'-' }}</td>
+            <td>
+                {% if history.status != 'SUCCESS' %}
+                <span>Only success eligible</span>
+                {% elif history.nss_verified %}
+                <a class="btn" href="{% url 'donation_certificate' history.id %}" target="_blank">View Certificate</a>
+                {% else %}
+                <form method="post" class="inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="nss_verify_donation">
+                    <input type="hidden" name="history_id" value="{{ history.id }}">
+                    <button type="submit" class="btn">Verify & Generate</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">No donation records found.</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -255,7 +309,7 @@
 
     const getActivePanelName = () => {
         const hashValue = (window.location.hash || '#overview').slice(1);
-        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'blood-groups'];
+        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'verify-donations', 'blood-groups'];
         return knownPanels.includes(hashValue) ? hashValue : 'overview';
     };
 

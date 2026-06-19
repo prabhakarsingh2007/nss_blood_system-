@@ -8,6 +8,7 @@
     <p>Blood Group: {{ profile.blood_group }}</p>
     <p>City: {{ profile.city }}</p>
     <p>Total Donations: {{ total_donations }}</p>
+    <p>NSS Verified Donations: {{ verified_donation_count }}</p>
     <p>Current Rating: {{ current_rating|floatformat:1 }} / 5.0</p>
     <p>Availability: {% if profile.available %}Available{% else %}Unavailable{% endif %}</p>
     <p>Verification: {{ profile.get_verification_status_display }}</p>
@@ -64,6 +65,8 @@
             <th>Blood Group</th>
             <th>Units</th>
             <th>Status</th>
+            <th>NSS Verify</th>
+            <th>Certificate</th>
         </tr>
     </thead>
     <tbody>
@@ -74,10 +77,24 @@
             <td>{{ item.request.blood_group }}</td>
             <td>{{ item.request.units }}</td>
             <td>{{ item.get_status_display }}</td>
+            <td>
+                {% if item.nss_verified %}
+                <span class="status-badge ok">Verified</span>
+                {% else %}
+                <span class="status-badge pending">Pending</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if item.has_certificate %}
+                <a class="btn" href="{% url 'donation_certificate' item.id %}">View</a>
+                {% else %}
+                <span>Not Generated</span>
+                {% endif %}
+            </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="5">No donation history.</td>
+            <td colspan="7">No donation history.</td>
         </tr>
         {% endfor %}
     </tbody>

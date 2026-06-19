@@ -21,5 +21,6 @@ urlpatterns = [
     path("camps/<int:camp_id>/register/", views.register_camp, name="register_camp"),
     path("donor-dashboard/", views.donor_dashboard, name="donor_dashboard"),
     path("donate-request/<int:request_id>/", views.donate_request, name="donate_request"),
+    path("certificate/<int:history_id>/", views.donation_certificate, name="donation_certificate"),
     path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
 ]

@@ -4,8 +4,9 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db.models.functions import TruncDate
+from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -266,12 +267,54 @@ def request_verify_otp(request):
 
 
 def request_status(request):
+    phone = request.GET.get("phone", "")
+    phone_verified = False
+    requests = []
+
     if request.user.is_authenticated:
         requests = BloodRequest.objects.filter(requester=request.user).order_by("-requested_at")
+        phone_verified = True
     else:
-        phone = request.GET.get("phone", "")
-        requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at") if phone else []
-    return render(request, "blooddonation/request_status.html", {"requests": requests})
+        if phone:
+            phone = phone.strip()
+            session_verified_phone = request.session.get("verified_status_phone", "")
+            if session_verified_phone == phone:
+                phone_verified = True
+                requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at")
+            else:
+                requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at")
+                if requests.exists():
+                    if request.session.get("status_search_phone") != phone or "status_search_otp" not in request.session:
+                        import random
+                        otp = "".join([str(random.randint(0, 9)) for _ in range(6)])
+                        request.session["status_search_otp"] = otp
+                        request.session["status_search_phone"] = phone
+                        messages.info(request, f"Demo OTP for search verification: {otp}")
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "verify_search_otp":
+            otp_entered = request.POST.get("otp", "").strip()
+            saved_otp = request.session.get("status_search_otp")
+            saved_phone = request.session.get("status_search_phone")
+            
+            if saved_otp and saved_otp == otp_entered:
+                request.session["verified_status_phone"] = saved_phone
+                request.session.pop("status_search_otp", None)
+                messages.success(request, "Phone number verified successfully. Access granted to details.")
+                return redirect(f"{reverse('request_status')}?phone={saved_phone}")
+            else:
+                messages.error(request, "Invalid search OTP. Please try again.")
+                if saved_phone:
+                    phone = saved_phone
+                    requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at")
+
+    context = {
+        "requests": requests,
+        "phone_verified": phone_verified,
+        "phone": phone,
+    }
+    return render(request, "blooddonation/request_status.html", context)
 
 
 def camp_list(request):
@@ -363,6 +406,7 @@ def donor_dashboard(request):
         {
             "profile": profile,
             "past_donations": past_donations,
+            "verified_donation_count": past_donations.filter(nss_verified=True).count(),
             "total_donations": profile.donation_count,
             "current_rating": profile.rating,
             "open_requests": open_requests,
@@ -397,6 +441,108 @@ def donate_request(request, request_id):
     return redirect("donor_dashboard")
 
 
+def _handle_admin_request_status(request):
+    req_id = request.POST.get("request_id")
+    new_status = request.POST.get("status")
+    req = get_object_or_404(BloodRequest, pk=req_id)
+
+    # Admin can manually verify old or offline requests.
+    if new_status in {"APPROVED", "REJECTED", "COMPLETED"} and not req.otp_verified:
+        req.otp_verified = True
+        req.save(update_fields=["otp_verified"])
+        messages.info(request, "OTP was not verified, so admin override verification was applied.")
+
+    if new_status in {"PENDING", "APPROVED", "REJECTED", "COMPLETED"}:
+        if new_status == "APPROVED":
+            req.status = new_status
+            req.approved_at = timezone.now()
+            if req.assigned_donor is None:
+                matching_donor = (
+                    DonorProfile.objects.filter(
+                        blood_group=req.blood_group,
+                        city__iexact=req.city,
+                        verification_status="APPROVED",
+                        otp_verified=True,
+                        available=True,
+                    )
+                    .order_by("created_at")
+                    .first()
+                )
+                if matching_donor and not matching_donor.is_in_cooldown:
+                    req.assigned_donor = matching_donor
+
+            req.save(update_fields=["status", "approved_at", "assigned_donor"])
+            messages.success(request, "Request status updated.")
+        elif new_status == "COMPLETED":
+            donor = req.assigned_donor or req.fulfilled_by
+            if donor:
+                completed_now = req.mark_completed(donor)
+                if completed_now:
+                    messages.success(request, "Request marked completed and donor history updated.")
+                else:
+                    messages.info(request, "Request was already completed.")
+            else:
+                req.status = "COMPLETED"
+                req.save(update_fields=["status"])
+                messages.warning(request, "Request marked completed without a donor assignment.")
+        else:
+            req.status = new_status
+            req.save(update_fields=["status"])
+            messages.success(request, "Request status updated.")
+
+
+def _handle_admin_donor_verify(request):
+    donor_id = request.POST.get("donor_id")
+    decision = request.POST.get("verification_status")
+    donor = get_object_or_404(DonorProfile, pk=donor_id)
+
+    # Admin can manually verify donor in case of offline verification.
+    if decision in {"APPROVED", "REJECTED"} and not donor.otp_verified:
+        donor.otp_verified = True
+        donor.save(update_fields=["otp_verified"])
+        messages.info(request, "Donor OTP was missing, admin override verification applied.")
+
+    if decision in {"PENDING", "APPROVED", "REJECTED"}:
+        donor.verification_status = decision
+        donor.save(update_fields=["verification_status"])
+        messages.success(request, "Donor verification updated.")
+
+
+def _handle_admin_broadcast_create(request):
+    form = BroadcastMessageForm(request.POST)
+    if form.is_valid():
+        broadcast = form.save(commit=False)
+        broadcast.created_by = request.user
+        broadcast.save()
+        messages.success(request, "Mass message published.")
+        return True
+    return False
+
+
+def _handle_admin_camp_create(request):
+    form = BloodCampForm(request.POST)
+    if form.is_valid():
+        camp = form.save(commit=False)
+        camp.created_by = request.user
+        camp.save()
+        messages.success(request, "Blood camp created successfully.")
+        return True
+    return False
+
+
+def _handle_admin_nss_verify_donation(request):
+    history_id = request.POST.get("history_id")
+    donation_history = get_object_or_404(DonationHistory, pk=history_id)
+    if donation_history.status != DonationHistory.STATUS_SUCCESS:
+        messages.error(request, "Only successful donations can be NSS verified.")
+    else:
+        verified_now = donation_history.verify_by_nss(request.user)
+        if verified_now:
+            messages.success(request, f"NSS verification completed. Certificate {donation_history.certificate_id} generated.")
+        else:
+            messages.info(request, f"Already NSS verified. Certificate {donation_history.certificate_id} is available.")
+
+
 @login_required
 def admin_dashboard(request):
     if not request.user.is_staff:
@@ -410,87 +556,24 @@ def admin_dashboard(request):
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "request_status":
-            req_id = request.POST.get("request_id")
-            new_status = request.POST.get("status")
-            req = get_object_or_404(BloodRequest, pk=req_id)
+            _handle_admin_request_status(request)
+            return redirect(f"{reverse('admin_dashboard')}#verify-requests")
 
-            # Admin can manually verify old or offline requests.
-            if new_status in {"APPROVED", "REJECTED", "COMPLETED"} and not req.otp_verified:
-                req.otp_verified = True
-                req.save(update_fields=["otp_verified"])
-                messages.info(request, "OTP was not verified, so admin override verification was applied.")
+        elif action == "donor_verify":
+            _handle_admin_donor_verify(request)
+            return redirect(f"{reverse('admin_dashboard')}#verify-donors")
 
-            if new_status in {"PENDING", "APPROVED", "REJECTED", "COMPLETED"}:
-                if new_status == "APPROVED":
-                    req.status = new_status
-                    req.approved_at = timezone.now()
-                    if req.assigned_donor is None:
-                        matching_donor = (
-                            DonorProfile.objects.filter(
-                                blood_group=req.blood_group,
-                                city__iexact=req.city,
-                                verification_status="APPROVED",
-                                otp_verified=True,
-                                available=True,
-                            )
-                            .order_by("created_at")
-                            .first()
-                        )
-                        if matching_donor and not matching_donor.is_in_cooldown:
-                            req.assigned_donor = matching_donor
+        elif action == "broadcast_create":
+            if _handle_admin_broadcast_create(request):
+                return redirect(f"{reverse('admin_dashboard')}#mass-message")
 
-                    req.save(update_fields=["status", "approved_at", "assigned_donor"])
-                    messages.success(request, "Request status updated.")
-                elif new_status == "COMPLETED":
-                    donor = req.assigned_donor or req.fulfilled_by
-                    if donor:
-                        completed_now = req.mark_completed(donor)
-                        if completed_now:
-                            messages.success(request, "Request marked completed and donor history updated.")
-                        else:
-                            messages.info(request, "Request was already completed.")
-                    else:
-                        req.status = "COMPLETED"
-                        req.save(update_fields=["status"])
-                        messages.warning(request, "Request marked completed without a donor assignment.")
-                else:
-                    req.status = new_status
-                    req.save(update_fields=["status"])
-                    messages.success(request, "Request status updated.")
+        elif action == "camp_create":
+            if _handle_admin_camp_create(request):
+                return redirect(f"{reverse('admin_dashboard')}#manage-camps")
 
-        if action == "donor_verify":
-            donor_id = request.POST.get("donor_id")
-            decision = request.POST.get("verification_status")
-            donor = get_object_or_404(DonorProfile, pk=donor_id)
-
-            # Admin can manually verify donor in case of offline verification.
-            if decision in {"APPROVED", "REJECTED"} and not donor.otp_verified:
-                donor.otp_verified = True
-                donor.save(update_fields=["otp_verified"])
-                messages.info(request, "Donor OTP was missing, admin override verification applied.")
-
-            if decision in {"PENDING", "APPROVED", "REJECTED"}:
-                donor.verification_status = decision
-                donor.save(update_fields=["verification_status"])
-                messages.success(request, "Donor verification updated.")
-
-        if action == "broadcast_create":
-            broadcast_form = BroadcastMessageForm(request.POST)
-            if broadcast_form.is_valid():
-                broadcast = broadcast_form.save(commit=False)
-                broadcast.created_by = request.user
-                broadcast.save()
-                messages.success(request, "Mass message published.")
-                return redirect("admin_dashboard")
-
-        if action == "camp_create":
-            camp_form = BloodCampForm(request.POST)
-            if camp_form.is_valid():
-                camp = camp_form.save(commit=False)
-                camp.created_by = request.user
-                camp.save()
-                messages.success(request, "Blood camp created successfully.")
-                return redirect("admin_dashboard")
+        elif action == "nss_verify_donation":
+            _handle_admin_nss_verify_donation(request)
+            return redirect(f"{reverse('admin_dashboard')}#verify-donations")
 
     donor_queryset = DonorProfile.objects.order_by("-created_at")
     request_queryset = BloodRequest.objects.order_by("-requested_at")
@@ -541,27 +624,35 @@ def admin_dashboard(request):
     )
 
     camps = BloodCamp.objects.annotate(registered_count=Count("registrations", distinct=True)).order_by("-date", "-created_at")[:10]
+    recent_donations = DonationHistory.objects.select_related("donor", "request", "verified_by").order_by("-date")[:30]
+
+    cooldown_limit = timezone.localdate() - timedelta(days=90)
+    
+    donor_aggregates = DonorProfile.objects.values("blood_group").annotate(
+        total=Count("id"),
+        active=Count("id", filter=Q(
+            verification_status="APPROVED",
+            otp_verified=True,
+            available=True
+        ) & (Q(last_donation_date__isnull=True) | Q(last_donation_date__lte=cooldown_limit)))
+    )
+    donor_aggregates_map = {item["blood_group"]: item for item in donor_aggregates}
+    
+    request_aggregates = BloodRequest.objects.filter(status="PENDING").values("blood_group").annotate(
+        total=Count("id")
+    )
+    request_aggregates_map = {item["blood_group"]: item["total"] for item in request_aggregates}
 
     blood_group_summary = []
     for group_value, group_label in DonorProfile.BLOOD_GROUP_CHOICES:
-        donor_count = DonorProfile.objects.filter(blood_group=group_value).count()
-        active_donor_count = [
-            donor
-            for donor in DonorProfile.objects.filter(
-                blood_group=group_value,
-                verification_status="APPROVED",
-                otp_verified=True,
-            )
-            if donor.is_active_donor
-        ]
-        pending_request_count = BloodRequest.objects.filter(blood_group=group_value, status="PENDING").count()
+        donor_stats = donor_aggregates_map.get(group_value, {})
         blood_group_summary.append(
             {
                 "value": group_value,
                 "label": group_label,
-                "donor_count": donor_count,
-                "active_donor_count": len(active_donor_count),
-                "pending_request_count": pending_request_count,
+                "donor_count": donor_stats.get("total", 0),
+                "active_donor_count": donor_stats.get("active", 0),
+                "pending_request_count": request_aggregates_map.get(group_value, 0),
             }
         )
 
@@ -575,6 +666,7 @@ def admin_dashboard(request):
         "broadcast_form": broadcast_form,
         "camp_form": camp_form,
         "camps": camps,
+        "recent_donations": recent_donations,
         "blood_groups": DonorProfile.BLOOD_GROUP_CHOICES,
         "cities": cities,
         "selected_blood_group": selected_blood_group,
@@ -586,3 +678,25 @@ def admin_dashboard(request):
         "donors_by_group_values": donors_by_group_values,
     }
     return render(request, "blooddonation/admin_dashboard.html", context)
+
+
+@login_required
+def donation_certificate(request, history_id):
+    donation_history = get_object_or_404(
+        DonationHistory.objects.select_related("donor", "request", "verified_by", "donor__user"),
+        pk=history_id,
+    )
+
+    if not request.user.is_staff and donation_history.donor.user_id != request.user.id:
+        messages.error(request, "You are not allowed to view this certificate.")
+        return redirect("dashboard_router")
+
+    if not donation_history.has_certificate:
+        messages.error(request, "Certificate is not available until NSS verification is completed.")
+        return redirect("donor_dashboard")
+
+    context = {
+        "donation": donation_history,
+        "issued_date": timezone.localtime(donation_history.verified_at) if donation_history.verified_at else timezone.localtime(),
+    }
+    return render(request, "blooddonation/certificate.html", context)

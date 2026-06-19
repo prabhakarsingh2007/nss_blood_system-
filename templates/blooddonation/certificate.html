@@ -1,0 +1,49 @@
+{% extends 'blooddonation/base.html' %}
+
+{% block content %}
+<div class="certificate-wrap">
+    <div class="certificate-inner">
+        <div class="certificate-brand-row">
+            <div>
+                <p class="certificate-brand-hi">Rashtriya Seva Yojana</p>
+                <p class="certificate-brand-en">National Service Scheme</p>
+            </div>
+        </div>
+
+        <h1 class="certificate-title">Certificate of Appreciation</h1>
+        <p class="certificate-subtitle">This is to proudly certify that</p>
+
+        <h2 class="certificate-name">{{ donation.donor.full_name }}</h2>
+
+        <p class="certificate-line">has voluntarily donated blood on</p>
+        <p class="certificate-date">{{ donation.date|date:'d F Y' }}</p>
+        <p class="certificate-line">at {{ donation.request.hospital_name }}</p>
+
+        <p class="certificate-message">In recognition of this selfless contribution to saving lives.</p>
+
+        <div class="certificate-meta">
+            <p><strong>Certificate ID:</strong> {{ donation.certificate_id }}</p>
+            <p><strong>Issued On:</strong> {{ issued_date|date:'d M Y, h:i A' }}</p>
+            <p><strong>Verified By:</strong> {% if donation.verified_by %}{{ donation.verified_by.get_full_name|default:donation.verified_by.username }}{% else %}NSS Coordinator{% endif %}</p>
+        </div>
+
+        <div class="certificate-signatures">
+            <div>
+                <div class="certificate-sign-line"></div>
+                <p>Coordinator NSS</p>
+            </div>
+            <div>
+                <div class="certificate-sign-line"></div>
+                <p>Director NSS</p>
+            </div>
+        </div>
+
+        <p class="certificate-footer">Thank you for being a lifesaver!</p>
+
+        <div class="certificate-actions no-print">
+            <button onclick="window.print()" class="btn">Download / Print Certificate</button>
+            <a href="{% url 'donor_dashboard' %}" class="btn btn-alt">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -44,8 +44,8 @@ class BroadcastMessageAdmin(admin.ModelAdmin):
 
 @admin.register(DonationHistory)
 class DonationHistoryAdmin(admin.ModelAdmin):
-    list_display = ("donor", "request", "date", "status")
-    list_filter = ("status", "date")
+    list_display = ("donor", "request", "date", "status", "nss_verified", "certificate_id", "verified_by", "verified_at")
+    list_filter = ("status", "nss_verified", "date")
     search_fields = ("donor__full_name", "request__request_code", "request__requester_name")
 
 
