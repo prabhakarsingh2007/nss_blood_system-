@@ -1,0 +1,161 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 space-y-8">
+    <!-- Header Block -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-neutral-200/40 pb-6">
+        <div>
+            <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Request <span class="bg-gradient-to-r from-brand-500 to-rose-600 bg-clip-text text-transparent">Status</span></h2>
+            <p class="text-xs text-neutral-400 font-semibold mt-0.5">Track your blood requests and volunteer assignments in real-time.</p>
+        </div>
+
+        {% if not user.is_authenticated %}
+        <div class="w-full md:w-80">
+            <form method="get" class="relative">
+                <div class="flex bg-white rounded-xl border border-neutral-200 p-1.5 shadow-sm shadow-zinc-50 focus-within:border-brand-500 transition-colors">
+                    <input id="phone" type="text" name="phone" value="{{ phone }}" 
+                           placeholder="Search by contact number..."
+                           class="w-full bg-transparent pl-3 pr-2 py-1.5 text-xs font-semibold focus:outline-none text-neutral-900">
+                    <button type="submit" class="bg-neutral-900 text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-neutral-800 transition-all active:scale-95 shrink-0 shadow-sm">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- OTP verification card if unverified -->
+    {% if phone and not phone_verified and requests %}
+    <div class="p-6 bg-brand-50/10 border border-brand-100 rounded-2xl space-y-4 shadow-sm shadow-brand-500/[0.01]">
+        <div class="space-y-1">
+            <h3 class="text-sm font-bold text-neutral-900 flex items-center gap-2">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
+                </span>
+                Search Verification Required
+            </h3>
+            <p class="text-xs text-neutral-500 font-medium leading-normal">To view full donor contact details and hospital locations, please verify the phone number <strong>{{ phone }}</strong> using the OTP shown in your messages.</p>
+        </div>
+        <form method="post" class="flex flex-col sm:flex-row gap-3 max-w-sm">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="verify_search_otp">
+            <input type="text" name="otp" placeholder="Enter 6-digit OTP..." required
+                   class="bg-white border border-neutral-200 text-neutral-900 font-semibold rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand-500 w-full shadow-sm">
+            <button type="submit" class="bg-neutral-900 text-white font-bold text-xs rounded-xl px-6 py-2.5 hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shrink-0">
+                Verify OTP
+            </button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Table Container -->
+    <div class="bg-white border border-neutral-200/40 rounded-2xl overflow-hidden shadow-sm shadow-zinc-100/50 premium-card">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-neutral-50/50 border-b border-neutral-100 text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
+                        <th class="px-6 py-4">Request Code / Patient</th>
+                        <th class="px-6 py-4">Blood Group</th>
+                        <th class="px-6 py-4">Location & Hospital</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4 text-right">Assigned Donor</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neutral-100 text-xs">
+                    {% for item in requests %}
+                    <tr class="hover:bg-neutral-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col space-y-0.5">
+                                <span class="text-[9px] font-bold tracking-wider text-brand-600 font-mono">
+                                    {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
+                                        #{{ item.request_code }}
+                                    {% else %}
+                                        #PENDING-ID
+                                    {% endif %}
+                                </span>
+                                <span class="font-bold text-neutral-850 text-xs">{{ item.requester_name }}</span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-black text-xs border border-brand-100/30">
+                                    {{ item.blood_group }}
+                                </span>
+                                <span class="text-neutral-500 font-semibold">{{ item.units }} Units</span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="text-neutral-800 font-bold">{{ item.city }}</span>
+                                <span class="text-neutral-400 text-[10px] font-medium italic mt-0.5">
+                                    {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
+                                        {% if phone_verified %}
+                                            {{ item.hospital_name }}
+                                        {% else %}
+                                            [Hospital Address Masked]
+                                        {% endif %}
+                                    {% else %}
+                                        Hospital hidden
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {% with s=item.status %}
+                            <span class="px-2.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider
+                                {% if s == 'PENDING' %} bg-amber-50 text-amber-700 border border-amber-100
+                                {% elif s == 'APPROVED' %} bg-blue-50 text-blue-700 border border-blue-100
+                                {% elif s == 'COMPLETED' %} bg-emerald-50 text-emerald-700 border border-emerald-100
+                                {% else %} bg-neutral-100 text-neutral-500 border border-neutral-200 {% endif %}">
+                                {{ item.get_status_display }}
+                            </span>
+                            {% endwith %}
+                        </td>
+
+                        <td class="px-6 py-4 text-right">
+                            {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
+                                {% with donor=item.assigned_donor|default:item.fulfilled_by %}
+                                    {% if donor %}
+                                        <div class="flex flex-col items-end gap-1.5">
+                                            {% if phone_verified %}
+                                                <span class="text-neutral-900 font-black text-xs tracking-tight">{{ donor.phone }}</span>
+                                                <a href="https://wa.me/{{ donor.phone }}" target="_blank" 
+                                                   class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500 text-white text-[9px] font-bold rounded-lg hover:bg-emerald-600 transition-colors uppercase tracking-wider shadow-sm">
+                                                    <span>WhatsApp</span>
+                                                </a>
+                                            {% else %}
+                                                <span class="text-neutral-500 font-bold">******{{ donor.phone|slice:"-4:" }}</span>
+                                                <span class="text-[9px] font-bold text-brand-600 uppercase tracking-widest">Verify Phone to Unlock</span>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-neutral-400 text-[9px] font-bold uppercase italic tracking-wider">Assigning...</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <div class="flex items-center justify-end text-neutral-300">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-16 text-center text-neutral-400 font-medium italic">
+                            No requests found. Use the search bar above to look up requests by contact phone number.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

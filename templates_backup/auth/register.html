@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4 relative">
+    
+    <!-- Ambient blurred background glows -->
+    <div class="absolute top-1/4 left-10 w-80 h-80 bg-rose-100/15 rounded-full filter blur-3xl opacity-60 -z-10 animate-pulse" style="animation-duration: 8s;"></div>
+    <div class="absolute bottom-1/4 right-10 w-80 h-80 bg-amber-100/10 rounded-full filter blur-3xl opacity-60 -z-10 animate-pulse" style="animation-duration: 12s;"></div>
+
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        
+        <!-- Left Column: Branding, Value Prop & Live Network Info (Premium SaaS Style) -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-neutral-900 via-zinc-950 to-neutral-900 text-white rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden shadow-xl shadow-neutral-950/10 min-h-[450px] lg:min-h-full">
+            <!-- Grid decorative background -->
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+            
+            <div class="space-y-10 relative z-10">
+                <!-- Branding Header -->
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-rose-600 flex items-center justify-center shadow-md shadow-brand-500/20">
+                        <span class="text-white text-base">🩸</span>
+                    </div>
+                    <span class="brand-font font-black text-base uppercase tracking-wider">
+                        NSS Volunteer Network
+                    </span>
+                </div>
+
+                <!-- Headline -->
+                <div class="space-y-4">
+                    <h3 class="text-3xl font-black tracking-tight leading-tight">
+                        Start Saving Lives<br>in Your District.
+                    </h3>
+                    <p class="text-xs text-neutral-400 font-medium leading-relaxed">
+                        Create an account to join over a thousand verified NSS volunteers coordinating emergency blood donations across Bihar.
+                    </p>
+                </div>
+
+                <!-- Bullet points -->
+                <div class="space-y-4 pt-2">
+                    <div class="flex gap-3.5 items-start">
+                        <div class="w-5 h-5 shrink-0 rounded-md bg-brand-500/10 border border-brand-500/25 flex items-center justify-center text-brand-400 text-xs">✓</div>
+                        <div class="space-y-0.5">
+                            <h4 class="text-xs font-bold text-neutral-200">OTP Security Masking</h4>
+                            <p class="text-[10px] text-neutral-450 font-medium">Your contact details are verified and masked to prevent abuse.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3.5 items-start">
+                        <div class="w-5 h-5 shrink-0 rounded-md bg-brand-500/10 border border-brand-500/25 flex items-center justify-center text-brand-400 text-xs">✓</div>
+                        <div class="space-y-0.5">
+                            <h4 class="text-xs font-bold text-neutral-200">Verified Certificates</h4>
+                            <p class="text-[10px] text-neutral-450 font-medium">Earn official appreciation certificates after verified donor sessions.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3.5 items-start">
+                        <div class="w-5 h-5 shrink-0 rounded-md bg-brand-500/10 border border-brand-500/25 flex items-center justify-center text-brand-400 text-xs">✓</div>
+                        <div class="space-y-0.5">
+                            <h4 class="text-xs font-bold text-neutral-200">Real-Time Alerts</h4>
+                            <p class="text-[10px] text-neutral-450 font-medium">Get notified of emergency requests in your city instantly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quote/Footnote -->
+            <div class="relative z-10 pt-8 border-t border-neutral-800 space-y-1">
+                <p class="text-[10px] text-neutral-400 italic font-semibold">"Volunteering is at the very core of NSS. Every drop of blood is a gift of life."</p>
+                <p class="text-[9px] text-brand-500 font-bold uppercase tracking-wider">— Bihar State Coordinator</p>
+            </div>
+        </div>
+
+        <!-- Right Column: Registration Form -->
+        <div class="lg:col-span-7 flex flex-col justify-center">
+            <div class="bg-white border border-neutral-200/40 rounded-3xl p-6 md:p-10 shadow-sm shadow-zinc-100/50 premium-card">
+                
+                <div class="mb-6 space-y-1">
+                    <h2 class="text-2xl font-black text-neutral-900 tracking-tight">Create Account</h2>
+                    <p class="text-xs text-neutral-400 font-semibold">Join the network to track your dashboard and submit requests.</p>
+                </div>
+
+                <form method="post" class="space-y-5">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="p-3.5 bg-brand-50 border border-brand-100 rounded-xl text-brand-700 text-xs font-bold shadow-sm">
+                            {{ form.non_field_errors|striptags }}
+                        </div>
+                    {% endif %}
+
+                    <div class="space-y-4 forms-inputs">
+                        {% for field in form %}
+                            <div class="space-y-1.5">
+                                <label for="{{ field.id_for_label }}" class="block text-[9px] font-bold text-neutral-450 uppercase tracking-wider">
+                                    {{ field.label }}
+                                </label>
+                                <div class="relative">
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <p class="text-[9px] text-neutral-450 mt-1.5 leading-relaxed font-medium flex items-start gap-1.5">
+                                            <span class="text-brand-500 text-xs leading-[9px] shrink-0">•</span>
+                                            <span>{{ field.help_text|striptags }}</span>
+                                        </p>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <p class="text-[10px] text-brand-650 mt-1.5 font-bold flex items-center gap-1.5">
+                                            <span class="text-brand-500 font-black">!</span>
+                                            <span>{{ field.errors.0 }}</span>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-neutral-900 text-white font-bold text-xs rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm mt-6">
+                        <span>Sign Up</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+                </form>
+
+                <div class="mt-6 pt-5 border-t border-neutral-100 text-center">
+                    <p class="text-xs text-neutral-400 font-semibold">
+                        Already have an account? 
+                        <a href="{% url 'login' %}" class="text-brand-500 font-black hover:underline ml-1">Sign In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styling form fields injected by Django */
+    .forms-inputs input[type="text"],
+    .forms-inputs input[type="password"],
+    .forms-inputs input[type="number"],
+    .forms-inputs select,
+    .forms-inputs input[type="email"] {
+        width: 100%;
+        background-color: #fafaf9;
+        border: 1px solid #e7e5e4;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #1c1917;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+    .forms-inputs input[type="text"]:focus,
+    .forms-inputs input[type="password"]:focus,
+    .forms-inputs input[type="number"]:focus,
+    .forms-inputs select:focus,
+    .forms-inputs input[type="email"]:focus {
+        border-color: #e11d48;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.08);
+    }
+</style>
+{% endblock %}

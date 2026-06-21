@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-12 px-4 relative">
+    <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-72 h-72 bg-brand-50/40 rounded-full filter blur-3xl opacity-60 -z-10 animate-pulse"></div>
+
+    <div class="text-center mb-8 space-y-2">
+        <span class="inline-flex items-center justify-center w-12 h-12 bg-white border border-neutral-200/50 rounded-2xl text-xl shadow-sm premium-card">
+            🔑
+        </span>
+        <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Verify Profile</h2>
+        <p class="text-xs text-neutral-400 font-semibold">Enter the verification code to activate your donor status.</p>
+    </div>
+
+    <div class="bg-white border border-neutral-200/40 rounded-2xl p-6 md:p-8 shadow-sm shadow-zinc-100/50 premium-card">
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="p-3.5 bg-brand-50 border border-brand-100 rounded-xl text-brand-700 text-xs font-semibold">
+                    {{ form.non_field_errors|striptags }}
+                </div>
+            {% endif %}
+
+            <div class="space-y-2 premium-otp-input">
+                <label for="{{ form.otp.id_for_label }}" class="block text-[9px] font-bold text-neutral-450 uppercase tracking-wider text-center">
+                    Enter 6-Digit OTP
+                </label>
+                {{ form.otp }}
+                {% if form.otp.errors %}
+                    <p class="text-[10px] text-brand-600 mt-1.5 font-semibold text-center">{{ form.otp.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-neutral-900 text-white font-bold text-xs rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+                <span>Verify & Activate</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Premium style specifically for the single OTP input */
+    .premium-otp-input input {
+        text-align: center;
+        letter-spacing: 0.5em;
+        font-size: 1.5rem;
+        font-weight: 900;
+        background-color: #fafaf9;
+        border: 1px solid #e7e5e4;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        width: 100%;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+    .premium-otp-input input:focus {
+        border-color: #e11d48;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.08);
+    }
+</style>
+{% endblock %}

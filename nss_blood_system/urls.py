@@ -5,7 +5,12 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("blooddonation.urls")),
+    path("", include("core.urls")),
+    path("", include("accounts.urls")),
+    path("", include("donors.urls")),
+    path("", include("requests.urls")),
+    path("", include("inventory.urls")),
+    path("", include("dashboard.urls")),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,52 @@
+from django import forms
+from django.utils import timezone
+from .models import DonorProfile, BloodCamp
+
+class DonorProfileForm(forms.ModelForm):
+    class Meta:
+        model = DonorProfile
+        fields = [
+            "full_name",
+            "blood_group",
+            "age",
+            "phone",
+            "city",
+            "last_donation_date",
+            "available",
+        ]
+        widgets = {
+            "last_donation_date": forms.DateInput(attrs={"type": "date"}),
+        }
+
+    def clean_age(self):
+        age = self.cleaned_data.get("age")
+        if age is not None and (age < 18 or age > 65):
+            raise forms.ValidationError("Donors must be between 18 and 65 years old.")
+        return age
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        if phone:
+            phone = phone.strip()
+            if not phone.isdigit() or len(phone) < 10 or len(phone) > 12:
+                raise forms.ValidationError("Enter a valid 10 to 12 digit phone number.")
+        return phone
+
+
+class BloodCampForm(forms.ModelForm):
+    class Meta:
+        model = BloodCamp
+        fields = ["title", "description", "date", "location"]
+        widgets = {
+            "date": forms.DateInput(attrs={"type": "date"}),
+        }
+
+    def clean_date(self):
+        date = self.cleaned_data.get("date")
+        if date and date < timezone.localdate():
+            raise forms.ValidationError("Blood camp cannot be scheduled in the past.")
+        return date
+
+
+class OtpVerifyForm(forms.Form):
+    otp = forms.CharField(max_length=6, min_length=6)

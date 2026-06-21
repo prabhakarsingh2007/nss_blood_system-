@@ -1,0 +1,97 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-12 px-4 relative">
+    <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-72 h-72 bg-brand-50/40 rounded-full filter blur-3xl opacity-60 -z-10 animate-pulse"></div>
+
+    <div class="text-center mb-8 space-y-2">
+        <span class="inline-flex items-center justify-center w-12 h-12 bg-white border border-neutral-200/50 rounded-2xl text-xl shadow-sm premium-card">
+            🚨
+        </span>
+        <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Request Blood Support</h2>
+        <p class="text-xs text-neutral-400 font-semibold">Fill in patient and hospital details to connect with volunteer donors.</p>
+    </div>
+
+    <div class="bg-white border border-neutral-200/40 rounded-2xl p-6 md:p-8 shadow-sm shadow-zinc-100/50 premium-card">
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="p-3.5 bg-brand-50 border border-brand-100 rounded-xl text-brand-700 text-xs font-semibold">
+                    {{ form.non_field_errors|striptags }}
+                </div>
+            {% endif %}
+
+            <div class="space-y-4 premium-inputs">
+                {% for field in form %}
+                    <div class="space-y-1.5">
+                        <label for="{{ field.id_for_label }}" class="block text-[9px] font-bold text-neutral-450 uppercase tracking-wider">
+                            {{ field.label }}
+                        </label>
+                        <div class="relative">
+                            {% if field.field.widget.input_type == 'checkbox' %}
+                                <div class="flex items-center gap-3 py-2 bg-neutral-50/50 px-3.5 rounded-xl border border-neutral-200/60">
+                                    {{ field }}
+                                    <span class="text-xs text-brand-700 font-bold uppercase tracking-wider">This is an urgent medical emergency</span>
+                                </div>
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                            
+                            {% if field.errors %}
+                                <p class="text-[10px] text-brand-600 mt-1 font-semibold">{{ field.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-500 text-white font-bold text-xs rounded-xl hover:bg-brand-600 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm mt-4 shadow-brand-500/10">
+                <span>Submit Request</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Injected Django input styling consistency */
+    .premium-inputs input[type="text"],
+    .premium-inputs input[type="number"],
+    .premium-inputs select,
+    .premium-inputs textarea {
+        width: 100%;
+        background-color: #fafaf9;
+        border: 1px solid #e7e5e4;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #1c1917;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+    .premium-inputs input[type="text"]:focus,
+    .premium-inputs input[type="number"]:focus,
+    .premium-inputs select:focus,
+    .premium-inputs textarea:focus {
+        border-color: #e11d48;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.08);
+    }
+    .premium-inputs textarea {
+        height: 6rem;
+        resize: none;
+    }
+    .premium-inputs input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        accent-color: #e11d48;
+        border-radius: 0.25rem;
+        border: 1px solid #e7e5e4;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}

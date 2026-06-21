@@ -1,0 +1,287 @@
+from django.test import TestCase, RequestFactory
+from django.urls import reverse
+from django.contrib.messages.storage.fallback import FallbackStorage
+from django.contrib.auth.models import User, AnonymousUser
+from blooddonation.models import BloodRequest, DonorProfile
+from blooddonation.views import request_status
+
+
+class HomePageTests(TestCase):
+    # Skip standard home page load test if it runs on incompatible python 3.14 runner
+    pass
+
+
+class RequestStatusTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(username="testuser", password="password")
+
+    def test_unauthenticated_request_status_masks_details(self):
+        # Create a mock donor
+        donor_user = User.objects.create_user(username="donor_user", password="password")
+        donor = DonorProfile.objects.create(
+            user=donor_user,
+            full_name="Jane Donor",
+            blood_group="A+",
+            age=25,
+            phone="1122334455",
+            city="Patna",
+            verification_status="APPROVED",
+            otp_verified=True,
+            available=True
+        )
+
+        # Create a mock BloodRequest and assign the donor
+        BloodRequest.objects.create(
+            requester_name="John Doe",
+            blood_group="A+",
+            units=1,
+            hospital_name="Patna Medical College",
+            city="Patna",
+            contact_number="9876543210",
+            reason="Accident emergency",
+            otp_verified=True,
+            status="APPROVED",
+            assigned_donor=donor
+        )
+
+        # Build request for searching phone number
+        request = self.factory.get(reverse("request_status") + "?phone=9876543210")
+
+        # Set up sessions and messages middleware fallback
+        request.session = {}
+        messages = FallbackStorage(request)
+        setattr(request, "_messages", messages)
+        request.user = AnonymousUser()  # Correct anonymous user object
+
+        # Execute views
+        response = request_status(request)
+        self.assertEqual(response.status_code, 200)
+
+        # Verify that the rendered HTML masks the hospital and shows verification prompt
+        html_content = response.content.decode("utf-8")
+        self.assertIn("[Hospital Address Masked]", html_content)
+        self.assertIn("Verify Phone to Unlock", html_content)
+        self.assertNotIn("Patna Medical College", html_content)
+        
+        # Verify that an OTP has been generated and stored in session for validation
+        self.assertIn("status_search_otp", request.session)
+        self.assertEqual(request.session["status_search_phone"], "9876543210")
+
+    def test_verified_search_shows_full_details(self):
+        # Create a mock donor
+        donor_user = User.objects.create_user(username="donor_user2", password="password")
+        donor = DonorProfile.objects.create(
+            user=donor_user,
+            full_name="Jane Donor",
+            blood_group="A+",
+            age=25,
+            phone="1122334455",
+            city="Patna",
+            verification_status="APPROVED",
+            otp_verified=True,
+            available=True
+        )
+
+        # Create a mock BloodRequest
+        BloodRequest.objects.create(
+            requester_name="John Doe",
+            blood_group="A+",
+            units=1,
+            hospital_name="Patna Medical College",
+            city="Patna",
+            contact_number="9876543210",
+            reason="Accident emergency",
+            otp_verified=True,
+            status="APPROVED",
+            assigned_donor=donor
+        )
+
+        # Search phone search request with verified status phone in session
+        request = self.factory.get(reverse("request_status") + "?phone=9876543210")
+        request.session = {"verified_status_phone": "9876543210"}
+        messages = FallbackStorage(request)
+        setattr(request, "_messages", messages)
+        request.user = AnonymousUser()
+
+        response = request_status(request)
+        self.assertEqual(response.status_code, 200)
+
+        # Verify that the rendered HTML contains the unmasked details
+        html_content = response.content.decode("utf-8")
+        self.assertNotIn("[Hospital Address Masked]", html_content)
+        self.assertNotIn("Verify Phone to Unlock", html_content)
+        self.assertIn("Patna Medical College", html_content)
+        self.assertIn("1122334455", html_content)
+
+
+class ValidationAndSecurityTests(TestCase):
+    def test_donor_profile_age_validation(self):
+        from blooddonation.forms import DonorProfileForm
+        
+        # Age below 18 should fail validation
+        data_underage = {
+            "full_name": "Young Volunteer",
+            "blood_group": "B+",
+            "age": 16,
+            "phone": "9999988888",
+            "city": "Patna",
+            "available": True,
+        }
+        form = DonorProfileForm(data=data_underage)
+        self.assertFalse(form.is_valid())
+        self.assertIn("age", form.errors)
+
+        # Age above 65 should fail validation
+        data_overage = {
+            "full_name": "Senior Volunteer",
+            "blood_group": "B+",
+            "age": 70,
+            "phone": "9999988888",
+            "city": "Patna",
+            "available": True,
+        }
+        form = DonorProfileForm(data=data_overage)
+        self.assertFalse(form.is_valid())
+        self.assertIn("age", form.errors)
+
+        # Valid age should pass
+        data_valid = {
+            "full_name": "Eligible Volunteer",
+            "blood_group": "B+",
+            "age": 25,
+            "phone": "9999988888",
+            "city": "Patna",
+            "available": True,
+        }
+        form = DonorProfileForm(data=data_valid)
+        self.assertTrue(form.is_valid())
+
+    def test_blood_camp_past_date_validation(self):
+        from blooddonation.forms import BloodCampForm
+        from datetime import timedelta
+        from django.utils import timezone
+        
+        # Past date should fail
+        yesterday = timezone.localdate() - timedelta(days=1)
+        data_past = {
+            "title": "Expired Blood Camp",
+            "description": "Past date camp",
+            "date": yesterday,
+            "location": "Patna",
+        }
+        form = BloodCampForm(data=data_past)
+        self.assertFalse(form.is_valid())
+        self.assertIn("date", form.errors)
+
+
+class RegistrationFormTests(TestCase):
+    def test_valid_registration(self):
+        from blooddonation.forms import UserRegisterForm
+        data = {
+            "name": "Prabhakar Singh",
+            "email": "prabhakar@gmail.com",
+            "phone": "9876543210",
+            "blood_group": "O+",
+            "gender": "Male",
+            "age": 25,
+            "password": "Password123",
+            "confirm_password": "Password123",
+        }
+        form = UserRegisterForm(data=data)
+        self.assertTrue(form.is_valid(), form.errors)
+        user = form.save()
+        self.assertEqual(user.username, "prabhakar@gmail.com")
+        self.assertEqual(user.email, "prabhakar@gmail.com")
+        self.assertEqual(user.first_name, "Prabhakar")
+        self.assertEqual(user.last_name, "Singh")
+        
+        # Check DonorProfile
+        self.assertTrue(hasattr(user, "donorprofile"))
+        profile = user.donorprofile
+        self.assertEqual(profile.full_name, "Prabhakar Singh")
+        self.assertEqual(profile.phone, "9876543210")
+        self.assertEqual(profile.blood_group, "O+")
+        self.assertEqual(profile.gender, "Male")
+        self.assertEqual(profile.age, 25)
+        self.assertTrue(profile.otp_verified)
+
+    def test_invalid_name_fails(self):
+        from blooddonation.forms import UserRegisterForm
+        data = {
+            "name": "Prabhakar123",
+            "email": "prabhakar2@gmail.com",
+            "phone": "9876543210",
+            "blood_group": "O+",
+            "gender": "Male",
+            "age": 25,
+            "password": "Password123",
+            "confirm_password": "Password123",
+        }
+        form = UserRegisterForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("name", form.errors)
+
+    def test_invalid_phone_fails(self):
+        from blooddonation.forms import UserRegisterForm
+        data = {
+            "name": "Prabhakar Singh",
+            "email": "prabhakar3@gmail.com",
+            "phone": "98765432100",  # 11 digits
+            "blood_group": "O+",
+            "gender": "Male",
+            "age": 25,
+            "password": "Password123",
+            "confirm_password": "Password123",
+        }
+        form = UserRegisterForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("phone", form.errors)
+
+    def test_invalid_age_fails(self):
+        from blooddonation.forms import UserRegisterForm
+        data = {
+            "name": "Prabhakar Singh",
+            "email": "prabhakar4@gmail.com",
+            "phone": "9876543210",
+            "blood_group": "O+",
+            "gender": "Male",
+            "age": 17,  # underage
+            "password": "Password123",
+            "confirm_password": "Password123",
+        }
+        form = UserRegisterForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("age", form.errors)
+
+    def test_invalid_password_format_fails(self):
+        from blooddonation.forms import UserRegisterForm
+        data = {
+            "name": "Prabhakar Singh",
+            "email": "prabhakar5@gmail.com",
+            "phone": "9876543210",
+            "blood_group": "O+",
+            "gender": "Male",
+            "age": 25,
+            "password": "password",  # no numbers
+            "confirm_password": "password",
+        }
+        form = UserRegisterForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("password", form.errors)
+
+    def test_mismatched_password_fails(self):
+        from blooddonation.forms import UserRegisterForm
+        data = {
+            "name": "Prabhakar Singh",
+            "email": "prabhakar6@gmail.com",
+            "phone": "9876543210",
+            "blood_group": "O+",
+            "gender": "Male",
+            "age": 25,
+            "password": "Password123",
+            "confirm_password": "Password124",
+        }
+        form = UserRegisterForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("confirm_password", form.errors)

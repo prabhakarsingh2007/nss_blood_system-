@@ -1,0 +1,138 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="space-y-8 animate-fadeIn">
+    <!-- Profile Banner Summary -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-200/60 pb-6">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg shadow-red-500/20 text-white">
+                <i class="fa-solid fa-gauge-high text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight">User Dashboard</h2>
+                <p class="text-xs text-slate-400 font-semibold mt-0.5">Coordinate and track your emergency blood requests.</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="{% url 'request_form' %}" class="px-5 py-3 bg-red-650 bg-red-650 hover:bg-red-700 bg-red-600 text-white text-xs font-bold rounded-xl transition-all hover:scale-[1.02] shadow-md shadow-red-600/10 flex items-center gap-1.5">
+                <i class="fa-solid fa-square-plus text-sm"></i> Create New Request
+            </a>
+        </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-5">
+        <!-- Metric Card 1 -->
+        <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between group">
+            <div>
+                <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Total Requests</p>
+                <p class="text-3xl font-black text-slate-900 tracking-tight mt-1">{{ total_requests }}</p>
+            </div>
+            <div class="p-2.5 bg-slate-100 text-slate-500 rounded-xl group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </div>
+        </article>
+
+        <!-- Metric Card 2 -->
+        <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between group">
+            <div>
+                <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Pending</p>
+                <p class="text-3xl font-black text-amber-600 tracking-tight mt-1">{{ pending_requests }}</p>
+            </div>
+            <div class="p-2.5 bg-amber-50 text-amber-600 rounded-xl group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-spinner animate-spin"></i>
+            </div>
+        </article>
+
+        <!-- Metric Card 3 -->
+        <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between group">
+            <div>
+                <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Approved</p>
+                <p class="text-3xl font-black text-blue-600 tracking-tight mt-1">{{ approved_requests }}</p>
+            </div>
+            <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+        </article>
+
+        <!-- Metric Card 4 -->
+        <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between group">
+            <div>
+                <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Completed</p>
+                <p class="text-3xl font-black text-emerald-600 tracking-tight mt-1">{{ completed_requests }}</p>
+            </div>
+            <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+        </article>
+    </section>
+
+    <!-- Roster Grid -->
+    <section class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
+        <div class="px-6 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-history text-slate-400"></i>
+            <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">My Blood Requests History</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        <th class="px-6 py-4">Request Code</th>
+                        <th class="px-6 py-4">Requested Date</th>
+                        <th class="px-6 py-4">Blood Group</th>
+                        <th class="px-6 py-4">Quantity Needed</th>
+                        <th class="px-6 py-4">District / City</th>
+                        <th class="px-6 py-4">Current Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs">
+                    {% for item in my_requests %}
+                    <tr class="hover:bg-slate-50/40 transition-colors">
+                        <td class="px-6 py-4 font-mono font-bold text-red-600 text-xs">
+                            {% if item.request_code %}
+                                #{{ item.request_code }}
+                            {% else %}
+                                #PENDING
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-slate-500 font-semibold"><i class="fa-regular fa-calendar text-slate-350 mr-1.5"></i>{{ item.requested_at|date:'d M Y' }}</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-50 text-red-650 border border-red-100/60 font-black text-xs shadow-sm">
+                                {{ item.blood_group }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-700 font-bold bg-slate-50/30">
+                            <span class="bg-slate-100 text-slate-750 px-2 py-0.5 rounded-md border border-slate-200">{{ item.units }} Units</span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-500 font-medium"><i class="fa-solid fa-map-pin text-slate-350 mr-1.5"></i>{{ item.city }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-xl text-[9px] font-extrabold uppercase tracking-wider inline-flex items-center gap-1
+                                {% if item.status == 'PENDING' %} bg-amber-50 text-amber-700 border border-amber-100/80
+                                {% elif item.status == 'APPROVED' %} bg-blue-50 text-blue-700 border border-blue-100/80
+                                {% elif item.status == 'COMPLETED' %} bg-emerald-50 text-emerald-700 border border-emerald-100/80
+                                {% else %} bg-slate-100 text-slate-500 border border-slate-205 {% endif %}">
+                                <span class="w-1.5 h-1.5 rounded-full 
+                                    {% if item.status == 'PENDING' %} bg-amber-500
+                                    {% elif item.status == 'APPROVED' %} bg-blue-500
+                                    {% elif item.status == 'COMPLETED' %} bg-emerald-500
+                                    {% else %} bg-slate-400 {% endif %}"></span>
+                                {{ item.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold italic">
+                            <div class="flex flex-col items-center justify-center space-y-2">
+                                <span class="text-3xl">📭</span>
+                                <p>You have not submitted any blood request campaigns yet.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 space-y-8">
+    <div class="border-b border-neutral-200/40 pb-5">
+        <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Upcoming Blood Camps</h2>
+        <p class="text-xs text-neutral-400 font-semibold mt-0.5">Find coordinated blood donation camps in Bihar and register to donate.</p>
+    </div>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for camp in camps %}
+        <article class="bg-white border border-neutral-200/40 rounded-2xl p-6 flex flex-col justify-between space-y-5 shadow-sm shadow-zinc-100/50 premium-card">
+            <div class="space-y-2">
+                <span class="inline-flex items-center gap-1.5 bg-brand-50 text-brand-700 px-2.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border border-brand-100">
+                    <span class="w-1 h-1 rounded-full bg-brand-500 animate-ping"></span>
+                    Scheduled Camp
+                </span>
+                <h3 class="text-neutral-950 font-bold text-base leading-snug">{{ camp.title }}</h3>
+                <p class="text-xs text-neutral-500 leading-relaxed font-medium">{{ camp.description }}</p>
+            </div>
+            
+            <div class="pt-4 border-t border-neutral-100 flex justify-between items-center text-xs">
+                <div class="space-y-1.5">
+                    <p class="text-neutral-400 font-medium flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Date: <strong class="text-neutral-700 font-bold">{{ camp.date|date:'d M Y' }}</strong>
+                    </p>
+                    <p class="text-neutral-400 font-medium flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                        Venue: <strong class="text-neutral-700 font-bold">{{ camp.location }}</strong>
+                    </p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Registered</p>
+                    <p class="text-neutral-900 font-black text-base tracking-tight">{{ camp.registered_count }} Donors</p>
+                </div>
+            </div>
+
+            <a class="w-full text-center px-4 py-2.5 bg-neutral-900 text-white text-xs font-bold rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm pt-3" href="{% url 'camp_detail' camp.id %}">
+                View Camp Details
+            </a>
+        </article>
+        {% empty %}
+        <article class="col-span-2 bg-white border border-neutral-200/40 rounded-2xl p-12 text-center text-neutral-400 italic">
+            No blood donation camps are currently scheduled in the directory.
+        </article>
+        {% endfor %}
+    </section>
+
+    <!-- Pagination Navigation Controls -->
+    {% if page_obj.has_other_pages %}
+    <nav class="flex items-center justify-between border-t border-neutral-200/40 px-4 py-3 sm:px-6 mt-6 bg-white rounded-2xl border premium-card shadow-sm shadow-zinc-100/50">
+        <div class="flex flex-1 justify-between sm:hidden">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-md border border-neutral-200 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50">Previous</a>
+            {% else %}
+            <span class="relative inline-flex items-center rounded-md border border-neutral-100 bg-neutral-50 px-4 py-2 text-xs font-medium text-neutral-400 cursor-not-allowed">Previous</span>
+            {% endif %}
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center rounded-md border border-neutral-200 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50">Next</a>
+            {% else %}
+            <span class="relative inline-flex items-center rounded-md border border-neutral-100 bg-neutral-50 px-4 py-2 text-xs font-medium text-neutral-400 cursor-not-allowed">Next</span>
+            {% endif %}
+        </div>
+        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+                <p class="text-xs text-neutral-500 font-medium">
+                    Showing page <span class="font-bold text-neutral-900">{{ page_obj.number }}</span> of <span class="font-bold text-neutral-900">{{ page_obj.paginator.num_pages }}</span>
+                </p>
+            </div>
+            <div>
+                <div class="inline-flex rounded-xl border border-neutral-200 bg-white p-1 gap-1" aria-label="Pagination">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-neutral-500 hover:bg-neutral-50">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <span class="relative inline-flex items-center rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-bold text-white shadow-sm shadow-brand-500/10">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}" class="relative inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-semibold text-neutral-500 hover:bg-neutral-50">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-neutral-500 hover:bg-neutral-50">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

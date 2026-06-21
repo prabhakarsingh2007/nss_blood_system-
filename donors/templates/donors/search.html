@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-xl mx-auto py-12 px-4 relative">
+    <!-- Background glow aura -->
+    <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-72 h-72 bg-brand-50/40 rounded-full filter blur-3xl opacity-60 -z-10 animate-pulse"></div>
+
+    <div class="text-center mb-8 space-y-2">
+        <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Find a <span class="bg-gradient-to-r from-brand-500 to-rose-600 bg-clip-text text-transparent">Donor</span></h2>
+        <p class="text-xs text-neutral-400 font-semibold">Select the blood group and target district to view available volunteers near you.</p>
+    </div>
+
+    <div class="bg-white border border-neutral-200/40 rounded-2xl p-6 md:p-8 shadow-sm shadow-zinc-100/50 premium-card">
+        <form method="get" action="{% url 'donor_list' %}" class="space-y-6">
+            <div class="space-y-5">
+                
+                <!-- Blood Group Selection -->
+                <div class="space-y-1.5">
+                    <label for="blood_group" class="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                        Blood Group Required
+                    </label>
+                    <div class="relative">
+                        <select id="blood_group" name="blood_group" 
+                            class="w-full bg-neutral-50/50 border border-neutral-200/80 text-neutral-900 font-semibold rounded-xl focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 block p-3.5 appearance-none transition-all cursor-pointer text-sm">
+                            <option value="">Any Blood Group</option>
+                            {% for value, label in blood_groups %}
+                                <option value="{{ value }}" {% if selected_blood_group == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-neutral-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Selection -->
+                <div class="space-y-1.5">
+                    <label for="city" class="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                        District / City
+                    </label>
+                    <div class="relative">
+                        <select id="city" name="city" 
+                            class="w-full bg-neutral-50/50 border border-neutral-200/80 text-neutral-900 font-semibold rounded-xl focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 block p-3.5 appearance-none transition-all cursor-pointer text-sm">
+                            <option value="">All Available Districts</option>
+                            {% for city_name in cities %}
+                                <option value="{{ city_name }}" {% if selected_city == city_name %}selected{% endif %}>
+                                    {{ city_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-neutral-400">
+                            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-neutral-900 text-white font-bold text-xs rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+                <span>Search Directory</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <!-- Features badge row -->
+    <div class="mt-10 flex justify-center gap-6 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+        <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> 
+            Verified NSS Volunteers
+        </div>
+        <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span> 
+            Real-time Matching
+        </div>
+    </div>
+</div>
+{% endblock %}
