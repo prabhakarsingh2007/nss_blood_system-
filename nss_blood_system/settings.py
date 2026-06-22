@@ -4,6 +4,16 @@ from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
 import dj_database_url
+import copy
+from django.template.context import BaseContext
+
+# Python 3.14 compatibility monkeypatch for Django's template BaseContext copy
+def patch_copy(self):
+    duplicate = self.__class__.__new__(self.__class__)
+    duplicate.__dict__.update(self.__dict__)
+    duplicate.dicts = self.dicts[:]
+    return duplicate
+BaseContext.__copy__ = patch_copy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,7 +26,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', '0.0.0.0', '.onrender.com'])
 
 # Local development origins used by browser while posting login/admin forms.
 CSRF_TRUSTED_ORIGINS = [
@@ -26,12 +36,14 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     "http://0.0.0.0:8000",
+    "https://*.onrender.com",
 ]
 
 render_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if render_hostname:
     ALLOWED_HOSTS.append(render_hostname)
-    CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")
+    if f"https://{render_hostname}" not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -80,11 +92,19 @@ TEMPLATES = [
 WSGI_APPLICATION = "nss_blood_system.wsgi.application"
 ASGI_APPLICATION = "nss_blood_system.asgi.application"
 
+import sys
+
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
     )
 }
+
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db_test.sqlite3',
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
