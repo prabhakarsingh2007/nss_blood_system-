@@ -28,6 +28,11 @@ CSRF_TRUSTED_ORIGINS = [
     "http://0.0.0.0:8000",
 ]
 
+render_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if render_hostname:
+    ALLOWED_HOSTS.append(render_hostname)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -76,7 +81,9 @@ WSGI_APPLICATION = "nss_blood_system.wsgi.application"
 ASGI_APPLICATION = "nss_blood_system.asgi.application"
 
 DATABASES = {
-    "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
