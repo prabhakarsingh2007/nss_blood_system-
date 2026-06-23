@@ -88,6 +88,11 @@ class DonorProfile(models.Model):
             self.rating = 0.0
         return self.rating
 
+    def save(self, *args, **kwargs):
+        if self.verification_status == "APPROVED":
+            self.otp_verified = True
+        super().save(*args, **kwargs)
+
 
 class BloodCamp(models.Model):
     title = models.CharField(max_length=180)

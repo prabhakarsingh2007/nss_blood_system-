@@ -183,6 +183,53 @@ across Bihar districts, view system live impacts, and post urgent blood requirem
         </div>
     </section>
 
+    <!-- Recent Verified Donors Section -->
+    {% if recent_donors %}
+    <section class="space-y-8 pt-2">
+        <div class="text-center max-w-xl mx-auto space-y-1.5">
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Our Verified Donors</h2>
+            <p class="text-xs text-slate-400 font-medium">Meet the recently verified NSS blood volunteers ready to support emergencies.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for donor in recent_donors %}
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm hover:shadow-md transition-all">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm">
+                            {{ donor.full_name|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <h4 class="text-slate-900 font-bold text-sm leading-tight">{{ donor.full_name }}</h4>
+                            <p class="text-[10px] text-slate-400 font-semibold">{{ donor.city }}</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-brand-50 text-brand-600 font-black text-xs border border-brand-100 shadow-sm">
+                        {{ donor.blood_group }}
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-50 text-[10px]">
+                    <div class="flex items-center gap-1.5">
+                        {% if donor.is_active_donor %}
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="text-emerald-700 font-bold uppercase tracking-wider">Available</span>
+                        {% else %}
+                        <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
+                        <span class="text-slate-500 font-bold uppercase tracking-wider">In Cooldown</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'request_form' %}?blood_group={{ donor.blood_group }}&city={{ donor.city }}" 
+                       class="text-brand-500 font-bold hover:text-brand-600 transition-colors uppercase tracking-wider">
+                        Request <i class="fa-solid fa-chevron-right ml-0.5 text-[8px]"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
     <!-- Notice Dispatch Feed Section -->
     {% if broadcast_messages %}
     <section class="border border-slate-200 bg-white rounded-3xl p-8 space-y-6 shadow-sm relative overflow-hidden">
