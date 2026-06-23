@@ -405,6 +405,7 @@
                                             <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
                                             <option value="COMPLETED" {% if item.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
                                         </select>
+                                        <input type="text" name="rejection_reason" placeholder="Rejection reason..." value="{{ item.rejection_reason|default:'' }}" class="bg-slate-55 border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none w-36 placeholder-slate-450">
                                         <button type="submit" class="px-3.5 py-1.5 bg-slate-900 text-white font-bold text-[9px] rounded-lg hover:bg-slate-800 transition-colors shadow-sm">
                                             Update
                                         </button>

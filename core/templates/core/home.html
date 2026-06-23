@@ -95,6 +95,26 @@ across Bihar districts, view system live impacts, and post urgent blood requirem
                         Register as a Donor
                     </a>
                 </div>
+
+                <!-- Track Blood Request Widget -->
+                <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2">
+                    <div class="space-y-0.5">
+                        <p class="text-xs font-bold text-slate-850">Track Request Status</p>
+                        <p class="text-[10px] text-slate-450 font-medium">Query live status of any emergency case without logging in.</p>
+                    </div>
+                    <form method="get" action="{% url 'request_status' %}" class="space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="code" placeholder="Code (e.g. REQ123456789)" required
+                                   class="bg-white border border-slate-200 text-slate-900 font-semibold rounded-lg px-2.5 py-1.5 text-[10px] focus:outline-none focus:border-brand-500 shadow-sm w-full">
+                            <input type="text" name="phone" placeholder="Contact Phone" required
+                                   class="bg-white border border-slate-200 text-slate-900 font-semibold rounded-lg px-2.5 py-1.5 text-[10px] focus:outline-none focus:border-brand-500 shadow-sm w-full">
+                        </div>
+                        <button type="submit"
+                                class="inline-flex items-center justify-center w-full px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold transition-colors shadow-sm">
+                            <i class="fa-solid fa-magnifying-glass-location mr-1"></i> Track Status Card
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </section>

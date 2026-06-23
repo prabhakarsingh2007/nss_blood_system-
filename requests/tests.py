@@ -164,3 +164,43 @@ class RequestStatusTests(TestCase):
         html_content = response.content.decode("utf-8")
         self.assertIn("Critical", html_content)
 
+    def test_request_tracking_cards_and_rejection(self):
+        # Create a pending request
+        req = BloodRequest.objects.create(
+            requester_name="Track Patient",
+            blood_group="O+",
+            units=2,
+            hospital_name="Purnia Sadar",
+            city="Purnia",
+            contact_number="9988776655",
+            reason="Blood loss",
+            priority="URGENT",
+            otp_verified=True,
+            status="PENDING"
+        )
+        
+        # 1. Verify tracking lookup by code and phone
+        request = self.factory.get(reverse("request_status") + f"?code={req.request_code}&phone=9988776655")
+        request.session = {}
+        messages = FallbackStorage(request)
+        setattr(request, "_messages", messages)
+        request.user = AnonymousUser()
+
+        response = request_status(request)
+        self.assertEqual(response.status_code, 200)
+        html_content = response.content.decode("utf-8")
+        self.assertIn("Pending Verification", html_content)
+        self.assertIn("Your request is under verification.", html_content)
+
+        # 2. Reject request with reason and verify rejection card display
+        req.status = "REJECTED"
+        req.rejection_reason = "Out of volunteer area."
+        req.save()
+
+        response = request_status(request)
+        self.assertEqual(response.status_code, 200)
+        html_content = response.content.decode("utf-8")
+        self.assertIn("Request Rejected", html_content)
+        self.assertIn("Out of volunteer area.", html_content)
+
+

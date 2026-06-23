@@ -50,6 +50,7 @@ class BloodRequest(models.Model):
     otp_verified = models.BooleanField(default=False)
     otp_created_at = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="PENDING", db_index=True)
+    rejection_reason = models.TextField(blank=True, null=True)
     requested_at = models.DateTimeField(auto_now_add=True, db_index=True)
     approved_at = models.DateTimeField(blank=True, null=True)
     assigned_donor = models.ForeignKey(

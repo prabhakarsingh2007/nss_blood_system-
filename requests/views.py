@@ -23,8 +23,8 @@ def request_form(request):
                 req.requester = request.user
             req.otp_verified = True
             req.save()
-            messages.success(request, f"Request submitted successfully with ID {req.request_code}. Status is Pending.")
-            return redirect("request_status")
+            messages.success(request, f"Request submitted successfully. Status is Pending.")
+            return redirect(reverse("request_status") + f"?code={req.request_code}&phone={req.contact_number}")
     else:
         initial_data = {
             "blood_group": request.GET.get("blood_group", ""),
@@ -37,23 +37,26 @@ def request_verify_otp(request):
     return redirect("request_status")
 
 def request_status(request):
-    phone = request.GET.get("phone", "")
+    code = request.GET.get("code", "").strip()
+    phone = request.GET.get("phone", "").strip()
     phone_verified = False
     requests = []
 
-    if request.user.is_authenticated:
-        requests = BloodRequest.objects.filter(requester=request.user).order_by("-requested_at")
+    if code and phone:
+        requests = BloodRequest.objects.filter(request_code=code, contact_number=phone).select_related("assigned_donor", "fulfilled_by").order_by("-requested_at")
         phone_verified = True
-    else:
-        if phone:
-            phone = phone.strip()
-            phone_verified = True
-            requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at")
+    elif request.user.is_authenticated:
+        requests = BloodRequest.objects.filter(requester=request.user).select_related("assigned_donor", "fulfilled_by").order_by("-requested_at")
+        phone_verified = True
+    elif phone:
+        phone_verified = True
+        requests = BloodRequest.objects.filter(contact_number=phone).select_related("assigned_donor", "fulfilled_by").order_by("-requested_at")
 
     context = {
         "requests": requests,
         "phone_verified": phone_verified,
         "phone": phone,
+        "code": code,
     }
     return render(request, "requests/request_status.html", context)
 

@@ -118,6 +118,12 @@ def _handle_admin_request_status(request):
                 req.status = "COMPLETED"
                 req.save(update_fields=["status"])
                 messages.warning(request, "Request marked completed without a donor assignment.")
+        elif new_status == "REJECTED":
+            req.status = new_status
+            rejection_reason = request.POST.get("rejection_reason", "").strip()
+            req.rejection_reason = rejection_reason or "Does not meet emergency criteria."
+            req.save(update_fields=["status", "rejection_reason"])
+            messages.success(request, "Request status updated to Rejected.")
         else:
             req.status = new_status
             req.save(update_fields=["status"])
