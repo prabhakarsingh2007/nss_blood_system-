@@ -77,50 +77,17 @@ def donor_register(request):
             donor.user = request.user
             if profile is None:
                 donor.verification_status = "PENDING"
-            otp_code = donor.generate_otp()
+            donor.otp_verified = True
             donor.save()
-            request.session["donor_otp_profile_id"] = donor.id
-            messages.info(request, f"Demo OTP for donor verification: {otp_code}")
-            return redirect("donor_verify_otp")
+            messages.success(request, "Donor profile registered successfully. Profile is pending admin approval.")
+            return redirect("donor_dashboard")
     else:
         form = DonorProfileForm(instance=profile)
     return render(request, "donors/donor_register.html", {"form": form, "public_page": False})
 
 @login_required
 def donor_verify_otp(request):
-    profile_id = request.session.get("donor_otp_profile_id")
-    if not profile_id:
-        messages.error(request, "No pending donor OTP verification found.")
-        return redirect("donor_register")
-
-    donor = get_object_or_404(DonorProfile, pk=profile_id, user=request.user)
-
-    # Enforce OTP Verification Rate Limit
-    client_ip = get_client_ip(request)
-    action_key = f"donor_verify_{profile_id}"
-    is_allowed, info = check_otp_rate_limit(client_ip, action_key)
-    if not is_allowed:
-        messages.error(request, f"Too many verification attempts. Locked out for {info} seconds.")
-        return render(request, "donors/donor_verify_otp.html", {"form": OtpVerifyForm()})
-
-    if request.method == "POST":
-        form = OtpVerifyForm(request.POST)
-        if form.is_valid():
-            otp = form.cleaned_data["otp"]
-            if donor.otp_is_valid(otp):
-                donor.otp_verified = True
-                donor.save(update_fields=["otp_verified"])
-                request.session.pop("donor_otp_profile_id", None)
-                clear_otp_attempts(client_ip, action_key)
-                messages.success(request, "Donor OTP verified. Profile sent for admin verification.")
-                return redirect("donor_dashboard")
-            else:
-                increment_otp_attempts(client_ip, action_key)
-                messages.error(request, "Invalid or expired OTP.")
-    else:
-        form = OtpVerifyForm()
-
-    return render(request, "donors/donor_verify_otp.html", {"form": form})
+    return redirect("donor_dashboard")
 
 def camp_list(request):
     today = timezone.localdate()

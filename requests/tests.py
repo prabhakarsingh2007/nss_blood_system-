@@ -53,15 +53,14 @@ class RequestStatusTests(TestCase):
         response = request_status(request)
         self.assertEqual(response.status_code, 200)
 
-        # Verify that the rendered HTML masks the hospital and shows verification prompt
+        # Verify that the rendered HTML immediately contains full details (no masking, no OTP prompt)
         html_content = response.content.decode("utf-8")
-        self.assertIn("[Hospital Address Masked]", html_content)
-        self.assertIn("Verify Phone to Unlock", html_content)
-        self.assertNotIn("Patna Medical College", html_content)
+        self.assertNotIn("[Hospital Address Masked]", html_content)
+        self.assertNotIn("Verify Phone to Unlock", html_content)
+        self.assertIn("Patna Medical College", html_content)
         
-        # Verify that an OTP has been generated and stored in session for validation
-        self.assertIn("status_search_otp", request.session)
-        self.assertEqual(request.session["status_search_phone"], "9876543210")
+        # Verify that no OTP has been generated
+        self.assertNotIn("status_search_otp", request.session)
 
     def test_verified_search_shows_full_details(self):
         # Create a mock donor

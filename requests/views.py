@@ -21,11 +21,10 @@ def request_form(request):
             req = form.save(commit=False)
             if request.user.is_authenticated:
                 req.requester = request.user
-            otp_code = req.generate_otp()
+            req.otp_verified = True
             req.save()
-            request.session["request_otp_request_id"] = req.id
-            messages.info(request, f"Demo OTP for request verification: {otp_code}")
-            return redirect("request_verify_otp")
+            messages.success(request, f"Request submitted successfully with ID {req.request_code}. Status is Pending.")
+            return redirect("request_status")
     else:
         initial_data = {
             "blood_group": request.GET.get("blood_group", ""),
@@ -35,39 +34,7 @@ def request_form(request):
     return render(request, "requests/request_form.html", {"form": form})
 
 def request_verify_otp(request):
-    req_id = request.session.get("request_otp_request_id")
-    if not req_id:
-        messages.error(request, "No pending request OTP verification found.")
-        return redirect("request_form")
-
-    blood_req = get_object_or_404(BloodRequest, pk=req_id)
-
-    # Enforce OTP Verification Rate Limit
-    client_ip = get_client_ip(request)
-    action_key = f"request_verify_{req_id}"
-    is_allowed, info = check_otp_rate_limit(client_ip, action_key)
-    if not is_allowed:
-        messages.error(request, f"Too many verification attempts. Locked out for {info} seconds.")
-        return render(request, "requests/request_verify_otp.html", {"form": OtpVerifyForm()})
-
-    if request.method == "POST":
-        form = OtpVerifyForm(request.POST)
-        if form.is_valid():
-            otp = form.cleaned_data["otp"]
-            if blood_req.otp_is_valid(otp):
-                blood_req.otp_verified = True
-                blood_req.save(update_fields=["otp_verified"])
-                request.session.pop("request_otp_request_id", None)
-                clear_otp_attempts(client_ip, action_key)
-                messages.success(request, f"Request submitted with ID {blood_req.request_code}. Status is Pending.")
-                return redirect("request_status")
-            else:
-                increment_otp_attempts(client_ip, action_key)
-                messages.error(request, "Invalid or expired OTP.")
-    else:
-        form = OtpVerifyForm()
-
-    return render(request, "requests/request_verify_otp.html", {"form": form})
+    return redirect("request_status")
 
 def request_status(request):
     phone = request.GET.get("phone", "")
@@ -80,49 +47,8 @@ def request_status(request):
     else:
         if phone:
             phone = phone.strip()
-            session_verified_phone = request.session.get("verified_status_phone", "")
-            if session_verified_phone == phone:
-                phone_verified = True
-                requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at")
-            else:
-                requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at")
-                if requests.exists():
-                    if request.session.get("status_search_phone") != phone or "status_search_otp" not in request.session:
-                        otp = generate_secure_otp(6)
-                        request.session["status_search_otp"] = otp
-                        request.session["status_search_phone"] = phone
-                        messages.info(request, f"Demo OTP for search verification: {otp}")
-
-    if request.method == "POST":
-        action = request.POST.get("action")
-        if action == "verify_search_otp":
-            saved_phone = request.session.get("status_search_phone")
-            
-            # Enforce Rate Limit for Search OTP
-            client_ip = get_client_ip(request)
-            action_key = f"search_verify_{saved_phone or 'unknown'}"
-            is_allowed, info = check_otp_rate_limit(client_ip, action_key)
-            if not is_allowed:
-                messages.error(request, f"Too many verification attempts. Locked out for {info} seconds.")
-                if saved_phone:
-                    phone = saved_phone
-                    requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at")
-            else:
-                otp_entered = request.POST.get("otp", "").strip()
-                saved_otp = request.session.get("status_search_otp")
-                
-                if saved_otp and saved_otp == otp_entered:
-                    request.session["verified_status_phone"] = saved_phone
-                    request.session.pop("status_search_otp", None)
-                    clear_otp_attempts(client_ip, action_key)
-                    messages.success(request, "Phone number verified successfully. Access granted to details.")
-                    return redirect(f"{reverse('request_status')}?phone={saved_phone}")
-                else:
-                    increment_otp_attempts(client_ip, action_key)
-                    messages.error(request, "Invalid search OTP. Please try again.")
-                    if saved_phone:
-                        phone = saved_phone
-                        requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at")
+            phone_verified = True
+            requests = BloodRequest.objects.filter(contact_number=phone).order_by("-requested_at")
 
     context = {
         "requests": requests,
