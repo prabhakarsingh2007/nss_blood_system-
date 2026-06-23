@@ -40,6 +40,17 @@ class UserRegisterForm(forms.Form):
         required=True,
         label="Gender"
     )
+    city = forms.ChoiceField(
+        choices=[(c, c) for c in [
+            "Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur", "Buxar",
+            "Darbhanga", "East Champaran", "Gaya", "Gopalganj", "Jamui", "Jehanabad", "Kaimur", "Katihar",
+            "Khagaria", "Kishanganj", "Lakhisarai", "Madhepura", "Madhubani", "Munger", "Muzaffarpur",
+            "Nalanda", "Nawada", "Patna", "Purnia", "Rohtas", "Saharsa", "Samastipur", "Saran",
+            "Sheikhpura", "Sheohar", "Sitamarhi", "Siwan", "Supaul", "Vaishali", "West Champaran",
+        ]],
+        required=True,
+        label="District / City"
+    )
     age = forms.IntegerField(
         min_value=18,
         max_value=65,
@@ -136,7 +147,7 @@ class UserRegisterForm(forms.Form):
             gender=self.cleaned_data["gender"],
             age=self.cleaned_data["age"],
             phone=self.cleaned_data["phone"],
-            city="Patna",  # Default required field
+            city=self.cleaned_data["city"],
             otp_verified=True,
             verification_status="PENDING",
             available=True

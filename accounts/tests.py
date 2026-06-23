@@ -10,6 +10,7 @@ class RegistrationFormTests(TestCase):
             "phone": "9876543210",
             "blood_group": "O+",
             "gender": "Male",
+            "city": "Patna",
             "age": 25,
             "password": "Password123",
             "confirm_password": "Password123",
@@ -40,6 +41,7 @@ class RegistrationFormTests(TestCase):
             "phone": "9876543210",
             "blood_group": "O+",
             "gender": "Male",
+            "city": "Patna",
             "age": 25,
             "password": "Password123",
             "confirm_password": "Password123",
@@ -56,6 +58,7 @@ class RegistrationFormTests(TestCase):
             "phone": "98765432100",  # 11 digits
             "blood_group": "O+",
             "gender": "Male",
+            "city": "Patna",
             "age": 25,
             "password": "Password123",
             "confirm_password": "Password123",
@@ -72,6 +75,7 @@ class RegistrationFormTests(TestCase):
             "phone": "9876543210",
             "blood_group": "O+",
             "gender": "Male",
+            "city": "Patna",
             "age": 17,  # underage
             "password": "Password123",
             "confirm_password": "Password123",
@@ -88,6 +92,7 @@ class RegistrationFormTests(TestCase):
             "phone": "9876543210",
             "blood_group": "O+",
             "gender": "Male",
+            "city": "Patna",
             "age": 25,
             "password": "password",  # no numbers
             "confirm_password": "password",
@@ -104,6 +109,7 @@ class RegistrationFormTests(TestCase):
             "phone": "9876543210",
             "blood_group": "O+",
             "gender": "Male",
+            "city": "Patna",
             "age": 25,
             "password": "Password123",
             "confirm_password": "Password124",
