@@ -67,6 +67,21 @@
         </article>
     </section>
 
+    {% if approved_requests > 0 %}
+    <section class="bg-blue-50/80 border border-blue-200 rounded-3xl p-5 shadow-sm flex items-start gap-4 animate-fadeIn">
+        <div class="p-3 bg-blue-100 text-blue-700 rounded-2xl animate-pulse">
+            <i class="fa-solid fa-bell text-lg"></i>
+        </div>
+        <div class="space-y-1">
+            <h4 class="text-sm font-bold text-blue-900">Request Approved & Donor Assigned!</h4>
+            <p class="text-xs text-blue-700 font-medium leading-relaxed">
+                One or more of your emergency requests have been approved by the NSS coordinators! We have automatically assigned matching volunteer donors. 
+                Please look at the <strong>Assigned Donor</strong> column below and contact them immediately via phone or WhatsApp.
+            </p>
+        </div>
+    </section>
+    {% endif %}
+
     <!-- Roster Grid -->
     <section class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
         <div class="px-6 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-2">
@@ -80,15 +95,17 @@
                         <th class="px-6 py-4">Request Code</th>
                         <th class="px-6 py-4">Requested Date</th>
                         <th class="px-6 py-4">Blood Group</th>
+                        <th class="px-6 py-4">Priority</th>
                         <th class="px-6 py-4">Quantity Needed</th>
                         <th class="px-6 py-4">District / City</th>
                         <th class="px-6 py-4">Current Status</th>
+                        <th class="px-6 py-4 text-right">Assigned Donor</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-xs">
                     {% for item in my_requests %}
-                    <tr class="hover:bg-slate-50/40 transition-colors">
-                        <td class="px-6 py-4 font-mono font-bold text-red-600 text-xs">
+                    <tr class="transition-colors {% if item.priority == 'CRITICAL' %}bg-red-50/25 hover:bg-red-50/40{% elif item.priority == 'URGENT' %}bg-amber-50/15 hover:bg-amber-50/30{% else %}hover:bg-slate-50/40{% endif %}">
+                        <td class="px-6 py-4 font-mono font-bold text-red-600 text-xs {% if item.priority == 'CRITICAL' %}border-l-4 border-l-brand-600{% elif item.priority == 'URGENT' %}border-l-4 border-l-amber-500{% else %}border-l-4 border-l-transparent{% endif %}">
                             {% if item.request_code %}
                                 #{{ item.request_code }}
                             {% else %}
@@ -100,6 +117,15 @@
                             <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-50 text-red-650 border border-red-100/60 font-black text-xs shadow-sm">
                                 {{ item.blood_group }}
                             </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if item.priority == 'CRITICAL' %}
+                            <span class="px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200 text-[8px] font-extrabold uppercase animate-pulse inline-flex items-center gap-0.5"><i class="fa-solid fa-triangle-exclamation text-red-650 animate-bounce"></i> Critical</span>
+                            {% elif item.priority == 'URGENT' %}
+                            <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-circle-exclamation text-amber-600 animate-pulse"></i> Urgent</span>
+                            {% else %}
+                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 text-[8px] font-extrabold uppercase">Normal</span>
+                            {% endif %}
                         </td>
                         <td class="px-6 py-4 text-slate-700 font-bold bg-slate-50/30">
                             <span class="bg-slate-100 text-slate-750 px-2 py-0.5 rounded-md border border-slate-200">{{ item.units }} Units</span>
@@ -119,10 +145,30 @@
                                 {{ item.get_status_display }}
                             </span>
                         </td>
+                        <td class="px-6 py-4 text-right">
+                            {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
+                                {% with donor=item.assigned_donor|default:item.fulfilled_by %}
+                                    {% if donor %}
+                                        <div class="flex flex-col items-end gap-1">
+                                            <span class="text-slate-900 font-bold text-xs tracking-tight">{{ donor.full_name }}</span>
+                                            <span class="text-slate-500 font-mono text-[11px]">{{ donor.phone }}</span>
+                                            <a href="https://wa.me/{{ donor.phone }}" target="_blank" 
+                                               class="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500 hover:bg-emerald-600 text-white text-[9px] font-bold rounded-lg transition-colors uppercase tracking-wider shadow-sm shadow-emerald-500/10">
+                                                <i class="fa-brands fa-whatsapp text-[10px]"></i> <span>WhatsApp Chat</span>
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-slate-400 text-[9px] font-bold uppercase italic tracking-wider animate-pulse">Assigning Volunteer...</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                <span class="text-slate-300 italic text-[11px] font-medium">Pending Approval</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold italic">
+                        <td colspan="8" class="px-6 py-12 text-center text-slate-400 font-semibold italic">
                             <div class="flex flex-col items-center justify-center space-y-2">
                                 <span class="text-3xl">📭</span>
                                 <p>You have not submitted any blood request campaigns yet.</p>

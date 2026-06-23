@@ -65,9 +65,9 @@
                 </thead>
                 <tbody class="divide-y divide-neutral-100 text-xs">
                     {% for item in requests %}
-                    <tr class="hover:bg-neutral-50/50 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="flex flex-col space-y-0.5">
+                    <tr class="transition-colors {% if item.priority == 'CRITICAL' %}bg-red-50/25 hover:bg-red-50/45{% elif item.priority == 'URGENT' %}bg-amber-50/15 hover:bg-amber-50/30{% else %}hover:bg-neutral-50/50{% endif %}">
+                        <td class="px-6 py-4 {% if item.priority == 'CRITICAL' %}border-l-4 border-l-brand-600{% elif item.priority == 'URGENT' %}border-l-4 border-l-amber-500{% else %}border-l-4 border-l-transparent{% endif %}">
+                            <div class="flex flex-col space-y-1">
                                 <span class="text-[9px] font-bold tracking-wider text-brand-600 font-mono">
                                     {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
                                         #{{ item.request_code }}
@@ -76,6 +76,15 @@
                                     {% endif %}
                                 </span>
                                 <span class="font-bold text-neutral-850 text-xs">{{ item.requester_name }}</span>
+                                <div class="pt-0.5">
+                                    {% if item.priority == 'CRITICAL' %}
+                                    <span class="px-1.5 py-0.5 rounded bg-red-100 text-red-700 border border-red-200 text-[8px] font-extrabold uppercase animate-pulse inline-flex items-center gap-0.5"><i class="fa-solid fa-triangle-exclamation text-red-650 animate-bounce"></i> Critical</span>
+                                    {% elif item.priority == 'URGENT' %}
+                                    <span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-circle-exclamation text-amber-600 animate-pulse"></i> Urgent</span>
+                                    {% else %}
+                                    <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 text-[8px] font-extrabold uppercase">Normal</span>
+                                    {% endif %}
+                                </div>
                             </div>
                         </td>
 

@@ -230,6 +230,75 @@ across Bihar districts, view system live impacts, and post urgent blood requirem
     </section>
     {% endif %}
 
+    <!-- Active Emergency Blood Requests Section -->
+    {% if emergency_cases %}
+    <section class="space-y-8 pt-2">
+        <div class="text-center max-w-xl mx-auto space-y-1.5">
+            <span class="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 px-3.5 py-1.5 rounded-full text-[9px] font-extrabold tracking-wider text-red-650 uppercase animate-pulse">
+                <i class="fa-solid fa-circle-exclamation text-red-500 animate-bounce"></i> Live Emergency Cases
+            </span>
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Active Emergency Requests</h2>
+            <p class="text-xs text-slate-400 font-medium">Hospital units and patients requiring immediate support. Contact details are verified.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for case in emergency_cases %}
+            <div class="relative overflow-hidden bg-white border rounded-2xl p-5 space-y-4 shadow-sm hover:shadow-md transition-all duration-200
+                        {% if case.priority == 'CRITICAL' %} border-red-200 bg-red-50/10 {% else %} border-amber-200 bg-amber-50/5 {% endif %}">
+                
+                <!-- Priority Header Accent -->
+                <div class="absolute top-0 left-0 w-full h-1 {% if case.priority == 'CRITICAL' %} bg-red-500 {% else %} bg-amber-500 {% endif %}"></div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-slate-900 font-black text-sm tracking-tight">{{ case.requester_name }}</span>
+                        </div>
+                        <p class="text-[10px] text-slate-450 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-map-pin text-slate-350"></i> {{ case.city }}
+                        </p>
+                    </div>
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg font-black text-xs border shadow-sm
+                                 {% if case.priority == 'CRITICAL' %} bg-brand-500 text-white border-brand-600 {% else %} bg-amber-500 text-white border-amber-600 {% endif %}">
+                        {{ case.blood_group }}
+                    </span>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-slate-400 font-medium">Quantity Required:</span>
+                        <span class="text-slate-800 font-bold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">{{ case.units }} Unit{{ case.units|pluralize }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-slate-400 font-medium">Priority:</span>
+                        {% if case.priority == 'CRITICAL' %}
+                        <span class="px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200 text-[8px] font-extrabold uppercase animate-pulse inline-flex items-center gap-0.5"><i class="fa-solid fa-triangle-exclamation text-red-650 animate-bounce"></i> Critical</span>
+                        {% else %}
+                        <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-circle-exclamation text-amber-600 animate-pulse"></i> Urgent</span>
+                        {% endif %}
+                    </div>
+                    {% if case.hospital_name %}
+                    <div class="text-[10px] text-slate-500 bg-slate-50/50 p-2 rounded-lg border border-slate-100">
+                        <i class="fa-solid fa-hospital text-slate-450 mr-1"></i> <span class="font-bold">{{ case.hospital_name }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-[9px] text-slate-450 font-semibold"><i class="fa-regular fa-clock mr-1"></i>{{ case.requested_at|timesince }} ago</span>
+                    <a href="{% url 'request_status' %}?phone={{ case.contact_number }}" 
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider text-white transition-colors shadow-sm
+                              {% if case.priority == 'CRITICAL' %} bg-brand-600 hover:bg-brand-700 shadow-red-600/10 {% else %} bg-slate-900 hover:bg-slate-800 shadow-slate-900/10 {% endif %}">
+                        <span>Volunteer / View</span>
+                        <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
     <!-- Notice Dispatch Feed Section -->
     {% if broadcast_messages %}
     <section class="border border-slate-200 bg-white rounded-3xl p-8 space-y-6 shadow-sm relative overflow-hidden">

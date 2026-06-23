@@ -22,7 +22,7 @@ def dashboard_router(request):
 
 @login_required
 def user_dashboard(request):
-    my_requests = BloodRequest.objects.filter(requester=request.user).order_by("-requested_at")
+    my_requests = BloodRequest.objects.filter(requester=request.user).select_related("assigned_donor", "fulfilled_by").order_by("-requested_at")
     context = {
         "my_requests": my_requests[:20],
         "total_requests": my_requests.count(),
@@ -31,6 +31,7 @@ def user_dashboard(request):
         "completed_requests": my_requests.filter(status="COMPLETED").count(),
     }
     return render(request, "dashboard/user_dashboard.html", context)
+
 
 @login_required
 def donor_dashboard(request):

@@ -359,18 +359,20 @@
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-xs">
                             {% for item in requests %}
-                            <tr class="hover:bg-slate-50/40 transition-colors">
-                                <td class="px-4 py-3.5 font-bold text-slate-850">{{ item.requester_name }}</td>
+                            <tr class="transition-colors {% if item.priority == 'CRITICAL' %}bg-red-50/25 hover:bg-red-50/40{% elif item.priority == 'URGENT' %}bg-amber-50/15 hover:bg-amber-50/30{% else %}hover:bg-slate-50/40{% endif %}">
+                                <td class="px-4 py-3.5 font-bold text-slate-850 {% if item.priority == 'CRITICAL' %}border-l-4 border-l-brand-600{% elif item.priority == 'URGENT' %}border-l-4 border-l-amber-500{% else %}border-l-4 border-l-transparent{% endif %}">{{ item.requester_name }}</td>
                                 <td class="px-4 py-3.5 text-slate-600 font-bold">
                                     <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-50 text-red-650 border border-red-100/60 font-bold text-[11px]">{{ item.blood_group }}</span>
                                 </td>
                                 <td class="px-4 py-3.5 text-slate-500 font-semibold">{{ item.units }} Units</td>
                                 <td class="px-4 py-3.5 text-slate-500 font-medium"><i class="fa-solid fa-map-pin mr-1 text-slate-350"></i>{{ item.city }}</td>
                                 <td class="px-4 py-3.5">
-                                    {% if item.is_emergency %}
-                                    <span class="px-2.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-100/80 text-[8px] font-extrabold uppercase"><i class="fa-solid fa-circle-exclamation mr-0.5 animate-pulse"></i> Emergency</span>
+                                    {% if item.priority == 'CRITICAL' %}
+                                    <span class="px-2.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-100/80 text-[8px] font-extrabold uppercase animate-pulse inline-flex items-center gap-0.5"><i class="fa-solid fa-triangle-exclamation text-red-650 animate-bounce"></i> Critical</span>
+                                    {% elif item.priority == 'URGENT' %}
+                                    <span class="px-2.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100/80 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-circle-exclamation text-amber-600 animate-pulse"></i> Urgent</span>
                                     {% else %}
-                                    <span class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 text-[8px] font-extrabold uppercase">Routine</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 text-[8px] font-extrabold uppercase">Normal</span>
                                     {% endif %}
                                 </td>
                                 <td class="px-4 py-3.5">

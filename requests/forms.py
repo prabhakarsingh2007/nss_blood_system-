@@ -2,6 +2,23 @@ from django import forms
 from .models import BloodRequest
 
 class BloodRequestForm(forms.ModelForm):
+    city = forms.ChoiceField(
+        choices=[(c, c) for c in [
+            "Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur", "Buxar",
+            "Darbhanga", "East Champaran", "Gaya", "Gopalganj", "Jamui", "Jehanabad", "Kaimur", "Katihar",
+            "Khagaria", "Kishanganj", "Lakhisarai", "Madhepura", "Madhubani", "Munger", "Muzaffarpur",
+            "Nalanda", "Nawada", "Patna", "Purnia", "Rohtas", "Saharsa", "Samastipur", "Saran",
+            "Sheikhpura", "Sheohar", "Sitamarhi", "Siwan", "Supaul", "Vaishali", "West Champaran",
+        ]],
+        required=True,
+        label="District / City"
+    )
+    priority = forms.ChoiceField(
+        choices=BloodRequest.PRIORITY_CHOICES,
+        required=True,
+        label="Emergency Priority"
+    )
+
     class Meta:
         model = BloodRequest
         fields = [
@@ -12,7 +29,7 @@ class BloodRequestForm(forms.ModelForm):
             "city",
             "contact_number",
             "reason",
-            "is_emergency",
+            "priority",
         ]
 
     def clean_contact_number(self):

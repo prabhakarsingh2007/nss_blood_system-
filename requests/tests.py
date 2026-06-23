@@ -107,3 +107,60 @@ class RequestStatusTests(TestCase):
         self.assertNotIn("Verify Phone to Unlock", html_content)
         self.assertIn("Patna Medical College", html_content)
         self.assertIn("1122334455", html_content)
+
+    def test_emergency_priority_field(self):
+        # Create requests with different priorities
+        req_normal = BloodRequest.objects.create(
+            requester_name="Normal Patient",
+            blood_group="O-",
+            units=2,
+            hospital_name="Patna Hospital",
+            city="Patna",
+            contact_number="9876543220",
+            reason="Routine surgery",
+            priority="NORMAL",
+            otp_verified=True,
+            status="PENDING"
+        )
+        req_urgent = BloodRequest.objects.create(
+            requester_name="Urgent Patient",
+            blood_group="B+",
+            units=1,
+            hospital_name="Gaya General",
+            city="Gaya",
+            contact_number="9876543221",
+            reason="Accident case",
+            priority="URGENT",
+            otp_verified=True,
+            status="PENDING"
+        )
+        req_critical = BloodRequest.objects.create(
+            requester_name="Critical Patient",
+            blood_group="AB-",
+            units=3,
+            hospital_name="Patna Medical",
+            city="Patna",
+            contact_number="9876543222",
+            reason="Severe bleeding",
+            priority="CRITICAL",
+            otp_verified=True,
+            status="PENDING"
+        )
+
+        # Check self.is_emergency auto calculation
+        self.assertFalse(req_normal.is_emergency)
+        self.assertTrue(req_urgent.is_emergency)
+        self.assertTrue(req_critical.is_emergency)
+
+        # Check rendering priority choices in requests status page
+        request = self.factory.get(reverse("request_status") + "?phone=9876543222")
+        request.session = {}
+        messages = FallbackStorage(request)
+        setattr(request, "_messages", messages)
+        request.user = AnonymousUser()
+
+        response = request_status(request)
+        self.assertEqual(response.status_code, 200)
+        html_content = response.content.decode("utf-8")
+        self.assertIn("Critical", html_content)
+

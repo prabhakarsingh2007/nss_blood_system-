@@ -39,6 +39,12 @@ class BloodRequest(models.Model):
     contact_number = models.CharField(max_length=15)
     reason = models.TextField()
     is_emergency = models.BooleanField(default=False)
+    PRIORITY_CHOICES = [
+        ("NORMAL", "Normal"),
+        ("URGENT", "Urgent"),
+        ("CRITICAL", "Critical"),
+    ]
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default="NORMAL", db_index=True)
     request_code = models.CharField(max_length=12, unique=True, blank=True)
     otp_code = models.CharField(max_length=6, blank=True)
     otp_verified = models.BooleanField(default=False)
@@ -70,6 +76,10 @@ class BloodRequest(models.Model):
     def save(self, *args, **kwargs):
         if not self.request_code:
             self.request_code = f"REQ{get_random_string(9, allowed_chars='0123456789')}"
+        if self.priority in {"URGENT", "CRITICAL"}:
+            self.is_emergency = True
+        else:
+            self.is_emergency = False
         super().save(*args, **kwargs)
 
     def generate_otp(self) -> str:
