@@ -2,7 +2,7 @@ from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from core.utils import (
@@ -38,7 +38,16 @@ def donor_list(request):
     blood_group = request.GET.get("blood_group", "")
     city = request.GET.get("city", "")
 
-    donors_qs = DonorProfile.objects.filter(verification_status="APPROVED", otp_verified=True).order_by("-created_at")
+    cooldown_limit = timezone.localdate() - timedelta(days=90)
+    donors_qs = (
+        DonorProfile.objects.filter(
+            verification_status="APPROVED",
+            otp_verified=True,
+            available=True,
+        )
+        .filter(Q(last_donation_date__isnull=True) | Q(last_donation_date__lte=cooldown_limit))
+        .order_by("-created_at")
+    )
     if blood_group:
         donors_qs = donors_qs.filter(blood_group=blood_group)
     if city:
