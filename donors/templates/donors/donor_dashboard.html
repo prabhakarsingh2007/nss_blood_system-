@@ -26,36 +26,59 @@
         </div>
     </div>
 
+    <!-- Profile Status Alert Banner -->
+    {% if profile.verification_status == 'PENDING' %}
+    <div class="bg-gradient-to-r from-amber-50/50 via-white to-white border border-amber-200/60 rounded-3xl p-5 shadow-sm flex items-start gap-4 animate-pulse" style="animation-duration: 4s;">
+        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0 shadow-sm">
+            <i class="fa-solid fa-hourglass-half animate-spin text-sm"></i>
+        </div>
+        <div class="space-y-1">
+            <h4 class="text-sm font-bold text-amber-950">Profile Pending Verification</h4>
+            <p class="text-xs text-amber-600 leading-relaxed font-semibold">Your voluntary donor profile is currently under review by our NSS State Coordinators. Once verified, you will receive a confirmation SMS and matching emergency requests will appear here instantly.</p>
+        </div>
+    </div>
+    {% elif profile.verification_status == 'REJECTED' %}
+    <div class="bg-gradient-to-r from-red-50/50 via-white to-white border border-red-200/60 rounded-3xl p-5 shadow-sm flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-red-50 text-red-650 border border-red-100 flex items-center justify-center shrink-0 shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation text-sm animate-bounce"></i>
+        </div>
+        <div class="space-y-1">
+            <h4 class="text-sm font-bold text-red-950">Verification Rejected</h4>
+            <p class="text-xs text-red-650 leading-relaxed font-semibold">Your profile verification request has been rejected. Please review your contact details and correct any spelling errors or re-register.</p>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Metrics Grid -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <!-- Metric Card 1 -->
-        <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between relative overflow-hidden group">
+        <article class="bg-gradient-to-br from-rose-50/40 via-white to-white border border-slate-200/65 rounded-3xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden group hover:shadow-md hover:border-red-200 transition-all duration-300">
             <div class="space-y-2">
                 <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Volunteer Name</p>
                 <p class="text-lg font-black text-slate-900 truncate leading-tight">{{ profile.full_name }}</p>
-                <div class="flex items-center gap-1 bg-red-50 text-red-600 px-2 py-0.5 rounded-md text-[10px] font-extrabold w-max">
+                <div class="flex items-center gap-1 bg-red-50 text-red-600 px-2 py-0.5 rounded-md text-[10px] font-extrabold w-max border border-red-100/50">
                     <i class="fa-solid fa-droplet text-[9px]"></i> Group: {{ profile.blood_group }}
                 </div>
             </div>
-            <div class="p-3 bg-red-50 text-red-500 rounded-2xl group-hover:scale-110 transition-transform">
-                <i class="fa-solid fa-user-doctor text-xl"></i>
+            <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 border border-red-100/50 flex items-center justify-center text-sm group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all duration-300 shadow-sm shrink-0">
+                <i class="fa-solid fa-user-doctor"></i>
             </div>
         </article>
 
         <!-- Metric Card 2 -->
-        <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between relative overflow-hidden group">
+        <article class="bg-gradient-to-br from-slate-50/50 via-white to-white border border-slate-200/65 rounded-3xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden group hover:shadow-md hover:border-slate-300 transition-all duration-300">
             <div class="space-y-1">
                 <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Total Donations</p>
                 <p class="text-3xl font-black text-slate-900 tracking-tight mt-1">{{ total_donations }}</p>
                 <p class="text-[9px] text-slate-400 font-semibold mt-1">Verified by NSS: <strong class="text-slate-700">{{ verified_donation_count }}</strong></p>
             </div>
-            <div class="p-3 bg-red-50 text-red-500 rounded-2xl group-hover:scale-110 transition-transform">
-                <i class="fa-solid fa-hand-holding-heart text-xl"></i>
+            <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 border border-slate-200/50 flex items-center justify-center text-sm group-hover:scale-110 group-hover:bg-slate-950 group-hover:text-white transition-all duration-300 shadow-sm shrink-0">
+                <i class="fa-solid fa-hand-holding-heart"></i>
             </div>
         </article>
 
         <!-- Metric Card 3 -->
-        <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between relative overflow-hidden group">
+        <article class="bg-gradient-to-br from-amber-50/30 via-white to-white border border-slate-200/65 rounded-3xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden group hover:shadow-md hover:border-amber-200 transition-all duration-300">
             <div class="space-y-1">
                 <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Volunteer Rating</p>
                 <div class="flex items-baseline gap-1 mt-1">
@@ -70,25 +93,25 @@
                     <i class="fa-solid fa-star-half-stroke"></i>
                 </div>
             </div>
-            <div class="p-3 bg-amber-50 text-amber-500 rounded-2xl group-hover:scale-110 transition-transform">
-                <i class="fa-solid fa-award text-xl"></i>
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-100/50 flex items-center justify-center text-sm group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 shadow-sm shrink-0">
+                <i class="fa-solid fa-award"></i>
             </div>
         </article>
 
         <!-- Metric Card 4 -->
-        <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between relative overflow-hidden group">
+        <article class="bg-gradient-to-br from-red-50/60 via-white to-white border border-red-200/80 rounded-3xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden group hover:shadow-md hover:border-red-300 transition-all duration-300">
             <div class="space-y-1">
                 <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Donation Cooldown</p>
                 {% if profile.is_in_cooldown %}
-                    <p class="text-2xl font-black text-red-600 tracking-tight mt-1">{{ profile.cooldown_days_remaining }} Days</p>
+                    <p class="text-2xl font-black text-red-650 tracking-tight mt-1">{{ profile.cooldown_days_remaining }} Days</p>
                     <p class="text-[9px] text-slate-400 font-medium mt-1">Eligible: {{ next_available_on|date:'d M Y' }}</p>
                 {% else %}
                     <p class="text-lg font-black text-emerald-600 mt-2">Ready to Donate</p>
                     <p class="text-[9px] text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded w-max mt-1">Safe to match</p>
                 {% endif %}
             </div>
-            <div class="p-3 {% if profile.is_in_cooldown %} bg-red-50 text-red-500 {% else %} bg-emerald-50 text-emerald-500 {% endif %} rounded-2xl group-hover:scale-110 transition-transform">
-                <i class="fa-solid fa-circle-radiation text-xl"></i>
+            <div class="w-10 h-10 rounded-xl {% if profile.is_in_cooldown %} bg-red-50 text-red-600 border-red-100/50 {% else %} bg-emerald-50 text-emerald-600 border-emerald-100/50 {% endif %} flex items-center justify-center text-sm group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-sm shrink-0">
+                <i class="fa-solid fa-circle-radiation"></i>
             </div>
         </article>
     </section>
