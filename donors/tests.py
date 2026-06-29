@@ -129,3 +129,21 @@ class ValidationAndSecurityTests(TestCase):
         form = DonorProfileForm(data=data_future)
         self.assertFalse(form.is_valid())
         self.assertIn("last_donation_date", form.errors)
+
+    def test_donor_search_rate_limiter(self):
+        from django.urls import reverse
+        from django.core.cache import cache
+        
+        # Clear cache first to ensure a clean state
+        cache.clear()
+        
+        url = reverse("search_donors")
+        
+        # Make 30 requests - all should succeed (status 200)
+        for _ in range(30):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            
+        # The 31st request should be rate-limited (status 429)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 429)

@@ -63,3 +63,25 @@ def clear_otp_attempts(ip_address, action_key):
     cache_key_lock = f"otp_lock_{ip_address}_{action_key}"
     cache.delete(cache_key_attempts)
     cache.delete(cache_key_lock)
+
+def check_request_rate_limit(ip_address, action_key, limit=30, period_sec=60) -> bool:
+    """
+    Checks if the IP + action_key has exceeded the limit of requests in the given period.
+    Returns True if allowed, False if rate-limited.
+    """
+    cache_key = f"rate_limit_{ip_address}_{action_key}"
+    requests_count = cache.get(cache_key)
+    
+    if requests_count is None:
+        cache.set(cache_key, 1, period_sec)
+        return True
+        
+    if requests_count >= limit:
+        return False
+        
+    try:
+        cache.incr(cache_key)
+    except ValueError:
+        cache.set(cache_key, 1, period_sec)
+        
+    return True

@@ -10,6 +10,7 @@ from core.utils import (
     check_otp_rate_limit,
     increment_otp_attempts,
     clear_otp_attempts,
+    check_request_rate_limit,
 )
 from requests.models import BloodRequest
 from .forms import DonorProfileForm, OtpVerifyForm
@@ -25,6 +26,11 @@ BIHAR_DISTRICTS = [
 ]
 
 def search_donors(request):
+    ip = get_client_ip(request)
+    if not check_request_rate_limit(ip, "donor_search", limit=30, period_sec=60):
+        from django.http import HttpResponse
+        return HttpResponse("Too Many Requests. Please try again after a minute.", status=429)
+
     blood_group = request.GET.get("blood_group", "")
     city = request.GET.get("city", "")
     context = {
@@ -36,6 +42,10 @@ def search_donors(request):
     return render(request, "donors/search.html", context)
 
 def donor_list(request):
+    ip = get_client_ip(request)
+    if not check_request_rate_limit(ip, "donor_search", limit=30, period_sec=60):
+        from django.http import HttpResponse
+        return HttpResponse("Too Many Requests. Please try again after a minute.", status=429)
     blood_group = request.GET.get("blood_group", "")
     city = request.GET.get("city", "")
 
