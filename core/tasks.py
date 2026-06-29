@@ -11,3 +11,12 @@ def send_sms_async(to_number: str, message: str) -> bool:
     """
     logger.info(f"Asynchronously dispatching SMS to {to_number}")
     return sync_send_sms(to_number, message)
+
+@shared_task
+def send_cooldown_alerts_task():
+    """
+    Periodic task to trigger the daily send_cooldown_alerts command.
+    """
+    from django.core.management import call_command
+    logger.info("Executing periodic send_cooldown_alerts task")
+    call_command("send_cooldown_alerts")

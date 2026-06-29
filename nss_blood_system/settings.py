@@ -194,3 +194,13 @@ if SENTRY_DSN and not DEBUG:
         traces_sample_rate=1.0,
         send_default_pii=True,
     )
+
+# Celery Beat Periodic Task Scheduling
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "send-cooldown-alerts-daily": {
+        "task": "core.tasks.send_cooldown_alerts_task",
+        "schedule": crontab(hour=0, minute=0),  # Run daily at midnight
+    },
+}
