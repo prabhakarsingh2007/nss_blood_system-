@@ -76,3 +76,61 @@ class CoordinatorApprovalCooldownTests(TestCase):
         self.assertEqual(req.status, "APPROVED")
         # Check that the assigned donor is donor_available, NOT donor_cooldown!
         self.assertEqual(req.assigned_donor, self.donor_available)
+
+
+from requests.models import Hospital
+
+class HospitalManagementTests(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(username="admin_coord", password="adminpassword")
+        self.hospital = Hospital.objects.create(
+            name="Apex Clinic",
+            city="Patna",
+            address="Kankarbagh, Patna",
+            is_active=True
+        )
+        self.client.login(username="admin_coord", password="adminpassword")
+
+    def test_hospital_create(self):
+        response = self.client.post(
+            reverse("admin_dashboard"),
+            {
+                "action": "hospital_create",
+                "name": "Nalanda Medical College",
+                "city": "Patna",
+                "address": "NMCH Patna",
+                "is_active": "on"
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Hospital.objects.filter(name="Nalanda Medical College").exists())
+
+    def test_hospital_update(self):
+        response = self.client.post(
+            reverse("admin_dashboard"),
+            {
+                "action": "hospital_update",
+                "hospital_id": self.hospital.pk,
+                "name": "Apex Clinic Updated",
+                "city": "Gaya",
+                "address": "Gaya Bypass",
+                "is_active": "on"
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        self.hospital.refresh_from_db()
+        self.assertEqual(self.hospital.name, "Apex Clinic Updated")
+        self.assertEqual(self.hospital.city, "Gaya")
+
+    def test_hospital_toggle(self):
+        response = self.client.post(
+            reverse("admin_dashboard"),
+            {
+                "action": "hospital_toggle",
+                "hospital_id": self.hospital.pk
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        self.hospital.refresh_from_db()
+        self.assertFalse(self.hospital.is_active)
+

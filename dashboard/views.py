@@ -8,7 +8,8 @@ from django.urls import reverse
 from django.utils import timezone
 from donors.models import DonorProfile, BloodCamp, DonationHistory
 from donors.forms import BloodCampForm
-from requests.models import BloodRequest
+from requests.models import BloodRequest, Hospital
+from requests.forms import HospitalForm
 from .models import BroadcastMessage
 from .forms import BroadcastMessageForm
 from core.tasks import send_sms_async
@@ -201,6 +202,41 @@ def _handle_admin_nss_verify_donation(request):
         else:
             messages.info(request, f"Already NSS verified. Certificate {donation_history.certificate_id} is available.")
 
+def _handle_admin_hospital_create(request):
+    form = HospitalForm(request.POST)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Hospital added successfully.")
+        return True
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"{field.capitalize()}: {error}")
+    return False
+
+def _handle_admin_hospital_update(request):
+    hospital_id = request.POST.get("hospital_id")
+    hospital = get_object_or_404(Hospital, pk=hospital_id)
+    form = HospitalForm(request.POST, instance=hospital)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f"Hospital '{hospital.name}' updated successfully.")
+        return True
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"{field.capitalize()}: {error}")
+    return False
+
+def _handle_admin_hospital_toggle(request):
+    hospital_id = request.POST.get("hospital_id")
+    hospital = get_object_or_404(Hospital, pk=hospital_id)
+    hospital.is_active = not hospital.is_active
+    hospital.save(update_fields=["is_active"])
+    status_str = "activated" if hospital.is_active else "deactivated"
+    messages.success(request, f"Hospital '{hospital.name}' has been {status_str}.")
+    return True
+
 @login_required
 def admin_dashboard(request):
     if not request.user.is_staff:
@@ -208,6 +244,7 @@ def admin_dashboard(request):
 
     broadcast_form = BroadcastMessageForm()
     camp_form = BloodCampForm()
+    hospital_form = HospitalForm()
     selected_blood_group = request.GET.get("blood_group", "")
     selected_city = request.GET.get("city", "")
 
@@ -233,6 +270,19 @@ def admin_dashboard(request):
             _handle_admin_nss_verify_donation(request)
             return redirect(f"{reverse('admin_dashboard')}#verify-donations")
 
+        elif action == "hospital_create":
+            if _handle_admin_hospital_create(request):
+                return redirect(f"{reverse('admin_dashboard')}#manage-hospitals")
+
+        elif action == "hospital_update":
+            if _handle_admin_hospital_update(request):
+                return redirect(f"{reverse('admin_dashboard')}#manage-hospitals")
+
+        elif action == "hospital_toggle":
+            _handle_admin_hospital_toggle(request)
+            return redirect(f"{reverse('admin_dashboard')}#manage-hospitals")
+
+    hospitals = Hospital.objects.all().order_by("name")
     donor_queryset = DonorProfile.objects.select_related("user").order_by("-created_at")
     request_queryset = BloodRequest.objects.select_related("requester", "assigned_donor", "fulfilled_by").order_by("-requested_at")
 
@@ -323,6 +373,8 @@ def admin_dashboard(request):
         "donors": donor_queryset[:25],
         "broadcast_form": broadcast_form,
         "camp_form": camp_form,
+        "hospital_form": hospital_form,
+        "hospitals": hospitals,
         "camps": camps,
         "recent_donations": recent_donations,
         "blood_groups": DonorProfile.BLOOD_GROUP_CHOICES,
