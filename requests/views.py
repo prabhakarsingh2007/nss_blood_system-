@@ -13,6 +13,7 @@ from donors.models import DonorProfile
 from donors.forms import OtpVerifyForm
 from .forms import BloodRequestForm
 from .models import BloodRequest
+from core.sms import send_sms
 
 def request_form(request):
     if request.method == "POST":
@@ -24,6 +25,14 @@ def request_form(request):
             req.otp_verified = True
             req.save()
             messages.success(request, f"Request submitted successfully. Status is Pending.")
+            
+            # Send SMS alert with request code and tracking parameters
+            submit_msg = (
+                f"NSS Blood: Your request #{req.request_code} has been received. "
+                f"Verify status online at: http://localhost:8000/request-status/?code={req.request_code}&phone={req.contact_number}"
+            )
+            send_sms(req.contact_number, submit_msg)
+            
             return redirect(reverse("request_status") + f"?code={req.request_code}&phone={req.contact_number}")
     else:
         initial_data = {

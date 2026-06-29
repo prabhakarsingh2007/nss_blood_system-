@@ -11,6 +11,7 @@ from donors.forms import BloodCampForm
 from requests.models import BloodRequest
 from .models import BroadcastMessage
 from .forms import BroadcastMessageForm
+from core.sms import send_sms
 
 @login_required
 def dashboard_router(request):
@@ -106,12 +107,33 @@ def _handle_admin_request_status(request):
 
             req.save(update_fields=["status", "approved_at", "assigned_donor"])
             messages.success(request, "Request status updated.")
+            
+            # Send SMS alerts
+            requester_msg = f"NSS Blood: Your request #{req.request_code} has been approved! We are coordinating volunteer donors."
+            if req.assigned_donor:
+                requester_msg = (
+                    f"NSS Blood: Your request #{req.request_code} has been approved! "
+                    f"Volunteer donor {req.assigned_donor.full_name} ({req.assigned_donor.phone}) "
+                    f"has been assigned. Please coordinate with them."
+                )
+            send_sms(req.contact_number, requester_msg)
+            
+            if req.assigned_donor:
+                donor_msg = (
+                    f"NSS Blood Emergency! You are assigned to request #{req.request_code} "
+                    f"for patient {req.requester_name} ({req.blood_group}) "
+                    f"at {req.hospital_name}. Contact: {req.contact_number}."
+                )
+                send_sms(req.assigned_donor.phone, donor_msg)
+
         elif new_status == "COMPLETED":
             donor = req.assigned_donor or req.fulfilled_by
             if donor:
                 completed_now = req.mark_completed(donor)
                 if completed_now:
                     messages.success(request, "Request marked completed and donor history updated.")
+                    completed_msg = f"NSS Blood: Your request #{req.request_code} has been successfully completed. Thank you!"
+                    send_sms(req.contact_number, completed_msg)
                 else:
                     messages.info(request, "Request was already completed.")
             else:
@@ -124,6 +146,9 @@ def _handle_admin_request_status(request):
             req.rejection_reason = rejection_reason or "Does not meet emergency criteria."
             req.save(update_fields=["status", "rejection_reason"])
             messages.success(request, "Request status updated to Rejected.")
+            
+            rejection_msg = f"NSS Blood: Your request #{req.request_code} has been rejected. Reason: {req.rejection_reason}"
+            send_sms(req.contact_number, rejection_msg)
         else:
             req.status = new_status
             req.save(update_fields=["status"])
