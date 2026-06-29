@@ -1,7 +1,14 @@
 from django import forms
-from .models import BloodRequest
+from .models import BloodRequest, Hospital
 
 class BloodRequestForm(forms.ModelForm):
+    hospital_name = forms.ModelChoiceField(
+        queryset=Hospital.objects.filter(is_active=True),
+        required=True,
+        label="Hospital Name",
+        to_field_name="name",
+        empty_label="Select Hospital"
+    )
     city = forms.ChoiceField(
         choices=[(c, c) for c in [
             "Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur", "Buxar",

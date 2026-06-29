@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import BloodRequest
+from .models import BloodRequest, Hospital
+
+@admin.register(Hospital)
+class HospitalAdmin(admin.ModelAdmin):
+    list_display = ("name", "city", "is_active")
+    list_filter = ("city", "is_active")
+    search_fields = ("name", "city")
 
 @admin.register(BloodRequest)
 class BloodRequestAdmin(admin.ModelAdmin):

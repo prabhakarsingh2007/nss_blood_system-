@@ -5,6 +5,20 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from core.utils import generate_secure_otp
 
+class Hospital(models.Model):
+    name = models.CharField(max_length=180, unique=True)
+    city = models.CharField(max_length=100, db_index=True)
+    address = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        db_table = 'blooddonation_hospital'
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.city})"
+
+
 class BloodRequest(models.Model):
     STATUS_CHOICES = [
         ("PENDING", "Pending"),
