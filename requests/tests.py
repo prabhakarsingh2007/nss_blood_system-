@@ -228,4 +228,42 @@ class RequestStatusTests(TestCase):
         self.assertIn(bank_active, queryset_bank)
         self.assertNotIn(bank_inactive, queryset_bank)
 
+    def test_request_verify_otp_flow(self):
+        from django.urls import reverse
+        from requests.models import BloodRequest
+        
+        req = BloodRequest.objects.create(
+            requester_name="Verify Patient",
+            blood_group="O+",
+            units=1,
+            hospital_name="Patna Hospital",
+            city="Patna",
+            contact_number="9988776655",
+            reason="Surgery",
+            priority="NORMAL",
+            otp_verified=False
+        )
+        otp = req.generate_otp()
+        req.save()
+        
+        session = self.client.session
+        session['pending_request_code'] = req.request_code
+        session.save()
+        
+        # Test GET request
+        response = self.client.get(reverse("request_verify_otp"))
+        self.assertEqual(response.status_code, 200)
+        
+        # Test POST request with invalid OTP
+        response = self.client.post(reverse("request_verify_otp"), {"otp": "000000"})
+        self.assertEqual(response.status_code, 200)
+        req.refresh_from_db()
+        self.assertFalse(req.otp_verified)
+        
+        # Test POST request with valid OTP
+        response = self.client.post(reverse("request_verify_otp"), {"otp": otp})
+        self.assertEqual(response.status_code, 302)  # Should redirect
+        req.refresh_from_db()
+        self.assertTrue(req.otp_verified)
+
 

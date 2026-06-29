@@ -22,18 +22,24 @@ def request_form(request):
             req = form.save(commit=False)
             if request.user.is_authenticated:
                 req.requester = request.user
-            req.otp_verified = True
-            req.save()
-            messages.success(request, f"Request submitted successfully. Status is Pending.")
+                req.otp_verified = True
+                req.save()
+                messages.success(request, f"Request submitted successfully. Status is Pending.")
+                return redirect(reverse("request_status") + f"?code={req.request_code}&phone={req.contact_number}")
             
-            # Send SMS alert with request code and tracking parameters
-            submit_msg = (
-                f"NSS Blood: Your request #{req.request_code} has been received. "
-                f"Verify status online at: http://localhost:8000/request-status/?code={req.request_code}&phone={req.contact_number}"
-            )
+            # For guests, generate OTP and redirect to verification view
+            req.otp_verified = False
+            req.save()
+            otp = req.generate_otp()
+            req.save(update_fields=["otp_code", "otp_verified", "otp_created_at"])
+            
+            # Send OTP SMS
+            submit_msg = f"NSS Blood: Your request verification OTP is {otp}. Expiry: 10 mins."
             send_sms(req.contact_number, submit_msg)
             
-            return redirect(reverse("request_status") + f"?code={req.request_code}&phone={req.contact_number}")
+            request.session['pending_request_code'] = req.request_code
+            messages.info(request, "Please verify the 6-digit OTP sent to your phone.")
+            return redirect("request_verify_otp")
     else:
         initial_data = {
             "blood_group": request.GET.get("blood_group", ""),
@@ -43,7 +49,44 @@ def request_form(request):
     return render(request, "requests/request_form.html", {"form": form})
 
 def request_verify_otp(request):
-    return redirect("request_status")
+    req_code = request.session.get('pending_request_code')
+    if not req_code:
+        messages.error(request, "No pending request found to verify.")
+        return redirect("home")
+        
+    req = get_object_or_404(BloodRequest, request_code=req_code)
+    
+    if request.method == "POST":
+        form = OtpVerifyForm(request.POST)
+        if form.is_valid():
+            otp_code = form.cleaned_data.get("otp").strip()
+            ip = get_client_ip(request)
+            action_key = f"req_otp_{req.request_code}"
+            
+            # Check rate limit
+            is_allowed, remaining = check_otp_rate_limit(ip, action_key)
+            if not is_allowed:
+                form.add_error(None, f"Too many failed attempts. Locked out. Please try again after {remaining} seconds.")
+                return render(request, "requests/request_verify_otp.html", {"form": form})
+                
+            # Verify OTP
+            if req.otp_is_valid(otp_code):
+                req.otp_verified = True
+                req.save(update_fields=["otp_verified"])
+                clear_otp_attempts(ip, action_key)
+                
+                # Delete session key
+                del request.session['pending_request_code']
+                
+                messages.success(request, "Request verified and activated successfully!")
+                return redirect(reverse("request_status") + f"?code={req.request_code}&phone={req.contact_number}")
+            else:
+                increment_otp_attempts(ip, action_key)
+                form.add_error("otp", "Invalid or expired OTP code.")
+    else:
+        form = OtpVerifyForm()
+        
+    return render(request, "requests/request_verify_otp.html", {"form": form})
 
 def request_status(request):
     code = request.GET.get("code", "").strip()

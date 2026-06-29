@@ -14,6 +14,7 @@ from core.utils import (
 from requests.models import BloodRequest
 from .forms import DonorProfileForm, OtpVerifyForm
 from .models import BloodCamp, CampRegistration, DonationHistory, DonorProfile
+from core.sms import send_sms
 
 BIHAR_DISTRICTS = [
     "Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur", "Buxar",
@@ -86,17 +87,60 @@ def donor_register(request):
             donor.user = request.user
             if profile is None:
                 donor.verification_status = "PENDING"
-            donor.otp_verified = True
+            
+            # Require OTP verification for donor phone numbers
+            donor.otp_verified = False
             donor.save()
-            messages.success(request, "Donor profile registered successfully. Profile is pending admin approval.")
-            return redirect("donor_dashboard")
+            otp = donor.generate_otp()
+            donor.save(update_fields=["otp_code", "otp_verified", "otp_created_at"])
+            
+            # Send SMS
+            otp_msg = f"NSS Blood: Your donor profile verification OTP is {otp}. Expiry: 10 mins."
+            send_sms(donor.phone, otp_msg)
+            
+            messages.info(request, "Please enter the 6-digit OTP sent to your phone.")
+            return redirect("donor_verify_otp")
     else:
         form = DonorProfileForm(instance=profile)
     return render(request, "donors/donor_register.html", {"form": form, "public_page": False})
 
 @login_required
 def donor_verify_otp(request):
-    return redirect("donor_dashboard")
+    donor = DonorProfile.objects.filter(user=request.user).first()
+    if not donor:
+        messages.error(request, "Please register your donor profile first.")
+        return redirect("donor_register")
+        
+    if donor.otp_verified:
+        return redirect("donor_dashboard")
+        
+    if request.method == "POST":
+        form = OtpVerifyForm(request.POST)
+        if form.is_valid():
+            otp_code = form.cleaned_data.get("otp").strip()
+            ip = get_client_ip(request)
+            action_key = f"donor_otp_{donor.pk}"
+            
+            # Check rate limit
+            is_allowed, remaining = check_otp_rate_limit(ip, action_key)
+            if not is_allowed:
+                form.add_error(None, f"Too many failed attempts. Locked out. Please try again after {remaining} seconds.")
+                return render(request, "donors/donor_verify_otp.html", {"form": form})
+                
+            # Verify OTP
+            if donor.otp_is_valid(otp_code):
+                donor.otp_verified = True
+                donor.save(update_fields=["otp_verified"])
+                clear_otp_attempts(ip, action_key)
+                messages.success(request, "Donor phone verified successfully! Profile is pending admin approval.")
+                return redirect("donor_dashboard")
+            else:
+                increment_otp_attempts(ip, action_key)
+                form.add_error("otp", "Invalid or expired OTP code.")
+    else:
+        form = OtpVerifyForm()
+        
+    return render(request, "donors/donor_verify_otp.html", {"form": form})
 
 def camp_list(request):
     today = timezone.localdate()
