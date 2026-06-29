@@ -3,13 +3,25 @@
 {% block content %}
 <style>
     /* Styling to support JavaScript active state toggles in the sidebar */
+    .admin-nav-link {
+        position: relative;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border-left: 3px solid transparent;
+    }
+    .admin-nav-link:hover {
+        background-color: #f8fafc;
+        color: #0f172a;
+    }
     .admin-nav-link.active {
         background-color: #fef2f2; /* brand-50 */
         color: #dc2626 !important; /* brand-600 */
-        border-left: 4px solid #dc2626;
+        border-left: 3px solid #dc2626;
         border-top-left-radius: 0px;
         border-bottom-left-radius: 0px;
-        padding-left: 0.75rem;
+        padding-left: 0.85rem;
+    }
+    .admin-nav-link.active i {
+        color: #ef4444 !important;
     }
 </style>
 
@@ -118,32 +130,32 @@
             
             <!-- OVERVIEW PANEL -->
             <section id="overview" class="grid grid-cols-2 md:grid-cols-4 gap-4 admin-panel" data-admin-panel="overview">
-                <article class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group">
+                <article class="bg-gradient-to-br from-rose-50/40 via-white to-white border border-slate-200/65 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group hover:shadow-md hover:border-red-200 transition-all duration-300">
                     <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Total Donors</p>
                     <div class="flex justify-between items-end">
                         <p class="text-3xl font-black text-slate-900 tracking-tight leading-none">{{ total_donors }}</p>
-                        <span class="w-7 h-7 rounded-lg bg-red-50 text-red-500 flex items-center justify-center text-xs group-hover:scale-105 transition-transform"><i class="fa-solid fa-users"></i></span>
+                        <span class="w-8 h-8 rounded-xl bg-red-50 text-red-600 border border-red-100/50 flex items-center justify-center text-xs group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all duration-300 shadow-sm"><i class="fa-solid fa-users"></i></span>
                     </div>
                 </article>
-                <article class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group">
+                <article class="bg-gradient-to-br from-slate-50/50 via-white to-white border border-slate-200/65 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group hover:shadow-md hover:border-slate-300 transition-all duration-300">
                     <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Total Requests</p>
                     <div class="flex justify-between items-end">
                         <p class="text-3xl font-black text-slate-900 tracking-tight leading-none">{{ total_requests }}</p>
-                        <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center text-xs group-hover:scale-105 transition-transform"><i class="fa-solid fa-clipboard-list"></i></span>
+                        <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 border border-slate-200/50 flex items-center justify-center text-xs group-hover:scale-110 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300 shadow-sm"><i class="fa-solid fa-clipboard-list"></i></span>
                     </div>
                 </article>
-                <article class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group">
+                <article class="bg-gradient-to-br from-amber-50/30 via-white to-white border border-slate-200/65 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group hover:shadow-md hover:border-amber-200 transition-all duration-300">
                     <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Pending Requests</p>
                     <div class="flex justify-between items-end">
                         <p class="text-3xl font-black text-amber-600 tracking-tight leading-none">{{ pending_requests }}</p>
-                        <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center text-xs group-hover:scale-105 transition-transform"><i class="fa-solid fa-spinner animate-spin"></i></span>
+                        <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 border border-amber-100/50 flex items-center justify-center text-xs group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 shadow-sm"><i class="fa-solid fa-spinner animate-spin"></i></span>
                     </div>
                 </article>
-                <article class="bg-white border border-red-200/80 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group">
+                <article class="bg-gradient-to-br from-red-50/60 via-white to-white border border-red-200/80 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group hover:shadow-md hover:border-red-300 transition-all duration-300">
                     <p class="text-[9px] uppercase font-bold tracking-wider text-red-650">Emergency Pending</p>
                     <div class="flex justify-between items-end">
                         <p class="text-3xl font-black text-red-650 tracking-tight leading-none">{{ emergency_requests }}</p>
-                        <span class="w-7 h-7 rounded-lg bg-red-50 text-red-550 flex items-center justify-center text-xs group-hover:scale-105 transition-transform"><i class="fa-solid fa-heartbeat animate-pulse"></i></span>
+                        <span class="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center text-xs group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-md shadow-red-500/20"><i class="fa-solid fa-heartbeat animate-pulse"></i></span>
                     </div>
                 </article>
             </section>
