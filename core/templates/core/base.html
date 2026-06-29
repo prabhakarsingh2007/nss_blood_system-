@@ -197,6 +197,10 @@
                        class="text-xs font-bold px-3 py-2 rounded-lg transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'camp_list' or request.resolver_match.url_name == 'camp_detail' %}text-red-600 bg-red-50/80 border border-red-100{% endif %}">
                        <i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps
                     </a>
+                    <a href="{% url 'blood_inventory' %}"
+                       class="text-xs font-bold px-3 py-2 rounded-lg transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'blood_inventory' %}text-red-600 bg-red-50/80 border border-red-100{% endif %}">
+                       <i class="fa-solid fa-boxes-stacked mr-1"></i> Stock Inventory
+                    </a>
 
                     {% if request.resolver_match.url_name != 'donor_register' %}
                     <a href="{% url 'request_form' %}"
@@ -252,6 +256,8 @@
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-magnifying-glass-location mr-1"></i> Find Donors</a>
                 <a href="{% url 'camp_list' %}"
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps</a>
+                <a href="{% url 'blood_inventory' %}"
+                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-boxes-stacked mr-1"></i> Stock Inventory</a>
                 {% if request.resolver_match.url_name != 'donor_register' %}
                 <a href="{% url 'request_form' %}"
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-kit-medical mr-1"></i> Request Blood</a>

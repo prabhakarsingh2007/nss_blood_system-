@@ -1,5 +1,6 @@
 from django.urls import path
+from . import views
 
 urlpatterns = [
-    # Placeholder for blood stocks directory views
+    path("stock/", views.blood_inventory, name="blood_inventory"),
 ]
