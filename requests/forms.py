@@ -1,13 +1,20 @@
 from django import forms
-from .models import BloodRequest, Hospital
+from .models import BloodRequest, Hospital, BloodBank
 
 class BloodRequestForm(forms.ModelForm):
     hospital_name = forms.ModelChoiceField(
         queryset=Hospital.objects.filter(is_active=True),
         required=True,
-        label="Hospital Name",
+        label="Deliver to Hospital",
         to_field_name="name",
         empty_label="Select Hospital"
+    )
+    blood_bank = forms.ModelChoiceField(
+        queryset=BloodBank.objects.filter(is_active=True),
+        required=True,
+        label="Blood Bank (Sourced From)",
+        to_field_name="name",
+        empty_label="Select Blood Bank"
     )
     city = forms.ChoiceField(
         choices=[(c, c) for c in [
@@ -33,6 +40,7 @@ class BloodRequestForm(forms.ModelForm):
             "blood_group",
             "units",
             "hospital_name",
+            "blood_bank",
             "city",
             "contact_number",
             "reason",

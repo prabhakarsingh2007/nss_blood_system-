@@ -71,6 +71,9 @@
                         <p>Patient: <strong class="text-slate-800 font-bold">{{ item.requester_name }}</strong></p>
                         <p class="mt-1">Blood Group: <strong class="text-brand-500 font-black">{{ item.blood_group }}</strong></p>
                         <p class="mt-1">Units Needed: <strong class="text-slate-800 font-bold">{{ item.units }} Unit{{ item.units|pluralize }}</strong></p>
+                        {% if item.blood_bank %}
+                        <p class="mt-1">Sourced From: <strong class="text-slate-850 font-bold">{{ item.blood_bank }}</strong></p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -90,6 +93,9 @@
                     <div class="text-xs text-slate-450 font-semibold bg-white/80 border border-slate-100 rounded-xl p-3 shadow-inner min-w-[150px]">
                         <p>Patient: <strong class="text-slate-800 font-bold">{{ item.requester_name }}</strong></p>
                         <p class="mt-1">Blood Group: <strong class="text-brand-500 font-black">{{ item.blood_group }}</strong></p>
+                        {% if item.blood_bank %}
+                        <p class="mt-1">Sourced From: <strong class="text-slate-850 font-bold">{{ item.blood_bank }}</strong></p>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -153,11 +159,14 @@
                         <h4 class="text-base font-black text-slate-900 tracking-tight mt-1.5">Request ID: #{{ item.request_code }}</h4>
                         <p class="text-xs text-emerald-800 font-semibold mt-1">This request campaign has been successfully fulfilled and completed.</p>
                     </div>
-                    <div class="text-xs text-slate-450 font-semibold bg-white/80 border border-slate-100 rounded-xl p-3 shadow-inner min-w-[150px]">
+                    <div class="text-xs text-slate-455 font-semibold bg-white/80 border border-slate-100 rounded-xl p-3 shadow-inner min-w-[150px]">
                         <p>Patient: <strong class="text-slate-800 font-bold">{{ item.requester_name }}</strong></p>
                         <p class="mt-1">Blood Group: <strong class="text-brand-500 font-black">{{ item.blood_group }}</strong></p>
                         {% if item.fulfilled_by %}
                         <p class="mt-1">Fulfilled By: <strong class="text-slate-800 font-bold">{{ item.fulfilled_by.full_name }}</strong></p>
+                        {% endif %}
+                        {% if item.blood_bank %}
+                        <p class="mt-1">Sourced From: <strong class="text-slate-850 font-bold">{{ item.blood_bank }}</strong></p>
                         {% endif %}
                     </div>
                 </div>
@@ -181,6 +190,9 @@
                     <div class="text-xs text-slate-455 font-semibold bg-white/80 border border-slate-100 rounded-xl p-3 shadow-inner min-w-[150px]">
                         <p>Patient: <strong class="text-slate-800 font-bold">{{ item.requester_name }}</strong></p>
                         <p class="mt-1">Blood Group: <strong class="text-brand-500 font-black">{{ item.blood_group }}</strong></p>
+                        {% if item.blood_bank %}
+                        <p class="mt-1">Sourced From: <strong class="text-slate-850 font-bold">{{ item.blood_bank }}</strong></p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -242,7 +254,10 @@
                                 <span class="text-neutral-400 text-[10px] font-medium italic mt-0.5">
                                     {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
                                         {% if phone_verified %}
-                                            {{ item.hospital_name }}
+                                            Hospital: {{ item.hospital_name }}
+                                            {% if item.blood_bank %}
+                                                <br/>Bank: {{ item.blood_bank }}
+                                            {% endif %}
                                         {% else %}
                                             [Hospital Address Masked]
                                         {% endif %}

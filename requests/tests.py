@@ -203,20 +203,29 @@ class RequestStatusTests(TestCase):
         self.assertIn("Request Rejected", html_content)
         self.assertIn("Out of volunteer area.", html_content)
 
-    def test_blood_request_form_hospital_choices(self):
+    def test_blood_request_form_hospital_and_bank_choices(self):
         from requests.forms import BloodRequestForm
-        from requests.models import Hospital
+        from requests.models import Hospital, BloodBank
 
         # Create active and inactive hospitals
         hospital_active = Hospital.objects.create(name="Active Hospital", city="Patna", is_active=True)
         hospital_inactive = Hospital.objects.create(name="Inactive Hospital", city="Patna", is_active=False)
 
+        # Create active and inactive blood banks
+        bank_active = BloodBank.objects.create(name="Active Bank", city="Patna", is_active=True)
+        bank_inactive = BloodBank.objects.create(name="Inactive Bank", city="Patna", is_active=False)
+
         # Instantiate form
         form = BloodRequestForm()
 
         # Check queryset of hospital_name field
-        queryset = form.fields["hospital_name"].queryset
-        self.assertIn(hospital_active, queryset)
-        self.assertNotIn(hospital_inactive, queryset)
+        queryset_hosp = form.fields["hospital_name"].queryset
+        self.assertIn(hospital_active, queryset_hosp)
+        self.assertNotIn(hospital_inactive, queryset_hosp)
+
+        # Check queryset of blood_bank field
+        queryset_bank = form.fields["blood_bank"].queryset
+        self.assertIn(bank_active, queryset_bank)
+        self.assertNotIn(bank_inactive, queryset_bank)
 
 
