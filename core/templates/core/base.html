@@ -184,36 +184,29 @@
                 </a>
 
                 <!-- Desktop Core Links -->
-                <nav class="hidden md:flex items-center gap-4">
+                <nav class="hidden md:flex items-center gap-2 lg:gap-4">
                     <a href="{% url 'home' %}"
-                       class="text-xs font-bold px-3 py-2 rounded-lg transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'home' %}text-red-600 bg-red-50/80 border border-red-100{% endif %}">
+                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'home' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
                        <i class="fa-solid fa-house-chimney mr-1"></i> Home
                     </a>
                     <a href="{% url 'search_donors' %}"
-                       class="text-xs font-bold px-3 py-2 rounded-lg transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'search_donors' or request.resolver_match.url_name == 'donor_list' %}text-red-600 bg-red-50/80 border border-red-100{% endif %}">
+                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'search_donors' or request.resolver_match.url_name == 'donor_list' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
                        <i class="fa-solid fa-magnifying-glass-location mr-1"></i> Find Donors
                     </a>
-                    <a href="{% url 'camp_list' %}"
-                       class="text-xs font-bold px-3 py-2 rounded-lg transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'camp_list' or request.resolver_match.url_name == 'camp_detail' %}text-red-600 bg-red-50/80 border border-red-100{% endif %}">
-                       <i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps
-                    </a>
-                    <a href="{% url 'blood_inventory' %}"
-                       class="text-xs font-bold px-3 py-2 rounded-lg transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'blood_inventory' %}text-red-600 bg-red-50/80 border border-red-100{% endif %}">
-                       <i class="fa-solid fa-boxes-stacked mr-1"></i> Stock Inventory
-                    </a>
-
-                    {% if request.resolver_match.url_name != 'donor_register' %}
                     <a href="{% url 'request_form' %}"
-                       class="text-xs font-bold px-3 py-2 rounded-lg transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'request_form' %}text-red-600 bg-red-50/80 border border-red-100{% endif %}">
+                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'request_form' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
                        <i class="fa-solid fa-kit-medical mr-1"></i> Request Blood
                     </a>
-                    {% endif %}
+                    <a href="{% url 'camp_list' %}"
+                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'camp_list' or request.resolver_match.url_name == 'camp_detail' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
+                       <i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps
+                    </a>
 
-                    <span class="h-4 w-px bg-slate-200"></span>
+                    <span class="h-4 w-px bg-slate-200 mx-1"></span>
 
                     {% if user.is_authenticated %}
                     <a href="{% url 'dashboard_router' %}"
-                       class="text-xs font-bold px-3 py-2 rounded-lg transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'user_dashboard' or request.resolver_match.url_name == 'donor_dashboard' or request.resolver_match.url_name == 'admin_dashboard' %}text-red-600 bg-red-50/80 border border-red-100{% endif %}">
+                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'user_dashboard' or request.resolver_match.url_name == 'donor_dashboard' or request.resolver_match.url_name == 'admin_dashboard' or request.resolver_match.url_name == 'dashboard_router' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
                        <i class="fa-solid fa-gauge-high mr-1"></i> Dashboard
                     </a>
                     {% if user.is_staff %}
@@ -224,15 +217,17 @@
                        class="text-xs font-bold text-slate-400 hover:text-red-600 transition-colors px-2 py-1"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
                     {% else %}
                     <a href="{% url 'login' %}"
-                       class="text-xs font-bold text-slate-600 hover:text-red-600 transition-colors"><i class="fa-solid fa-user-lock mr-1"></i> Login</a>
+                       class="text-xs font-bold text-slate-600 hover:text-red-600 transition-colors px-2 py-1"><i class="fa-solid fa-user-lock mr-1"></i> Login</a>
                     <a href="{% url 'register' %}"
-                       class="text-xs font-bold text-slate-600 hover:text-red-600 transition-colors"><i class="fa-solid fa-user-plus mr-1"></i> Register</a>
+                       class="text-xs font-bold text-slate-600 hover:text-red-600 transition-colors px-2 py-1"><i class="fa-solid fa-user-plus mr-1"></i> Register</a>
                     {% endif %}
 
+                    {% if not user.is_authenticated or not user.donor_profile %}
                     <a href="{% url 'donor_register' %}"
-                       class="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-all hover:scale-[1.02] shadow-sm">
+                       class="flex items-center gap-1.5 px-3.5 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-all hover:scale-[1.02] shadow-sm ml-2">
                         <i class="fa-solid fa-hand-holding-heart animate-pulse"></i> Become Donor
                     </a>
+                    {% endif %}
                 </nav>
 
                 <!-- Mobile Menu Navigation Button Trigger -->
@@ -254,14 +249,11 @@
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-house-chimney mr-1"></i> Home</a>
                 <a href="{% url 'search_donors' %}"
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-magnifying-glass-location mr-1"></i> Find Donors</a>
-                <a href="{% url 'camp_list' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps</a>
-                <a href="{% url 'blood_inventory' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-boxes-stacked mr-1"></i> Stock Inventory</a>
-                {% if request.resolver_match.url_name != 'donor_register' %}
                 <a href="{% url 'request_form' %}"
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-kit-medical mr-1"></i> Request Blood</a>
-                {% endif %}
+                <a href="{% url 'camp_list' %}"
+                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps</a>
+                
                 {% if user.is_authenticated %}
                 <a href="{% url 'dashboard_router' %}"
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-gauge-high mr-1"></i> Dashboard</a>
@@ -273,8 +265,11 @@
                 <a href="{% url 'register' %}"
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-user-plus mr-1"></i> Register</a>
                 {% endif %}
+                
+                {% if not user.is_authenticated or not user.donor_profile %}
                 <a href="{% url 'donor_register' %}"
                    class="block text-center mt-2 px-4 py-2.5 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition-colors">Become Donor</a>
+                {% endif %}
             </nav>
         </div>
     </header>
@@ -314,15 +309,50 @@
     </main>
 
     <!-- Medical Professional Footer -->
-    <footer class="bg-white border-t border-slate-200 py-10 mt-20">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-droplet text-red-600 text-lg"></i>
-                <span class="text-slate-900 text-sm font-bold tracking-tight">NSS <span class="text-red-600">Blood Network</span></span>
+    <footer class="bg-white border-t border-slate-200 py-12 mt-20">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pb-8 border-b border-slate-100">
+                <!-- Brand Info -->
+                <div class="md:col-span-6 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-red-650 flex items-center justify-center shadow-sm bg-red-600">
+                            <i class="fa-solid fa-droplet text-white text-xs"></i>
+                        </div>
+                        <span class="text-slate-900 text-sm font-bold tracking-tight">NSS <span class="text-red-600">Blood Network</span></span>
+                    </div>
+                    <p class="text-slate-400 text-xs font-medium max-w-sm leading-relaxed">
+                        Official coordinate network linking student volunteers and medical units. Bridging the gap in emergency blood supply across Bihar.
+                    </p>
+                </div>
+                
+                <!-- Quick links -->
+                <div class="md:col-span-3 space-y-3">
+                    <h4 class="text-slate-800 text-xs font-bold uppercase tracking-wider">Quick Links</h4>
+                    <ul class="space-y-2 text-xs font-semibold">
+                        <li><a href="{% url 'home' %}" class="text-slate-500 hover:text-red-600 transition-colors">Home</a></li>
+                        <li><a href="{% url 'search_donors' %}" class="text-slate-500 hover:text-red-600 transition-colors">Find Donors</a></li>
+                        <li><a href="{% url 'request_form' %}" class="text-slate-500 hover:text-red-600 transition-colors">Request Blood</a></li>
+                        <li><a href="{% url 'camp_list' %}" class="text-slate-500 hover:text-red-600 transition-colors">Blood Camps</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources / Staff -->
+                <div class="md:col-span-3 space-y-3">
+                    <h4 class="text-slate-800 text-xs font-bold uppercase tracking-wider">Resources</h4>
+                    <ul class="space-y-2 text-xs font-semibold">
+                        <li><a href="{% url 'blood_inventory' %}" class="text-slate-500 hover:text-red-600 transition-colors">Stock Inventory</a></li>
+                        <li><a href="{% url 'dashboard_router' %}" class="text-slate-500 hover:text-red-600 transition-colors">User Dashboard</a></li>
+                        <li><a href="/admin/" class="text-slate-500 hover:text-red-600 transition-colors">Admin Portal</a></li>
+                    </ul>
+                </div>
             </div>
-            <p class="text-slate-400 text-xs font-medium max-w-md leading-relaxed">
-                &copy; 2026 NSS Blood System. Official coordinate network linking volunteers and medical units. Every donation coordinates emergency lives.
-            </p>
+            
+            <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left text-slate-400 text-[11px] font-semibold">
+                <p>&copy; 2026 NSS Blood System. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <span class="hover:text-slate-500 transition-colors"><i class="fa-solid fa-heart text-red-500 mr-1 animate-pulse"></i> NSS Volunteers Team</span>
+                </div>
+            </div>
         </div>
     </footer>
 
