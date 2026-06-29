@@ -15,7 +15,7 @@ from core.utils import (
 from requests.models import BloodRequest
 from .forms import DonorProfileForm, OtpVerifyForm
 from .models import BloodCamp, CampRegistration, DonationHistory, DonorProfile
-from core.sms import send_sms
+from core.tasks import send_sms_async
 
 BIHAR_DISTRICTS = [
     "Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur", "Buxar",
@@ -106,7 +106,7 @@ def donor_register(request):
             
             # Send SMS
             otp_msg = f"NSS Blood: Your donor profile verification OTP is {otp}. Expiry: 10 mins."
-            send_sms(donor.phone, otp_msg)
+            send_sms_async.delay(donor.phone, otp_msg)
             
             messages.info(request, "Please enter the 6-digit OTP sent to your phone.")
             return redirect("donor_verify_otp")

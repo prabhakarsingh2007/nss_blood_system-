@@ -13,7 +13,7 @@ from donors.models import DonorProfile
 from donors.forms import OtpVerifyForm
 from .forms import BloodRequestForm
 from .models import BloodRequest
-from core.sms import send_sms
+from core.tasks import send_sms_async
 
 def request_form(request):
     if request.method == "POST":
@@ -35,7 +35,7 @@ def request_form(request):
             
             # Send OTP SMS
             submit_msg = f"NSS Blood: Your request verification OTP is {otp}. Expiry: 10 mins."
-            send_sms(req.contact_number, submit_msg)
+            send_sms_async.delay(req.contact_number, submit_msg)
             
             request.session['pending_request_code'] = req.request_code
             messages.info(request, "Please verify the 6-digit OTP sent to your phone.")
