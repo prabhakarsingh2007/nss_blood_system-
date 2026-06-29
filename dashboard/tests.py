@@ -134,3 +134,67 @@ class HospitalManagementTests(TestCase):
         self.hospital.refresh_from_db()
         self.assertFalse(self.hospital.is_active)
 
+
+class DashboardDateFilterTests(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(username="admin_coord", password="adminpassword")
+        self.client.login(username="admin_coord", password="adminpassword")
+
+        # Create user + donor profile
+        self.user = User.objects.create_user(username="donor1", password="password")
+        self.donor = DonorProfile.objects.create(
+            user=self.user,
+            full_name="Donor One",
+            blood_group="O+",
+            age=25,
+            phone="9999911111",
+            city="Patna",
+            verification_status="APPROVED",
+            otp_verified=True,
+            available=True
+        )
+        DonorProfile.objects.filter(pk=self.donor.pk).update(created_at=timezone.now() - timedelta(days=5))
+
+        # Create blood requests
+        self.request1 = BloodRequest.objects.create(
+            requester_name="Patient One",
+            blood_group="O+",
+            units=1,
+            hospital_name="Patna Hospital",
+            city="Patna",
+            contact_number="9999900000",
+            otp_verified=True,
+            status="PENDING"
+        )
+        BloodRequest.objects.filter(pk=self.request1.pk).update(requested_at=timezone.now() - timedelta(days=5))
+
+        self.request2 = BloodRequest.objects.create(
+            requester_name="Patient Two",
+            blood_group="O+",
+            units=2,
+            hospital_name="Patna Hospital",
+            city="Patna",
+            contact_number="9999900002",
+            otp_verified=True,
+            status="PENDING"
+        )
+
+    def test_date_range_filter(self):
+        today_str = timezone.localdate().strftime("%Y-%m-%d")
+        past_str = (timezone.localdate() - timedelta(days=6)).strftime("%Y-%m-%d")
+        three_days_ago_str = (timezone.localdate() - timedelta(days=3)).strftime("%Y-%m-%d")
+
+        # Filter from 6 days ago to 3 days ago (should include request1/donor, exclude request2)
+        response = self.client.get(
+            reverse("admin_dashboard"),
+            {
+                "start_date": past_str,
+                "end_date": three_days_ago_str
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        requests = response.context["requests"]
+        self.assertTrue(any(r.pk == self.request1.pk for r in requests))
+        self.assertFalse(any(r.pk == self.request2.pk for r in requests))
+
+

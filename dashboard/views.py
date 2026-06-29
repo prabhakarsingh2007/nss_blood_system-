@@ -247,6 +247,8 @@ def admin_dashboard(request):
     hospital_form = HospitalForm()
     selected_blood_group = request.GET.get("blood_group", "")
     selected_city = request.GET.get("city", "")
+    selected_start_date = request.GET.get("start_date", "")
+    selected_end_date = request.GET.get("end_date", "")
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -293,6 +295,14 @@ def admin_dashboard(request):
     if selected_city:
         donor_queryset = donor_queryset.filter(city__iexact=selected_city)
         request_queryset = request_queryset.filter(city__iexact=selected_city)
+
+    if selected_start_date:
+        donor_queryset = donor_queryset.filter(created_at__date__gte=selected_start_date)
+        request_queryset = request_queryset.filter(requested_at__date__gte=selected_start_date)
+
+    if selected_end_date:
+        donor_queryset = donor_queryset.filter(created_at__date__lte=selected_end_date)
+        request_queryset = request_queryset.filter(requested_at__date__lte=selected_end_date)
 
     approved_donor_queryset = donor_queryset.filter(verification_status="APPROVED")
 
@@ -381,6 +391,8 @@ def admin_dashboard(request):
         "cities": cities,
         "selected_blood_group": selected_blood_group,
         "selected_city": selected_city,
+        "selected_start_date": selected_start_date,
+        "selected_end_date": selected_end_date,
         "blood_group_summary": blood_group_summary,
         "requests_per_day_labels": requests_per_day_labels,
         "requests_per_day_values": requests_per_day_values,
