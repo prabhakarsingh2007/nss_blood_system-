@@ -1,0 +1,304 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Donor Eligibility & Compatibility Checker | NSS Emergency Network{% endblock %}
+{% block meta_description %}Quickly evaluate if you are eligible to donate blood with our interactive checklist, and view the global blood group compatibility matrix.{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4 space-y-12 animate-fadeIn">
+    
+    <!-- Hero Header section -->
+    <section class="rounded-3xl border border-slate-200/60 bg-white p-6 md:p-8 shadow-sm relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-rose-50/20 via-red-50/10 to-transparent -z-10 rounded-full filter blur-3xl"></div>
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-neutral-900 flex items-center justify-center text-white shadow-md">
+                <i class="fa-solid fa-heart-pulse text-2xl text-red-500 animate-pulse"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight">Eligibility & Compatibility</h2>
+                <p class="text-xs text-slate-400 font-semibold mt-0.5">Quickly assess if you can donate today and explore blood compatibility pairings.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Grid Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Multi-step Eligibility Checker Quiz (col-span-7) -->
+        <section class="lg:col-span-7 bg-white border border-slate-200/60 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+            <div class="border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-950 flex items-center gap-1.5"><i class="fa-solid fa-clipboard-question text-red-500"></i> Donor Eligibility Quiz</h3>
+                <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Check your current clinical status before registering as an active volunteer.</p>
+            </div>
+
+            <!-- Quiz Container -->
+            <div id="quiz-container" class="space-y-6">
+                <!-- Progress Indicators -->
+                <div class="flex items-center gap-2">
+                    <div class="flex-grow bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div id="quiz-progress-bar" class="bg-red-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <span id="quiz-step-count" class="text-[10px] font-bold text-slate-450 uppercase tracking-wider whitespace-nowrap">Step 1 of 6</span>
+                </div>
+
+                <!-- Questions Wrap -->
+                <div id="questions-wrapper">
+                    <!-- Q1 -->
+                    <div class="quiz-step space-y-4" data-step="1">
+                        <h4 class="text-sm font-bold text-slate-850">1. Are you between 18 and 65 years old?</h4>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-relaxed">The safe minimum age threshold set by medical authorities is 18 years, with a maximum of 65 years for voluntary blood donation.</p>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="quiz-step space-y-4 hidden" data-step="2">
+                        <h4 class="text-sm font-bold text-slate-850">2. Do you weigh at least 50 kg (110 lbs)?</h4>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-relaxed">Standard adult blood donation collects roughly 350ml - 450ml of blood. A minimum body weight of 50kg ensures safety against temporary lightheadedness.</p>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="quiz-step space-y-4 hidden" data-step="3">
+                        <h4 class="text-sm font-bold text-slate-850">3. Have you donated blood in the last 90 days?</h4>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-relaxed">Both red blood cells and iron storage levels require safe replenishment time. A 90-day cooldown period is enforced for all donors.</p>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="quiz-step space-y-4 hidden" data-step="4">
+                        <h4 class="text-sm font-bold text-slate-850">4. Are you currently feeling well and healthy?</h4>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-relaxed">You must not have any active symptoms of fever, persistent cough, cold, flu, sore throat, or general weakness today.</p>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="quiz-step space-y-4 hidden" data-step="5">
+                        <h4 class="text-sm font-bold text-slate-850">5. Have you had a tattoo or body piercing in the last 6 months?</h4>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-relaxed">To mitigate risks associated with bloodborne infections, temporary deferral is required for 6 months after receiving needle art or body piercings.</p>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="quiz-step space-y-4 hidden" data-step="6">
+                        <h4 class="text-sm font-bold text-slate-850">6. Are you currently pregnant or breastfeeding?</h4>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-relaxed">Temporary deferrals apply during pregnancy and subsequent lactation periods to avoid strain on the mother's cardiovascular health.</p>
+                    </div>
+                </div>
+
+                <!-- Answer buttons -->
+                <div class="flex items-center gap-3" id="action-buttons">
+                    <button type="button" onclick="answerQuestion(true)" class="flex-grow py-3 bg-red-650 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-sm hover:scale-[1.01] transition-all">
+                        Yes
+                    </button>
+                    <button type="button" onclick="answerQuestion(false)" class="flex-grow py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl hover:scale-[1.01] transition-all">
+                        No
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Results (Hidden initially) -->
+            <div id="quiz-result" class="hidden space-y-6 py-4">
+                <!-- Eligible card -->
+                <div id="result-eligible" class="hidden bg-emerald-50/50 border border-emerald-100 rounded-3xl p-6 text-center space-y-4">
+                    <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 text-xl"><i class="fa-solid fa-circle-check"></i></span>
+                    <h4 class="text-xl font-bold text-emerald-950">You Are Eligible to Donate!</h4>
+                    <p class="text-xs text-emerald-700 leading-relaxed font-medium">Your answers indicate you meet the basic pre-requisites to volunteer. Your donation can save up to 3 lives.</p>
+                    <div class="pt-2">
+                        <a href="{% url 'donor_register' %}" class="inline-flex px-6 py-3 bg-[#ec1313] hover:bg-[#ec1313]/90 text-white font-bold text-xs rounded-xl shadow-md shadow-red-500/10 hover:scale-105 transition-transform uppercase tracking-wider">
+                            Register Now <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Ineligible card -->
+                <div id="result-ineligible" class="hidden bg-amber-50/50 border border-amber-100 rounded-3xl p-6 text-center space-y-4">
+                    <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 text-amber-600 text-xl"><i class="fa-solid fa-circle-exclamation animate-pulse"></i></span>
+                    <h4 class="text-xl font-bold text-amber-950">Temporary Deferral Advised</h4>
+                    <p class="text-xs text-amber-700 leading-relaxed font-medium" id="deferral-reason">Based on your input, you may not be eligible to donate blood today. Please consult our local healthcare coordinators for guidance.</p>
+                    <div class="pt-2">
+                        <button onclick="resetQuiz()" class="px-5 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+                            Restart Eligibility Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right: Interactive Compatibility Matrix (col-span-5) -->
+        <section class="lg:col-span-5 bg-white border border-slate-200/60 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+            <div class="border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-950 flex items-center gap-1.5"><i class="fa-solid fa-people-arrows text-red-500"></i> Compatibility Matrix</h3>
+                <p class="text-[10px] text-slate-450 font-semibold mt-0.5">Explore who can donate to or receive from different blood groups.</p>
+            </div>
+
+            <!-- Visual Compatibility Card list -->
+            <div class="space-y-4 text-xs">
+                <!-- Group Select Dropdown -->
+                <div class="space-y-2">
+                    <label for="select-blood-group" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Select a Blood Group</label>
+                    <select id="select-blood-group" onchange="updateCompatibilityMatrix()" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 font-bold outline-none w-full cursor-pointer">
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+
+                <!-- Matrix Display cards -->
+                <div class="grid grid-cols-1 gap-4 pt-2">
+                    <!-- Can Give To -->
+                    <div class="bg-red-50/20 border border-red-100/50 rounded-2xl p-4 space-y-2">
+                        <div class="flex items-center gap-1.5 text-[#ec1313] font-bold uppercase tracking-wider text-[10px]">
+                            <i class="fa-solid fa-hand-holding-heart"></i> Can Give Blood To
+                        </div>
+                        <div class="flex flex-wrap gap-1.5" id="matrix-give-to">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Can Receive From -->
+                    <div class="bg-slate-50 border border-slate-200/50 rounded-2xl p-4 space-y-2">
+                        <div class="flex items-center gap-1.5 text-slate-800 font-bold uppercase tracking-wider text-[10px]">
+                            <i class="fa-solid fa-kit-medical"></i> Can Receive Blood From
+                        </div>
+                        <div class="flex flex-wrap gap-1.5" id="matrix-receive-from">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Universal Donors Guide Alert -->
+                <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-1 mt-4 text-[11px] leading-relaxed">
+                    <h5 class="font-bold text-slate-900">💡 Fast Facts</h5>
+                    <ul class="list-disc pl-4 text-slate-500 space-y-1 mt-1 font-medium">
+                        <li><strong>O Negative (O-)</strong> is the universal donor group. Their blood can be administered to any patient regardless of type.</li>
+                        <li><strong>AB Positive (AB+)</strong> is the universal receiver group. They can accept red blood cell transfers from any other blood group safely.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 6;
+    const answers = {};
+
+    const updateProgressBar = () => {
+        const bar = document.getElementById('quiz-progress-bar');
+        const count = document.getElementById('quiz-step-count');
+        const progressPct = ((currentStep - 1) / totalSteps) * 100;
+        bar.style.width = `${progressPct}%`;
+        count.innerText = `Step ${currentStep} of ${totalSteps}`;
+    };
+
+    const answerQuestion = (isYes) => {
+        answers[currentStep] = isYes;
+
+        // Perform instant disqualification checks
+        if (currentStep === 1 && !isYes) {
+            showResult(false, "You must be between 18 and 65 years old to donate blood.");
+            return;
+        }
+        if (currentStep === 2 && !isYes) {
+            showResult(false, "To ensure donor safety against anemia and fainting, body weight must be at least 50 kg.");
+            return;
+        }
+        if (currentStep === 3 && isYes) {
+            showResult(false, "Volunteers must observe a safe 90-day cooldown period between consecutive donor sessions to replenish red blood cells.");
+            return;
+        }
+        if (currentStep === 4 && !isYes) {
+            showResult(false, "You must feel healthy and completely free from any viral or flu symptoms on the day of donation.");
+            return;
+        }
+        if (currentStep === 5 && isYes) {
+            showResult(false, "A temporary 6-month deferral applies after getting a tattoo or body piercing to prevent infection risks.");
+            return;
+        }
+        if (currentStep === 6 && isYes) {
+            showResult(false, "Lactating and pregnant volunteers are deferred to prevent mineral depletion and ensure cardiovascular health.");
+            return;
+        }
+
+        // Advance step
+        if (currentStep < totalSteps) {
+            document.querySelector(`.quiz-step[data-step="${currentStep}"]`).classList.add('hidden');
+            currentStep++;
+            document.querySelector(`.quiz-step[data-step="${currentStep}"]`).classList.remove('hidden');
+            updateProgressBar();
+        } else {
+            // Completed all steps successfully
+            showResult(true);
+        }
+    };
+
+    const showResult = (eligible, reasonText = "") => {
+        document.getElementById('quiz-container').classList.add('hidden');
+        const resultDiv = document.getElementById('quiz-result');
+        resultDiv.classList.remove('hidden');
+
+        if (eligible) {
+            document.getElementById('result-eligible').classList.remove('hidden');
+        } else {
+            document.getElementById('result-ineligible').classList.remove('hidden');
+            document.getElementById('deferral-reason').innerText = reasonText;
+        }
+    };
+
+    const resetQuiz = () => {
+        document.getElementById('quiz-result').classList.add('hidden');
+        document.getElementById('result-eligible').classList.add('hidden');
+        document.getElementById('result-ineligible').classList.add('hidden');
+        document.getElementById('quiz-container').classList.remove('hidden');
+
+        document.querySelectorAll('.quiz-step').forEach(step => step.classList.add('hidden'));
+        currentStep = 1;
+        document.querySelector(`.quiz-step[data-step="1"]`).classList.remove('hidden');
+        updateProgressBar();
+    };
+
+    // Blood compatibility rules configuration
+    const compatibilityRules = {
+        "A+": { give: ["A+", "AB+"], receive: ["A+", "A-", "O+", "O-"] },
+        "A-": { give: ["A+", "A-", "AB+", "AB-"], receive: ["A-", "O-"] },
+        "B+": { give: ["B+", "AB+"], receive: ["B+", "B-", "O+", "O-"] },
+        "B-": { give: ["B+", "B-", "AB+", "AB-"], receive: ["B-", "O-"] },
+        "AB+": { give: ["AB+"], receive: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] },
+        "AB-": { give: ["AB+", "AB-"], receive: ["A-", "B-", "AB-", "O-"] },
+        "O+": { give: ["A+", "B+", "AB+", "O+"], receive: ["O+", "O-"] },
+        "O-": { give: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], receive: ["O-"] }
+    };
+
+    const updateCompatibilityMatrix = () => {
+        const selectedGroup = document.getElementById('select-blood-group').value;
+        const giveContainer = document.getElementById('matrix-give-to');
+        const receiveContainer = document.getElementById('matrix-receive-from');
+
+        giveContainer.innerHTML = '';
+        receiveContainer.innerHTML = '';
+
+        const data = compatibilityRules[selectedGroup];
+
+        data.give.forEach(group => {
+            const badge = document.createElement('span');
+            badge.className = 'px-3 py-1.5 rounded-lg bg-red-50 text-red-650 font-bold border border-red-100 flex items-center justify-center text-xs w-11 h-8 shadow-sm';
+            badge.innerText = group;
+            giveContainer.appendChild(badge);
+        });
+
+        data.receive.forEach(group => {
+            const badge = document.createElement('span');
+            badge.className = 'px-3 py-1.5 rounded-lg bg-slate-100 text-slate-800 font-bold border border-slate-200 flex items-center justify-center text-xs w-11 h-8 shadow-sm';
+            badge.innerText = group;
+            receiveContainer.appendChild(badge);
+        });
+    };
+
+    // Initialize Matrix view & Progress Bar on load
+    document.addEventListener('DOMContentLoaded', () => {
+        updateProgressBar();
+        updateCompatibilityMatrix();
+    });
+</script>
+{% endblock %}

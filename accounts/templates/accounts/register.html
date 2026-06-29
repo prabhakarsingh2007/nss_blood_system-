@@ -131,6 +131,60 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Dynamically inject Show/Hide password toggle buttons for all password inputs
+    const passwordInputs = document.querySelectorAll('input[type="password"]');
+    passwordInputs.forEach(input => {
+        const parent = input.parentElement;
+        if (parent) {
+            parent.classList.add('relative');
+            
+            const toggleBtn = document.createElement('button');
+            toggleBtn.type = 'button';
+            toggleBtn.className = 'absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-red-500 focus:outline-none transition-colors text-sm';
+            toggleBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+            
+            toggleBtn.addEventListener('click', () => {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+                } else {
+                    input.type = 'password';
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+                }
+            });
+            
+            parent.appendChild(toggleBtn);
+            input.style.paddingRight = '2.75rem';
+        }
+    });
+
+    // Real-time password criteria feedback
+    const pwdInput = document.querySelector('input[name="password1"]');
+    if (pwdInput) {
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'text-[10px] text-neutral-400 mt-1.5 font-medium space-y-1';
+        feedbackDiv.innerHTML = `
+            <div id="len-check" class="flex items-center gap-1.5"><i class="fa-regular fa-circle text-neutral-300"></i> Minimum 8 characters</div>
+        `;
+        pwdInput.parentElement.appendChild(feedbackDiv);
+
+        pwdInput.addEventListener('input', () => {
+            const val = pwdInput.value;
+            const lenCheck = document.getElementById('len-check');
+            if (val.length >= 8) {
+                lenCheck.className = 'flex items-center gap-1.5 text-emerald-600 font-bold';
+                lenCheck.querySelector('i').className = 'fa-solid fa-circle-check';
+            } else {
+                lenCheck.className = 'flex items-center gap-1.5 text-neutral-400';
+                lenCheck.querySelector('i').className = 'fa-regular fa-circle';
+            }
+        });
+    }
+});
+</script>
+
 <style>
     /* Styling form fields injected by Django */
     .forms-inputs input[type="text"],
@@ -159,4 +213,4 @@
         box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.08);
     }
 </style>
-{% endblock %}
+{% endblock %}

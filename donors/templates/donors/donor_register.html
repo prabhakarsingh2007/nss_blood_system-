@@ -83,6 +83,59 @@
     {% endif %}
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Phone input real-time checking
+    const phoneInput = document.querySelector('input[name="phone"]');
+    if (phoneInput) {
+        const parent = phoneInput.parentElement;
+        const msg = document.createElement('p');
+        msg.className = 'text-[9px] text-neutral-400 mt-1 font-semibold';
+        msg.id = 'phone-feedback';
+        msg.innerText = 'Must be a 10-digit number';
+        parent.appendChild(msg);
+
+        phoneInput.addEventListener('input', () => {
+            const val = phoneInput.value.replace(/\D/g, '');
+            phoneInput.value = val; // enforce numeric
+            if (val.length === 10) {
+                phoneInput.style.borderColor = '#10b981'; // emerald-500
+                msg.innerText = '✓ Valid 10-digit number';
+                msg.className = 'text-[9px] text-emerald-600 mt-1 font-extrabold';
+            } else {
+                phoneInput.style.borderColor = ''; // reset to default focus styling
+                msg.innerText = 'Must be a 10-digit number';
+                msg.className = 'text-[9px] text-neutral-400 mt-1 font-semibold';
+            }
+        });
+    }
+
+    // Age input real-time checking
+    const ageInput = document.querySelector('input[name="age"]');
+    if (ageInput) {
+        const parent = ageInput.parentElement;
+        const msg = document.createElement('p');
+        msg.className = 'text-[9px] text-neutral-400 mt-1 font-semibold';
+        msg.id = 'age-feedback';
+        msg.innerText = 'Must be between 18 and 65 years';
+        parent.appendChild(msg);
+
+        ageInput.addEventListener('input', () => {
+            const val = parseInt(ageInput.value, 10);
+            if (!isNaN(val) && val >= 18 && val <= 65) {
+                ageInput.style.borderColor = '#10b981';
+                msg.innerText = '✓ Eligible donor age';
+                msg.className = 'text-[9px] text-emerald-600 mt-1 font-extrabold';
+            } else {
+                ageInput.style.borderColor = '';
+                msg.innerText = 'Must be between 18 and 65 years';
+                msg.className = 'text-[9px] text-neutral-400 mt-1 font-semibold';
+            }
+        });
+    }
+});
+</script>
+
 <style>
     /* Injected Django input styling consistency */
     .premium-inputs input[type="text"],
@@ -117,4 +170,4 @@
         cursor: pointer;
     }
 </style>
-{% endblock %}
+{% endblock %}

@@ -201,6 +201,10 @@
                        class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'camp_list' or request.resolver_match.url_name == 'camp_detail' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
                        <i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps
                     </a>
+                    <a href="{% url 'eligibility_checker' %}"
+                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'eligibility_checker' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
+                       <i class="fa-solid fa-heart-pulse mr-1"></i> Am I Eligible?
+                    </a>
 
                     <span class="h-4 w-px bg-slate-200 mx-1"></span>
 
@@ -253,6 +257,8 @@
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-kit-medical mr-1"></i> Request Blood</a>
                 <a href="{% url 'camp_list' %}"
                    class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps</a>
+                <a href="{% url 'eligibility_checker' %}"
+                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-heart-pulse mr-1"></i> Am I Eligible?</a>
                 
                 {% if user.is_authenticated %}
                 <a href="{% url 'dashboard_router' %}"

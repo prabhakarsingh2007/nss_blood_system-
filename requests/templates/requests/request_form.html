@@ -56,6 +56,59 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Phone input real-time checking
+    const contactInput = document.querySelector('input[name="contact_number"]');
+    if (contactInput) {
+        const parent = contactInput.parentElement;
+        const msg = document.createElement('p');
+        msg.className = 'text-[9px] text-neutral-400 mt-1 font-semibold';
+        msg.id = 'phone-feedback';
+        msg.innerText = 'Must be a valid 10-12 digit phone number';
+        parent.appendChild(msg);
+
+        contactInput.addEventListener('input', () => {
+            const val = contactInput.value.replace(/\D/g, '');
+            contactInput.value = val; // enforce numeric
+            if (val.length >= 10 && val.length <= 12) {
+                contactInput.style.borderColor = '#10b981'; // emerald-500
+                msg.innerText = '✓ Valid phone format';
+                msg.className = 'text-[9px] text-emerald-600 mt-1 font-extrabold';
+            } else {
+                contactInput.style.borderColor = ''; // reset to default focus styling
+                msg.innerText = 'Must be a valid 10-12 digit phone number';
+                msg.className = 'text-[9px] text-neutral-400 mt-1 font-semibold';
+            }
+        });
+    }
+
+    // Units real-time check (must be at least 1)
+    const unitsInput = document.querySelector('input[name="units"]');
+    if (unitsInput) {
+        const parent = unitsInput.parentElement;
+        const msg = document.createElement('p');
+        msg.className = 'text-[9px] text-neutral-400 mt-1 font-semibold';
+        msg.id = 'units-feedback';
+        msg.innerText = 'Standard donation request is 1-5 units';
+        parent.appendChild(msg);
+
+        unitsInput.addEventListener('input', () => {
+            const val = parseInt(unitsInput.value, 10);
+            if (!isNaN(val) && val >= 1) {
+                unitsInput.style.borderColor = '#10b981';
+                msg.innerText = `✓ Requesting ${val} Unit(s)`;
+                msg.className = 'text-[9px] text-emerald-600 mt-1 font-extrabold';
+            } else {
+                unitsInput.style.borderColor = '';
+                msg.innerText = 'Please enter a valid amount of units';
+                msg.className = 'text-[9px] text-neutral-450 mt-1 font-semibold';
+            }
+        });
+    }
+});
+</script>
+
 <style>
     /* Injected Django input styling consistency */
     .premium-inputs input[type="text"],
@@ -94,4 +147,4 @@
         cursor: pointer;
     }
 </style>
-{% endblock %}
+{% endblock %}

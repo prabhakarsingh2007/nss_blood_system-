@@ -26,3 +26,7 @@ def home(request):
     }
     return render(request, "core/home.html", context)
 
+def eligibility_checker(request):
+    return render(request, "core/eligibility.html")
+
+
