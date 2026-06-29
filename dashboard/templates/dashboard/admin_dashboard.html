@@ -529,7 +529,14 @@
 
     const setActiveAdminPanel = (panelName) => {
         adminPanels.forEach((panel) => {
-            panel.hidden = panel.dataset.adminPanel !== panelName;
+            const isMatch = panel.dataset.adminPanel === panelName;
+            if (isMatch) {
+                panel.removeAttribute('hidden');
+                panel.classList.remove('hidden');
+            } else {
+                panel.setAttribute('hidden', '');
+                panel.classList.add('hidden');
+            }
         });
     };
 
