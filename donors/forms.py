@@ -44,6 +44,12 @@ class DonorProfileForm(forms.ModelForm):
                 raise forms.ValidationError("Enter a valid 10 to 12 digit phone number.")
         return phone
 
+    def clean_last_donation_date(self):
+        last_donation_date = self.cleaned_data.get("last_donation_date")
+        if last_donation_date and last_donation_date > timezone.localdate():
+            raise forms.ValidationError("Last donation date cannot be in the future.")
+        return last_donation_date
+
 
 class BloodCampForm(forms.ModelForm):
     class Meta:

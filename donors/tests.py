@@ -80,3 +80,52 @@ class ValidationAndSecurityTests(TestCase):
         response = self.client.get(reverse("donor_dashboard"))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["verified_donation_count"], 0)
+
+    def test_donor_cooldown_days_and_availability(self):
+        from django.contrib.auth.models import User
+        from django.utils import timezone
+        from datetime import timedelta
+        from donors.models import DonorProfile
+        
+        user_new = User.objects.create_user(username="new_donor", password="password")
+        profile_new = DonorProfile.objects.create(
+            user=user_new,
+            full_name="New Volunteer",
+            blood_group="B+",
+            age=25,
+            phone="9999988888",
+            city="Patna",
+            verification_status="APPROVED",
+            otp_verified=True,
+            available=True
+        )
+        # 1. No donation history means cooldown is 0 and active donor is True
+        self.assertEqual(profile_new.cooldown_days_remaining, 0)
+        self.assertTrue(profile_new.is_active_donor)
+        
+        # 2. Donation 45 days ago means cooldown is 45 and active donor is False
+        profile_new.last_donation_date = timezone.localdate() - timedelta(days=45)
+        profile_new.save()
+        self.assertTrue(profile_new.cooldown_days_remaining > 0)
+        self.assertFalse(profile_new.is_active_donor)
+        
+        # 3. Donation 95 days ago means cooldown is 0 and active donor is True
+        profile_new.last_donation_date = timezone.localdate() - timedelta(days=95)
+        profile_new.save()
+        self.assertEqual(profile_new.cooldown_days_remaining, 0)
+        self.assertTrue(profile_new.is_active_donor)
+
+        # 4. Form validation check for future donation date
+        from donors.forms import DonorProfileForm
+        data_future = {
+            "full_name": "Eligible Volunteer",
+            "blood_group": "B+",
+            "age": 25,
+            "phone": "9999988888",
+            "city": "Patna",
+            "last_donation_date": timezone.localdate() + timedelta(days=5),
+            "available": True,
+        }
+        form = DonorProfileForm(data=data_future)
+        self.assertFalse(form.is_valid())
+        self.assertIn("last_donation_date", form.errors)
