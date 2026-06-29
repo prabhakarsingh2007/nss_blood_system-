@@ -147,3 +147,58 @@ class ValidationAndSecurityTests(TestCase):
         # The 31st request should be rate-limited (status 429)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 429)
+
+    def test_send_cooldown_alerts_command(self):
+        from django.core.management import call_command
+        from io import StringIO
+        from django.contrib.auth.models import User
+        from donors.models import DonorProfile
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # 1. Create a donor whose cooldown ends exactly today (donated 90 days ago)
+        user_alert = User.objects.create_user(username="donor_alert", password="password")
+        donor_alert = DonorProfile.objects.create(
+            user=user_alert,
+            full_name="Alert Target",
+            blood_group="O+",
+            age=25,
+            phone="9988776655",
+            city="Patna",
+            verification_status="APPROVED",
+            otp_verified=True,
+            available=True,
+            last_donation_date=timezone.localdate() - timedelta(days=90)
+        )
+        
+        # 2. Create another donor whose cooldown ends tomorrow (donated 89 days ago)
+        user_no_alert = User.objects.create_user(username="donor_no_alert", password="password")
+        donor_no_alert = DonorProfile.objects.create(
+            user=user_no_alert,
+            full_name="No Alert Target",
+            blood_group="O+",
+            age=25,
+            phone="9988776644",
+            city="Patna",
+            verification_status="APPROVED",
+            otp_verified=True,
+            available=True,
+            last_donation_date=timezone.localdate() - timedelta(days=89)
+        )
+
+        out = StringIO()
+        call_command("send_cooldown_alerts", stdout=out)
+        output_str = out.getvalue()
+        
+        # Assert donor_alert was processed and donor_no_alert was skipped
+        self.assertIn("Found 1 donor", output_str)
+        self.assertIn("Successfully alerted Alert Target", output_str)
+        
+        donor_alert.refresh_from_db()
+        self.assertEqual(donor_alert.last_cooldown_alert_date, timezone.localdate())
+        
+        # 3. Running the command again should skip because last_cooldown_alert_date matches today
+        out2 = StringIO()
+        call_command("send_cooldown_alerts", stdout=out2)
+        output_str2 = out2.getvalue()
+        self.assertIn("Found 0 donor", output_str2)

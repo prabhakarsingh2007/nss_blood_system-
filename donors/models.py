@@ -43,6 +43,7 @@ class DonorProfile(models.Model):
     otp_verified = models.BooleanField(default=False, db_index=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    last_cooldown_alert_date = models.DateField(blank=True, null=True)
 
     class Meta:
         db_table = 'blooddonation_donorprofile'
