@@ -112,6 +112,37 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Dynamically inject Show/Hide password toggle buttons for all password inputs
+    const passwordInputs = document.querySelectorAll('input[type="password"]');
+    passwordInputs.forEach(input => {
+        const parent = input.parentElement;
+        if (parent) {
+            parent.classList.add('relative');
+            
+            const toggleBtn = document.createElement('button');
+            toggleBtn.type = 'button';
+            toggleBtn.className = 'absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-red-500 focus:outline-none transition-colors text-sm';
+            toggleBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+            
+            toggleBtn.addEventListener('click', () => {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+                } else {
+                    input.type = 'password';
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+                }
+            });
+            
+            parent.appendChild(toggleBtn);
+            input.style.paddingRight = '2.75rem';
+        }
+    });
+});
+</script>
+
 <style>
     /* Styling form fields injected by Django */
     .forms-inputs input[type="text"],
@@ -136,4 +167,4 @@
         box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.08);
     }
 </style>
-{% endblock %}
+{% endblock %}
