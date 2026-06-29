@@ -202,3 +202,52 @@ class ValidationAndSecurityTests(TestCase):
         call_command("send_cooldown_alerts", stdout=out2)
         output_str2 = out2.getvalue()
         self.assertIn("Found 0 donor", output_str2)
+
+    def test_donor_admin_actions(self):
+        from django.contrib.admin.sites import AdminSite
+        from donors.admin import DonorProfileAdmin
+        from donors.models import DonorProfile
+        from django.contrib.auth.models import User
+        
+        user1 = User.objects.create_user(username="donor_a1", password="password")
+        donor1 = DonorProfile.objects.create(
+            user=user1,
+            full_name="Donor Action Target",
+            blood_group="O+",
+            age=25,
+            phone="9988776654",
+            city="Patna",
+            verification_status="PENDING",
+            otp_verified=False,
+            available=False
+        )
+        
+        site = AdminSite()
+        admin_instance = DonorProfileAdmin(DonorProfile, site)
+        admin_instance.message_user = lambda request, message, level=25, extra_tags="", fail_silently=False: None
+        
+        req = None
+        
+        # 1. Test approve_donors action
+        qs = DonorProfile.objects.filter(id=donor1.id)
+        admin_instance.approve_donors(req, qs)
+        donor1.refresh_from_db()
+        self.assertEqual(donor1.verification_status, "APPROVED")
+        self.assertTrue(donor1.otp_verified)
+        
+        # 2. Test mark_available action
+        admin_instance.mark_available(req, qs)
+        donor1.refresh_from_db()
+        self.assertTrue(donor1.available)
+
+        # 3. Test mark_unavailable action
+        admin_instance.mark_unavailable(req, qs)
+        donor1.refresh_from_db()
+        self.assertFalse(donor1.available)
+
+        # 4. Test export_donors_as_csv action
+        response = admin_instance.export_donors_as_csv(req, qs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        content = response.content.decode("utf-8")
+        self.assertIn("Donor Action Target", content)

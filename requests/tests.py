@@ -266,4 +266,42 @@ class RequestStatusTests(TestCase):
         req.refresh_from_db()
         self.assertTrue(req.otp_verified)
 
+    def test_blood_request_admin_actions(self):
+        from django.contrib.admin.sites import AdminSite
+        from requests.admin import BloodRequestAdmin
+        from requests.models import BloodRequest
+        
+        req = BloodRequest.objects.create(
+            requester_name="Action Patient",
+            blood_group="O+",
+            units=1,
+            hospital_name="Patna Hospital",
+            city="Patna",
+            contact_number="9988776654",
+            reason="Surgery",
+            priority="NORMAL",
+            otp_verified=False,
+            status="PENDING"
+        )
+        
+        site = AdminSite()
+        admin_instance = BloodRequestAdmin(BloodRequest, site)
+        admin_instance.message_user = lambda request, message, level=25, extra_tags="", fail_silently=False: None
+        
+        req_obj = None
+        
+        # 1. Test approve_requests action
+        qs = BloodRequest.objects.filter(id=req.id)
+        admin_instance.approve_requests(req_obj, qs)
+        req.refresh_from_db()
+        self.assertEqual(req.status, "APPROVED")
+        self.assertTrue(req.otp_verified)
+        
+        # 2. Test export_requests_as_csv action
+        response = admin_instance.export_requests_as_csv(req_obj, qs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        content = response.content.decode("utf-8")
+        self.assertIn("Action Patient", content)
+
 
