@@ -117,3 +117,35 @@ class RegistrationFormTests(TestCase):
         form = UserRegisterForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn("confirm_password", form.errors)
+
+from django.test import override_settings
+
+@override_settings(AXES_ENABLED=True)
+class BruteForceLockoutTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="ValidPassword123")
+
+    def test_brute_force_lockout_admin_and_login_attempts(self):
+        from django.urls import reverse
+        from axes.utils import reset
+        
+        login_url = reverse("login")
+        
+        # Reset axes state
+        reset()
+        
+        # Make 5 failed login attempts
+        for _ in range(5):
+            self.client.post(login_url, {
+                "username": "testuser",
+                "password": "WrongPassword"
+            })
+            
+        # The 6th attempt should result in a lockout
+        response = self.client.post(login_url, {
+            "username": "testuser",
+            "password": "WrongPassword"
+        })
+        
+        self.assertEqual(response.status_code, 429)
+        self.assertTemplateUsed(response, "core/lockout.html")

@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-16 px-4 relative">
+    <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-72 h-72 bg-red-50/40 rounded-full filter blur-3xl opacity-60 -z-10 animate-pulse"></div>
+
+    <div class="text-center mb-8 space-y-2">
+        <span class="inline-flex items-center justify-center w-14 h-14 bg-red-50 border border-red-100 rounded-3xl text-2xl shadow-sm text-red-650 animate-bounce">
+            ⚠️
+        </span>
+        <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Access Locked</h2>
+        <p class="text-xs text-neutral-400 font-semibold mt-1">Security protection lock triggered on this terminal.</p>
+    </div>
+
+    <div class="bg-white border border-neutral-200/60 rounded-3xl p-6 md:p-8 shadow-sm shadow-zinc-100/50 premium-card text-center space-y-6">
+        <p class="text-xs text-neutral-600 font-semibold leading-relaxed">
+            This account or IP address has been temporarily locked due to too many failed authentication attempts. This lockout protects our volunteer database from credential brute-forcing.
+        </p>
+
+        <div class="p-4 bg-neutral-50 rounded-2xl border border-neutral-200/50 text-left space-y-2">
+            <h4 class="text-[9px] font-bold text-neutral-450 uppercase tracking-wider">💡 Troubleshooting Steps:</h4>
+            <ul class="text-xs text-neutral-500 font-medium list-disc list-inside space-y-1">
+                <li>Wait 2 hours for the security lock to automatically clear.</li>
+                <li>Verify your password matches the registration records.</li>
+                <li>Contact the system administrator or a student coordinator to unlock immediately.</li>
+            </ul>
+        </div>
+
+        <a href="{% url 'home' %}" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-neutral-900 text-white font-bold text-xs rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+            <i class="fa-solid fa-house"></i>
+            <span>Return to Homepage</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

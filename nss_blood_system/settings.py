@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "inventory",
     "dashboard",
     "core",
+    "axes",
 ]
 
 MIDDLEWARE = [
@@ -68,8 +69,14 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "axes.middleware.AxesMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 ROOT_URLCONF = "nss_blood_system.urls"
@@ -107,6 +114,7 @@ if 'test' in sys.argv:
         'NAME': BASE_DIR / 'db_test.sqlite3',
     }
     CELERY_TASK_ALWAYS_EAGER = True
+    AXES_ENABLED = False
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -158,3 +166,9 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+# Axes Brute Force Lockout Settings
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 2  # hours
+AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]
+AXES_LOCKOUT_TEMPLATE = "core/lockout.html"
