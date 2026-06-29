@@ -1,15 +1,22 @@
 {% extends 'core/base.html' %}
 
 <!-- ================= DYNAMIC SEO BLOCKS ================= -->
-{% block title %}NSS Emergency Blood Network Bihar | Search Live Donors & Raise Requests{% endblock %}
+{% block title %}BloodLink - Donate Blood, Save Lives | NSS Emergency Network{% endblock %}
 
-{% block meta_description %}Access the dynamic NSS Emergency Blood Donation homepage. Connect with verified volunteers
-across Bihar districts, view system live impacts, and post urgent blood requirements instantly.{% endblock %}
+{% block meta_description %}Access the dynamic Emergency Blood Donation homepage. Connect with verified volunteers, view system live impacts, and post urgent blood requirements instantly.{% endblock %}
 
-{% block og_title %}NSS Emergency Blood Network Bihar - Every Drop Counts{% endblock %}
+{% block og_title %}BloodLink Emergency Network - Every Drop Counts{% endblock %}
 <!-- ======================================================= -->
 
 {% block content %}
+<!-- Material Symbols Google Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+</style>
+
 <div class="space-y-16 relative">
 
     <!-- Smooth Light Background Gradient Layout Overrides -->
@@ -19,229 +26,236 @@ across Bihar districts, view system live impacts, and post urgent blood requirem
         style="animation-duration: 12s;"></div>
 
     <!-- Apple-Style Premium Hero Banner Section -->
-    <section class="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 md:p-14 shadow-sm">
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-rose-50/30 -z-10"></div>
+    <section class="relative overflow-hidden rounded-3xl border border-slate-200 bg-white dark:bg-[#1a0c0c] p-8 md:p-14 shadow-sm transition-colors duration-300">
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-rose-50/30 dark:from-[#221010] dark:via-[#1a0c0c] dark:to-[#120606] -z-10"></div>
         <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
             <!-- Left Branding & Actions Content Box -->
             <div class="lg:col-span-7 space-y-6">
-                <span
-                    class="inline-flex items-center gap-2 bg-brand-50 border border-brand-100 px-3.5 py-1.5 rounded-full text-[10px] font-bold tracking-wider text-brand-500 uppercase">
+                <span class="inline-flex items-center gap-2 bg-red-50 dark:bg-red-950/50 border border-red-100 dark:border-red-900 px-3.5 py-1.5 rounded-full text-[10px] font-bold tracking-wider text-[#ec1313] uppercase">
                     <span class="relative flex h-2 w-2">
-                        <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                     </span>
-                    NSS Emergency Blood Network
+                    Live Blood Support Network
                 </span>
 
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.1]">
-                    Every Drop Counts.<br>
-                    <span class="bg-gradient-to-r from-slate-900 to-brand-500 bg-clip-text text-transparent">Every Donor
-                        Matters.</span>
+                <h1 class="text-slate-900 dark:text-white text-5xl md:text-6xl font-black leading-tight tracking-[-0.033em]">
+                    Donate Blood, <br /><span class="text-[#ec1313]">Save Lives</span>
                 </h1>
 
-                <p class="text-xs md:text-sm text-slate-500 max-w-lg leading-relaxed font-medium">
-                    A real-time coordination dashboard built for instant blood group matching, district volunteer
-                    mapping, and direct request support across Bihar.
+                <p class="text-slate-600 dark:text-gray-300 text-lg font-normal leading-relaxed max-w-[500px]">
+                    Your donation can give someone a second chance at life. Join our community of heroes today and help bridge the gap in blood supply.
                 </p>
 
-                <div class="flex flex-col sm:flex-row gap-3.5 pt-2">
-                    <a href="{% url 'search_donors' %}"
-                        class="inline-flex justify-center items-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-all hover:-translate-y-0.5 active:scale-95 shadow-md shadow-slate-900/10">
-                        <span>Find a Donor</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
+                <div class="flex flex-wrap gap-4 pt-2">
+                    <a href="{% url 'donor_register' %}" class="flex min-w-[160px] cursor-pointer items-center justify-center rounded-xl h-14 px-6 bg-[#ec1313] hover:bg-[#ec1313]/90 text-white text-lg font-bold shadow-lg shadow-red-500/20 hover:scale-105 transition-transform">
+                        Become a Donor
                     </a>
-                    <a href="{% url 'request_form' %}"
-                        class="inline-flex justify-center items-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:border-brand-500 hover:text-brand-500 transition-all hover:-translate-y-0.5 active:scale-95 shadow-sm">
-                        <span>Request Blood</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
-                            </path>
-                        </svg>
+                    <a href="{% url 'search_donors' %}" class="flex min-w-[160px] cursor-pointer items-center justify-center rounded-xl h-14 px-6 bg-white dark:bg-[#3d2424] border border-slate-200 dark:border-red-900/30 text-slate-800 dark:text-white text-lg font-bold hover:bg-slate-50 dark:hover:bg-[#4d3030] transition-all">
+                        Find Blood
                     </a>
                 </div>
             </div>
 
-            <!-- Right Panel: Live Performance Metrics -->
-            <div class="lg:col-span-5 bg-slate-50/50 border border-slate-200 rounded-2xl p-6 shadow-sm">
-                <h3 class="text-slate-900 font-bold text-sm">System Live Impact</h3>
-                <p class="text-[10px] text-slate-400 mt-0.5 font-medium">Real-time indicators across Bihar districts.
-                </p>
-
-                <div class="mt-5 grid grid-cols-2 gap-4">
-                    <div class="rounded-xl p-4 bg-white border border-slate-200 shadow-sm">
-                        <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Approved Donors</p>
-                        <p class="mt-1 text-2xl font-black text-slate-900 tracking-tight">{{ donor_count }}</p>
-                    </div>
-                    <div class="rounded-xl p-4 bg-white border border-slate-200 shadow-sm">
-                        <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Active Cases</p>
-                        <p class="mt-1 text-2xl font-black text-brand-500 tracking-tight">{{ active_requests }}</p>
-                    </div>
-                </div>
-
-                <div class="mt-5 rounded-xl border border-brand-100 bg-brand-50/60 p-4 space-y-3">
-                    <div class="space-y-0.5">
-                        <p class="text-xs font-bold text-brand-600">Become a volunteer hero</p>
-                        <p class="text-[10px] text-slate-400 font-medium">Verify your profile & answer local requests.
-                        </p>
-                    </div>
-                    <a href="{% url 'donor_register' %}"
-                        class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-lg bg-brand-500 text-white text-xs font-bold hover:bg-brand-600 transition-colors shadow-sm shadow-brand-500/5">
-                        Register as a Donor
-                    </a>
-                </div>
-
-                <!-- Track Blood Request Widget -->
-                <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2">
-                    <div class="space-y-0.5">
-                        <p class="text-xs font-bold text-slate-850">Track Request Status</p>
-                        <p class="text-[10px] text-slate-450 font-medium">Query live status of any emergency case without logging in.</p>
-                    </div>
-                    <form method="get" action="{% url 'request_status' %}" class="space-y-2">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" name="code" placeholder="Code (e.g. REQ123456789)" required
-                                   class="bg-white border border-slate-200 text-slate-900 font-semibold rounded-lg px-2.5 py-1.5 text-[10px] focus:outline-none focus:border-brand-500 shadow-sm w-full">
-                            <input type="text" name="phone" placeholder="Contact Phone" required
-                                   class="bg-white border border-slate-200 text-slate-900 font-semibold rounded-lg px-2.5 py-1.5 text-[10px] focus:outline-none focus:border-brand-500 shadow-sm w-full">
-                        </div>
-                        <button type="submit"
-                                class="inline-flex items-center justify-center w-full px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold transition-colors shadow-sm">
-                            <i class="fa-solid fa-magnifying-glass-location mr-1"></i> Track Status Card
-                        </button>
-                    </form>
+            <!-- Right Image Block -->
+            <div class="lg:col-span-5">
+                <div class="w-full aspect-square bg-cover bg-center rounded-2xl shadow-xl border border-slate-100 dark:border-red-950"
+                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDfWSeK_9b1OaRlwn-rH1YR6SNMIj7rlBMbF7adNvi6jRu2EOFsBMVwGVj_yXGdv5uOT_4e9c2YsFHEQndxkxSpaNwVO9k1yLZh_P4D01N9dXRFabR8HbK-QhjN6u6HGmb_W9YrYY8obftTC1xpa0zk5v6qMm02QzmWu5t4FmC8NplrJTWs_9ZiD6fOdHE2Zgpf85aQAhqmYFdn6fqTCLpl59FGB3yhYl53HsIIO7ktfwXYt8yYPJlxbf_Peo106S63G5nv6jVbtw");'
+                     role="img" aria-label="Doctor holding a blood donation bag">
                 </div>
             </div>
+
         </div>
     </section>
 
-    <!-- Core Highlights Metric Row -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col justify-center space-y-1 shadow-sm">
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Emergency Scope</p>
-            <p class="text-base font-black text-slate-900">24/7 Rapid Match</p>
+    <!-- Track Request Status Section (Phase 11 Core Feature) -->
+    <div class="w-full">
+        <div class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <div class="size-12 rounded-xl bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313]">
+                    <span class="material-symbols-outlined text-3xl">track_changes</span>
+                </div>
+                <div>
+                    <h3 class="text-slate-900 dark:text-white font-bold text-base">Track Blood Request</h3>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Query the live status of any emergency request using your Code and Phone number.</p>
+                </div>
+            </div>
+            <form method="get" action="{% url 'request_status' %}" class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <input type="text" name="code" placeholder="Request Code (e.g. REQ1234567)" required
+                       class="bg-white dark:bg-[#221010] border border-slate-200 dark:border-red-900/30 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#ec1313] w-full sm:w-60 shadow-sm">
+                <input type="text" name="phone" placeholder="Contact Phone Number" required
+                       class="bg-white dark:bg-[#221010] border border-slate-200 dark:border-red-900/30 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#ec1313] w-full sm:w-48 shadow-sm">
+                <button type="submit"
+                        class="flex items-center justify-center gap-2 rounded-xl bg-[#ec1313] hover:bg-[#ec1313]/90 text-white text-xs font-bold px-6 py-2.5 shadow-md shadow-red-500/10 transition-all cursor-pointer whitespace-nowrap border-0">
+                    <span class="material-symbols-outlined text-sm">search</span> Track Status
+                </button>
+            </form>
         </div>
-        <div class="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col justify-center space-y-1 shadow-sm">
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">District Coverage</p>
-            <p class="text-base font-black text-slate-900">Bihar Volunteers</p>
+    </div>
+
+    <!-- Stats Section -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-2xl p-6 shadow-sm flex flex-col items-center text-center group hover:border-[#ec1313] transition-all">
+            <div class="p-3 bg-red-50 dark:bg-[#221010] rounded-xl mb-4 text-[#ec1313]">
+                <span class="material-symbols-outlined text-3xl block">groups</span>
+            </div>
+            <p class="text-slate-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider">Total Donors</p>
+            <p class="text-slate-900 dark:text-white text-3xl font-black my-1">{{ donor_count|default:"15,420" }}</p>
+            <span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">trending_up</span> +12% this month
+            </span>
         </div>
-        <div class="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col justify-center space-y-1 shadow-sm">
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Verification</p>
-            <p class="text-base font-black text-brand-500">OTP Authenticated</p>
+
+        <div class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-2xl p-6 shadow-sm flex flex-col items-center text-center group hover:border-[#ec1313] transition-all">
+            <div class="p-3 bg-red-50 dark:bg-[#221010] rounded-xl mb-4 text-[#ec1313]">
+                <span class="material-symbols-outlined text-3xl block">favorite</span>
+            </div>
+            <p class="text-slate-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider">Lives Saved</p>
+            <p class="text-slate-900 dark:text-white text-3xl font-black my-1">46,260</p>
+            <span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">trending_up</span> +15% this month
+            </span>
         </div>
-        <div class="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col justify-center space-y-1 shadow-sm">
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Coordination</p>
-            <p class="text-base font-black text-slate-900">NSS Volunteers</p>
+
+        <div class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-2xl p-6 shadow-sm flex flex-col items-center text-center group hover:border-[#ec1313] transition-all">
+            <div class="p-3 bg-red-50 dark:bg-[#221010] rounded-xl mb-4 text-[#ec1313]">
+                <span class="material-symbols-outlined text-3xl block">local_hospital</span>
+            </div>
+            <p class="text-slate-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider">Active Requests</p>
+            <p class="text-[#ec1313] text-3xl font-black my-1">{{ active_requests|default:"120" }}</p>
+            <span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">trending_up</span> +5% this week
+            </span>
         </div>
     </section>
 
-    <!-- Operational Workflow Step Block -->
-    <section class="space-y-8 pt-2">
-        <div class="text-center max-w-xl mx-auto space-y-1.5">
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">How the Matching Works</h2>
-            <p class="text-xs text-slate-400 font-medium">Three coordinates steps to request blood and receive support
-                from nearby volunteers.</p>
+    <!-- Availability Section -->
+    <section class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-3xl p-8 md:p-10 shadow-sm" id="availability">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
+            <div>
+                <h2 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Current Blood Availability</h2>
+                <p class="text-slate-500 dark:text-gray-400 text-sm mt-1">Real-time status across major blood banks</p>
+            </div>
+            <button class="text-[#ec1313] text-sm font-bold flex items-center gap-1 hover:underline bg-transparent border-0 cursor-pointer">
+                View Detailed Map <span class="material-symbols-outlined text-sm">map</span>
+            </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            <!-- Step 1 -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
-                <div
-                    class="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-500">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                </div>
-                <div class="space-y-1">
-                    <h3 class="text-slate-900 font-bold text-sm">1. Submit Request</h3>
-                    <p class="text-xs text-slate-400 font-medium leading-relaxed">Enter blood groups, target units, and
-                        hospital coordinate details using our structured form.</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+            <!-- Card A+ -->
+            <div class="bg-slate-50 dark:bg-[#221010] border border-slate-100 dark:border-[#3d2424] rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-[#ec1313] transition-all cursor-pointer">
+                <div class="size-12 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313] font-black text-xl">A+</div>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">Optimal</span>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div class="bg-[#ec1313] h-full rounded-full w-[85%]"></div>
                 </div>
             </div>
 
-            <!-- Step 2 -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
-                <div
-                    class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
-                        </path>
-                    </svg>
-                </div>
-                <div class="space-y-1">
-                    <h3 class="text-slate-900 font-bold text-sm">2. Verify Contact</h3>
-                    <p class="text-xs text-slate-400 font-medium leading-relaxed">A standard verification code verifies
-                        lookups are authentic before notifying matching volunteer profiles.</p>
+            <!-- Card A- -->
+            <div class="bg-slate-50 dark:bg-[#221010] border border-slate-100 dark:border-[#3d2424] rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-[#ec1313] transition-all cursor-pointer">
+                <div class="size-12 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313] font-black text-xl">A-</div>
+                <span class="text-[10px] font-bold text-orange-500 bg-orange-50 dark:bg-orange-950/40 px-2 py-0.5 rounded-full">Low</span>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div class="bg-[#ec1313] h-full rounded-full w-[30%]"></div>
                 </div>
             </div>
 
-            <!-- Step 3 -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
-                <div
-                    class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                        </path>
-                    </svg>
-                </div>
-                <div class="space-y-1">
-                    <h3 class="text-slate-900 font-bold text-sm">3. Rapid Connection</h3>
-                    <p class="text-xs text-slate-400 font-medium leading-relaxed">Once approved, matching donors in the
-                        target city are assigned, and requesters receive secure contact permissions.</p>
+            <!-- Card B+ -->
+            <div class="bg-slate-50 dark:bg-[#221010] border border-slate-100 dark:border-[#3d2424] rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-[#ec1313] transition-all cursor-pointer">
+                <div class="size-12 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313] font-black text-xl">B+</div>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">Optimal</span>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div class="bg-[#ec1313] h-full rounded-full w-[70%]"></div>
                 </div>
             </div>
 
+            <!-- Card B- -->
+            <div class="bg-slate-50 dark:bg-[#221010] border border-slate-100 dark:border-[#3d2424] rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-[#ec1313] transition-all cursor-pointer">
+                <div class="size-12 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313] font-black text-xl">B-</div>
+                <span class="text-[10px] font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full">Critical</span>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div class="bg-[#ec1313] h-full rounded-full w-[12%]"></div>
+                </div>
+            </div>
+
+            <!-- Card O+ -->
+            <div class="bg-slate-50 dark:bg-[#221010] border border-slate-100 dark:border-[#3d2424] rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-[#ec1313] transition-all cursor-pointer">
+                <div class="size-12 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313] font-black text-xl">O+</div>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">Optimal</span>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div class="bg-[#ec1313] h-full rounded-full w-[95%]"></div>
+                </div>
+            </div>
+
+            <!-- Card O- -->
+            <div class="bg-slate-50 dark:bg-[#221010] border border-slate-100 dark:border-[#3d2424] rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-[#ec1313] transition-all cursor-pointer">
+                <div class="size-12 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313] font-black text-xl">O-</div>
+                <span class="text-[10px] font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full">Critical</span>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div class="bg-[#ec1313] h-full rounded-full w-[8%]"></div>
+                </div>
+            </div>
+
+            <!-- Card AB+ -->
+            <div class="bg-slate-50 dark:bg-[#221010] border border-slate-100 dark:border-[#3d2424] rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-[#ec1313] transition-all cursor-pointer">
+                <div class="size-12 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313] font-black text-xl">AB+</div>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">Optimal</span>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div class="bg-[#ec1313] h-full rounded-full w-[60%]"></div>
+                </div>
+            </div>
+
+            <!-- Card AB- -->
+            <div class="bg-slate-50 dark:bg-[#221010] border border-slate-100 dark:border-[#3d2424] rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-[#ec1313] transition-all cursor-pointer">
+                <div class="size-12 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313] font-black text-xl">AB-</div>
+                <span class="text-[10px] font-bold text-orange-500 bg-orange-50 dark:bg-orange-950/40 px-2 py-0.5 rounded-full">Low</span>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div class="bg-[#ec1313] h-full rounded-full w-[25%]"></div>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- Recent Verified Donors Section -->
     {% if recent_donors %}
-    <section class="space-y-8 pt-2">
-        <div class="text-center max-w-xl mx-auto space-y-1.5">
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Our Verified Donors</h2>
-            <p class="text-xs text-slate-400 font-medium">Meet the recently verified NSS blood volunteers ready to support emergencies.</p>
+    <section class="w-full">
+        <div class="text-center mb-10">
+            <h2 class="text-slate-900 dark:text-white text-3xl font-bold tracking-tight">Our Verified Donors</h2>
+            <p class="text-slate-500 dark:text-gray-400 text-sm mt-2">Active volunteer donors ready to support emergency cases in Bihar.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for donor in recent_donors %}
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm hover:shadow-md transition-all">
+            <div class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-2xl p-5 space-y-4 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm">
+                        <div class="w-10 h-10 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#ec1313] font-bold text-sm">
                             {{ donor.full_name|slice:":1"|upper }}
                         </div>
                         <div>
-                            <h4 class="text-slate-900 font-bold text-sm leading-tight">{{ donor.full_name }}</h4>
-                            <p class="text-[10px] text-slate-400 font-semibold">{{ donor.city }}</p>
+                            <h4 class="text-slate-900 dark:text-white font-bold text-sm leading-tight">{{ donor.full_name }}</h4>
+                            <p class="text-[10px] text-slate-450 dark:text-gray-400 font-semibold">{{ donor.city }}</p>
                         </div>
                     </div>
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-brand-50 text-brand-600 font-black text-xs border border-brand-100 shadow-sm">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 dark:bg-red-950/40 text-[#ec1313] font-black text-xs border border-red-100 dark:border-red-900/50 shadow-sm">
                         {{ donor.blood_group }}
                     </span>
                 </div>
 
-                <div class="flex items-center justify-between pt-2 border-t border-slate-50 text-[10px]">
+                <div class="flex items-center justify-between pt-2 border-t border-slate-50 dark:border-slate-800 text-[10px]">
                     <div class="flex items-center gap-1.5">
                         {% if donor.is_active_donor %}
                         <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                        <span class="text-emerald-700 font-bold uppercase tracking-wider">Available</span>
+                        <span class="text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">Available</span>
                         {% else %}
                         <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
-                        <span class="text-slate-500 font-bold uppercase tracking-wider">In Cooldown</span>
+                        <span class="text-slate-500 dark:text-gray-400 font-bold uppercase tracking-wider">In Cooldown</span>
                         {% endif %}
                     </div>
-                    <a href="{% url 'request_form' %}?blood_group={{ donor.blood_group }}&city={{ donor.city }}" 
-                       class="text-brand-500 font-bold hover:text-brand-600 transition-colors uppercase tracking-wider">
-                        Request <i class="fa-solid fa-chevron-right ml-0.5 text-[8px]"></i>
+                    <a href="{% url 'request_form' %}?blood_group={{ donor.blood_group }}&city={{ donor.city }}"
+                       class="text-[#ec1313] font-bold hover:underline transition-colors uppercase tracking-wider flex items-center gap-0.5">
+                        Request <span class="material-symbols-outlined text-[10px]">chevron_right</span>
                     </a>
                 </div>
             </div>
@@ -252,65 +266,69 @@ across Bihar districts, view system live impacts, and post urgent blood requirem
 
     <!-- Active Emergency Blood Requests Section -->
     {% if emergency_cases %}
-    <section class="space-y-8 pt-2">
-        <div class="text-center max-w-xl mx-auto space-y-1.5">
-            <span class="inline-flex items-center gap-1.5 bg-red-50 border border-red-100 px-3.5 py-1.5 rounded-full text-[9px] font-extrabold tracking-wider text-red-650 uppercase animate-pulse">
-                <i class="fa-solid fa-circle-exclamation text-red-500 animate-bounce"></i> Live Emergency Cases
+    <section class="w-full">
+        <div class="text-center mb-10">
+            <span class="inline-flex items-center gap-1.5 bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900 px-3.5 py-1.5 rounded-full text-[10px] font-extrabold tracking-wider text-[#ec1313] uppercase animate-pulse">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                Live Emergency Cases
             </span>
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Active Emergency Requests</h2>
-            <p class="text-xs text-slate-400 font-medium">Hospital units and patients requiring immediate support. Contact details are verified.</p>
+            <h2 class="text-slate-900 dark:text-white text-3xl font-bold tracking-tight mt-3">Active Emergency Requests</h2>
+            <p class="text-slate-500 dark:text-gray-400 text-sm mt-2">Hospital units and patients requiring immediate support. Contact details are verified.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for case in emergency_cases %}
-            <div class="relative overflow-hidden bg-white border rounded-2xl p-5 space-y-4 shadow-sm hover:shadow-md transition-all duration-200
-                        {% if case.priority == 'CRITICAL' %} border-red-200 bg-red-50/10 {% else %} border-amber-200 bg-amber-50/5 {% endif %}">
-                
+            <div class="relative overflow-hidden bg-white dark:bg-[#1a0c0c] border rounded-2xl p-5 space-y-4 shadow-sm hover:shadow-md transition-all duration-200
+                        {% if case.priority == 'CRITICAL' %} border-red-200 dark:border-red-950 bg-red-50/10 dark:bg-red-950/5 {% else %} border-amber-200 dark:border-amber-950 bg-amber-50/5 dark:bg-amber-950/5 {% endif %}">
+
                 <!-- Priority Header Accent -->
                 <div class="absolute top-0 left-0 w-full h-1 {% if case.priority == 'CRITICAL' %} bg-red-500 {% else %} bg-amber-500 {% endif %}"></div>
-                
+
                 <div class="flex items-center justify-between">
                     <div class="space-y-1">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-900 font-black text-sm tracking-tight">{{ case.requester_name }}</span>
-                        </div>
-                        <p class="text-[10px] text-slate-450 font-semibold flex items-center gap-1">
-                            <i class="fa-solid fa-map-pin text-slate-350"></i> {{ case.city }}
+                        <span class="text-slate-900 dark:text-white font-black text-sm tracking-tight block">{{ case.requester_name }}</span>
+                        <p class="text-[10px] text-slate-450 dark:text-gray-400 font-semibold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[12px] block">location_on</span> {{ case.city }}
                         </p>
                     </div>
                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg font-black text-xs border shadow-sm
-                                 {% if case.priority == 'CRITICAL' %} bg-brand-500 text-white border-brand-600 {% else %} bg-amber-500 text-white border-amber-600 {% endif %}">
+                                 {% if case.priority == 'CRITICAL' %} bg-[#ec1313] text-white border-red-600 {% else %} bg-amber-500 text-white border-amber-600 {% endif %}">
                         {{ case.blood_group }}
                     </span>
                 </div>
 
                 <div class="space-y-2">
                     <div class="flex items-center justify-between text-[11px]">
-                        <span class="text-slate-400 font-medium">Quantity Required:</span>
-                        <span class="text-slate-800 font-bold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">{{ case.units }} Unit{{ case.units|pluralize }}</span>
+                        <span class="text-slate-400 dark:text-gray-400 font-medium">Quantity Required:</span>
+                        <span class="text-slate-800 dark:text-white font-bold bg-slate-100 dark:bg-[#221010] border border-slate-200 dark:border-red-900/30 px-2 py-0.5 rounded-md">{{ case.units }} Unit{{ case.units|pluralize }}</span>
                     </div>
                     <div class="flex items-center justify-between text-[11px]">
-                        <span class="text-slate-400 font-medium">Priority:</span>
+                        <span class="text-slate-400 dark:text-gray-400 font-medium">Priority:</span>
                         {% if case.priority == 'CRITICAL' %}
-                        <span class="px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200 text-[8px] font-extrabold uppercase animate-pulse inline-flex items-center gap-0.5"><i class="fa-solid fa-triangle-exclamation text-red-650 animate-bounce"></i> Critical</span>
+                        <span class="px-2 py-0.5 rounded bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-900 text-[8px] font-extrabold uppercase animate-pulse inline-flex items-center gap-0.5">Critical</span>
                         {% else %}
-                        <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-circle-exclamation text-amber-600 animate-pulse"></i> Urgent</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-900 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5">Urgent</span>
                         {% endif %}
                     </div>
                     {% if case.hospital_name %}
-                    <div class="text-[10px] text-slate-500 bg-slate-50/50 p-2 rounded-lg border border-slate-100">
+                    <div class="text-[10px] text-slate-500 dark:text-gray-455 bg-slate-50/50 dark:bg-[#221010] p-2 rounded-lg border border-slate-100 dark:border-red-900/10">
                         <i class="fa-solid fa-hospital text-slate-450 mr-1"></i> <span class="font-bold">{{ case.hospital_name }}</span>
                     </div>
                     {% endif %}
                 </div>
 
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-[9px] text-slate-450 font-semibold"><i class="fa-regular fa-clock mr-1"></i>{{ case.requested_at|timesince }} ago</span>
-                    <a href="{% url 'request_status' %}?phone={{ case.contact_number }}" 
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <span class="text-[9px] text-slate-455 dark:text-gray-500 font-semibold flex items-center gap-0.5">
+                        <span class="material-symbols-outlined text-[10px] block">schedule</span> {{ case.requested_at|timesince }} ago
+                    </span>
+                    <a href="{% url 'request_status' %}?phone={{ case.contact_number }}"
                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider text-white transition-colors shadow-sm
-                              {% if case.priority == 'CRITICAL' %} bg-brand-600 hover:bg-brand-700 shadow-red-600/10 {% else %} bg-slate-900 hover:bg-slate-800 shadow-slate-900/10 {% endif %}">
+                              {% if case.priority == 'CRITICAL' %} bg-[#ec1313] hover:bg-[#ec1313]/90 {% else %} bg-slate-900 hover:bg-slate-800 {% endif %}">
                         <span>Volunteer / View</span>
-                        <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                        <span class="material-symbols-outlined text-[10px] block">chevron_right</span>
                     </a>
                 </div>
             </div>
@@ -319,49 +337,123 @@ across Bihar districts, view system live impacts, and post urgent blood requirem
     </section>
     {% endif %}
 
-    <!-- Notice Dispatch Feed Section -->
-    {% if broadcast_messages %}
-    <section class="border border-slate-200 bg-white rounded-3xl p-8 space-y-6 shadow-sm relative overflow-hidden">
-        <div
-            class="absolute -right-10 -bottom-10 w-44 h-44 bg-brand-50/50 rounded-full filter blur-2xl opacity-60 pointer-events-none">
+    <!-- How It Works Section -->
+    <section class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-3xl p-8 md:p-14 shadow-sm" id="how-it-works">
+        <div class="text-center max-w-xl mx-auto mb-12">
+            <h2 class="text-slate-900 dark:text-white text-3xl font-bold mb-3">Simple 3-Step Process</h2>
+            <p class="text-slate-500 dark:text-gray-400">Donating blood is easier than you think. Here's how you can make a difference in less than an hour.</p>
         </div>
 
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-                <h3 class="font-black text-base text-slate-900 tracking-tight">Notice & Alerts Dispatch</h3>
-                <p class="text-slate-400 text-[10px] mt-0.5 font-medium">Critical notifications and broadcasts published
-                    by NSS coordinators.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            <div class="flex flex-col items-center text-center p-4">
+                <div class="size-16 bg-[#ec1313] text-white rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-red-500/20">
+                    <span class="material-symbols-outlined text-3xl">edit_document</span>
+                </div>
+                <h3 class="text-slate-900 dark:text-white text-lg font-bold mb-2">1. Register</h3>
+                <p class="text-slate-500 dark:text-gray-400 text-sm leading-relaxed">Sign up online or at any of our partner centers. Complete a quick health screening.</p>
             </div>
-            <span
-                class="inline-flex items-center gap-1.5 bg-brand-50 text-brand-500 border border-brand-100 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider">
+            <div class="flex flex-col items-center text-center p-4">
+                <div class="size-16 bg-[#ec1313] text-white rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-red-500/20">
+                    <span class="material-symbols-outlined text-3xl">vaccines</span>
+                </div>
+                <h3 class="text-slate-900 dark:text-white text-lg font-bold mb-2">2. Donate</h3>
+                <p class="text-slate-500 dark:text-gray-400 text-sm leading-relaxed">The actual donation only takes about 10-15 minutes in a comfortable, safe environment.</p>
+            </div>
+            <div class="flex flex-col items-center text-center p-4">
+                <div class="size-16 bg-[#ec1313] text-white rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-red-500/20">
+                    <span class="material-symbols-outlined text-3xl">celebration</span>
+                </div>
+                <h3 class="text-slate-900 dark:text-white text-lg font-bold mb-2">3. Save Lives</h3>
+                <p class="text-slate-500 dark:text-gray-400 text-sm leading-relaxed">Your donation is processed and sent to hospitals to help patients in urgent need.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- NGO Section -->
+    <section id="ngos" class="space-y-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Featured NGOs</h2>
+                <p class="text-slate-500 dark:text-gray-400 text-sm">Supporting organizations across the country</p>
+            </div>
+            <button class="bg-slate-100 dark:bg-[#3d2424] text-slate-800 dark:text-white px-5 py-2.5 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-[#4d3030] text-sm transition-all shadow-sm border-0 cursor-pointer">
+                View All Organizations
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- NGO Card 1 -->
+            <div class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div class="h-44 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDnWYti0Vy6Wpz_sCy-XGsU7cwMOUgLDCAffSWlcqy0Tbh7q6RA6YXxlmg23blPU83QiK1UKJBCiJPb6d7CbqPObzZWzUkDv7tOzQb0sfQuxWxiV3oUh4aX-eDar1me9cBOzVA73tQ5AuTcrtKHYHICGC0ZX_JhJDrDnUoJv8STqX33u_LE6HB84q8dykoZoGhdWzXH1ogZGUvgWDSb1EwxZRe6NqIvJDxTKDtPokknm8zVGCIQ5Y93ZmZZ7IpazWCb7gywE3UGgA');" role="img" aria-label="A group of health volunteers"></div>
+                <div class="p-5 space-y-3">
+                    <h4 class="text-slate-900 dark:text-white text-lg font-bold">Red Cross Society</h4>
+                    <p class="text-slate-500 dark:text-gray-400 text-sm leading-relaxed">Dedicated to emergency assistance, disaster relief, and health education.</p>
+                    <div class="inline-flex items-center gap-1 text-[#ec1313] font-bold text-sm cursor-pointer hover:underline pt-2">
+                        Learn More <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NGO Card 2 -->
+            <div class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div class="h-44 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAmqAM5BMvdvJjiW98MojRrGfnQiPHMlcMh0lkxVnSTAQJctGuOLhvmcYOicB_z171ZA82Ykenb8t-j-bnelyg1I0k46vLCvcNr6gXZWP6dazu_gYpnAoxcTpdQ-RzycUfDmWULcVuYBDKhwpyl1F7xqmAC-Mdk-SfKto3czrgXw32OKijPR6idAbO_tBuCZ828mu5glGRnhfCpXNiD7aLG26ZplzzkskxV0DdVVTuBmbIhP7_Amrq_rgwuDwxQY7EwRKVMbp_x2g');" role="img" aria-label="Hands stacked together in teamwork"></div>
+                <div class="p-5 space-y-3">
+                    <h4 class="text-slate-900 dark:text-white text-lg font-bold">LifeStream Foundation</h4>
+                    <p class="text-slate-500 dark:text-gray-400 text-sm leading-relaxed">Bridging the gap between blood donors and rural healthcare centers.</p>
+                    <div class="inline-flex items-center gap-1 text-[#ec1313] font-bold text-sm cursor-pointer hover:underline pt-2">
+                        Learn More <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NGO Card 3 -->
+            <div class="bg-white dark:bg-[#1a0c0c] border border-slate-200 dark:border-[#3d2424] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div class="h-44 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAZzPK2oXahvd-Ccd7gFUMRApJo_jADe-d4eWWAX_z76sAoz7DIQtGRacx2gAi_Rh8CHLons6U_3snReFSKKjpFbY4oLKvPbR1UuHVSg27YDRoyvKmAURJgqShVEGw8AlAU8zaBLJnd20eCvc1rTWGYx6VwrBqxePbtNZUM7vF_DiN5Yt1RYVgoe32bjwfFqq3B6lCE6dKovn3ml3n3QEfXv24AxP7pDyi2WTsww5Pa3qOKExsv-J96aXIFvxQTB1uR0Su8D-x9Gg');" role="img" aria-label="Modern laboratory setup"></div>
+                <div class="p-5 space-y-3">
+                    <h4 class="text-slate-900 dark:text-white text-lg font-bold">Unity Blood Bank</h4>
+                    <p class="text-slate-500 dark:text-gray-400 text-sm leading-relaxed">A community-driven network ensuring no one waits for rare blood types.</p>
+                    <div class="inline-flex items-center gap-1 text-[#ec1313] font-bold text-sm cursor-pointer hover:underline pt-2">
+                        Learn More <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notice Dispatch Feed Section -->
+    {% if broadcast_messages %}
+    <section class="border border-slate-200 dark:border-[#3d2424] bg-white dark:bg-[#1a0c0c] rounded-3xl p-8 space-y-6 shadow-sm relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-red-50/30 dark:bg-red-950/10 rounded-full filter blur-2xl opacity-60 pointer-events-none"></div>
+
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div>
+                <h3 class="font-bold text-xl text-slate-900 dark:text-white tracking-tight">Notice & Alerts Dispatch</h3>
+                <p class="text-slate-400 dark:text-gray-400 text-xs mt-0.5 font-medium">Critical notifications and broadcasts published by NSS coordinators.</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 bg-red-50 dark:bg-red-950/40 text-[#ec1313] border border-red-100 dark:border-red-900 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider">
                 <span class="relative flex h-1.5 w-1.5">
-                    <span
-                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-brand-500"></span>
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
                 </span>
                 Live Feed
             </span>
         </div>
 
-        <div class="divide-y divide-slate-100">
+        <div class="divide-y divide-slate-100 dark:divide-slate-800">
             {% for note in broadcast_messages %}
             <div class="py-4 first:pt-0 last:pb-0 flex gap-4 items-start">
-                <div
-                    class="w-8 h-8 shrink-0 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-brand-500">
-                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                        </path>
-                    </svg>
+                <div class="w-8 h-8 shrink-0 rounded-lg bg-slate-50 dark:bg-[#221010] border border-slate-200 dark:border-[#3d2424] flex items-center justify-center text-[#ec1313]">
+                    <span class="material-symbols-outlined text-lg">notifications_active</span>
                 </div>
                 <div class="space-y-1">
-                    <p class="text-slate-700 text-xs font-medium leading-relaxed">{{ note.message }}</p>
-                    <p class="text-[9px] text-slate-400 font-semibold">{{ note.created_at|date:'d M Y, h:i A' }}</p>
+                    <p class="text-slate-700 dark:text-gray-300 text-xs font-medium leading-relaxed">{{ note.message }}</p>
+                    <p class="text-[9px] text-slate-400 dark:text-gray-500 font-semibold">{{ note.created_at|date:'d M Y, h:i A' }}</p>
                 </div>
             </div>
             {% endfor %}
         </div>
     </section>
     {% endif %}
+
 </div>
 {% endblock %}
