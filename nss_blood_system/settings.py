@@ -179,7 +179,7 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "fonts.googleapis.com", "cdnjs.cloudflare.com")
 CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "cdn.tailwindcss.com")
 CSP_FONT_SRC = ("'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com")
-CSP_IMG_SRC = ("'self'", "data:")
+CSP_IMG_SRC = ("'self'", "data:", "lh3.googleusercontent.com", "*.googleusercontent.com")
 CSP_CONNECT_SRC = ("'self'",)
 
 # Sentry Error Monitoring Integration
