@@ -48,8 +48,7 @@ Thumbs.db
 # Django
 *.log
 local_settings.py
-/media/
-/staticfiles/
+
 
 # Misc
 .pytest_cache/
