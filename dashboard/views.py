@@ -6,7 +6,7 @@ from django.db.models.functions import TruncDate
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from donors.models import DonorProfile, BloodCamp, DonationHistory
+from donors.models import DonorProfile, BloodCamp, DonationHistory, log_activity, ActivityLog
 from donors.forms import BloodCampForm
 from requests.models import BloodRequest, Hospital, BloodBank
 from requests.forms import HospitalForm, BloodBankForm
@@ -114,6 +114,10 @@ def _handle_admin_request_status(request):
 
             req.save(update_fields=["status", "approved_at", "assigned_donor"])
             messages.success(request, "Request status updated.")
+            if req.assigned_donor:
+                log_activity(request.user, "REQUEST_DECISION", f"Approved request #{req.request_code} and assigned donor {req.assigned_donor.full_name}.")
+            else:
+                log_activity(request.user, "REQUEST_DECISION", f"Approved request #{req.request_code} (no matching donor found).")
             
             # Send SMS alerts
             requester_msg = f"NSS Blood: Your request #{req.request_code} has been approved! We are coordinating volunteer donors."
@@ -153,6 +157,7 @@ def _handle_admin_request_status(request):
                     req.assigned_donor = matching_donor
                     req.save(update_fields=["status", "assigned_donor"])
                     messages.success(request, "Request status updated and donor assigned.")
+                    log_activity(request.user, "REQUEST_DECISION", f"Assigned donor {req.assigned_donor.full_name} to request #{req.request_code}.")
                     
                     # Send SMS alerts
                     requester_msg = (
@@ -166,15 +171,17 @@ def _handle_admin_request_status(request):
                         f"NSS Blood Emergency! You are assigned to request #{req.request_code} "
                         f"for patient {req.requester_name} ({req.blood_group}) "
                         f"at {req.hospital_name}. Contact: {req.contact_number}."
-                    )
+                )
                     send_sms_async.delay(req.assigned_donor.phone, donor_msg)
                 else:
                     messages.warning(request, "No matching volunteer donor found to assign.")
                     req.status = "APPROVED"
                     req.save(update_fields=["status"])
+                    log_activity(request.user, "REQUEST_DECISION", f"Updated request #{req.request_code} status to Approved (no matching donor found to assign).")
             else:
                 req.save(update_fields=["status"])
                 messages.success(request, "Request status updated.")
+                log_activity(request.user, "REQUEST_DECISION", f"Updated request #{req.request_code} status to Assigned.")
 
         elif new_status == "COMPLETED":
             donor = req.assigned_donor or req.fulfilled_by
@@ -182,6 +189,7 @@ def _handle_admin_request_status(request):
                 completed_now = req.mark_completed(donor)
                 if completed_now:
                     messages.success(request, "Request marked completed and donor history updated.")
+                    log_activity(request.user, "DONATION_COMPLETE", f"Marked request #{req.request_code} as completed (fulfilled by donor {donor.full_name}).")
                     completed_msg = f"NSS Blood: Your request #{req.request_code} has been successfully completed. Thank you!"
                     send_sms_async.delay(req.contact_number, completed_msg)
                 else:
@@ -190,12 +198,14 @@ def _handle_admin_request_status(request):
                 req.status = "COMPLETED"
                 req.save(update_fields=["status"])
                 messages.warning(request, "Request marked completed without a donor assignment.")
+                log_activity(request.user, "DONATION_COMPLETE", f"Marked request #{req.request_code} as completed (no donor assignment).")
         elif new_status == "REJECTED":
             req.status = new_status
             rejection_reason = request.POST.get("rejection_reason", "").strip()
             req.rejection_reason = rejection_reason or "Does not meet emergency criteria."
             req.save(update_fields=["status", "rejection_reason"])
             messages.success(request, "Request status updated to Rejected.")
+            log_activity(request.user, "REQUEST_DECISION", f"Rejected request #{req.request_code}. Reason: {req.rejection_reason}")
             
             rejection_msg = f"NSS Blood: Your request #{req.request_code} has been rejected. Reason: {req.rejection_reason}"
             send_sms_async.delay(req.contact_number, rejection_msg)
@@ -203,6 +213,8 @@ def _handle_admin_request_status(request):
             req.status = new_status
             req.save(update_fields=["status"])
             messages.success(request, "Request status updated.")
+            log_activity(request.user, "REQUEST_DECISION", f"Updated request #{req.request_code} status to {new_status}.")
+
 
 def _handle_admin_donor_verify(request):
     donor_id = request.POST.get("donor_id")
@@ -218,6 +230,7 @@ def _handle_admin_donor_verify(request):
         donor.verification_status = decision
         donor.save(update_fields=["verification_status"])
         messages.success(request, "Donor verification updated.")
+        log_activity(request.user, "DONOR_VERIFICATION", f"Updated donor {donor.full_name} verification status to {decision}.")
 
 def _handle_admin_broadcast_create(request):
     form = BroadcastMessageForm(request.POST)
@@ -225,7 +238,9 @@ def _handle_admin_broadcast_create(request):
         broadcast = form.save(commit=False)
         broadcast.created_by = request.user
         broadcast.save()
+
         messages.success(request, "Mass message published.")
+        log_activity(request.user, "BROADCAST_ACTION", f"Published mass message: '{broadcast.message[:50]}...'.")
         return True
     return False
 
@@ -236,6 +251,7 @@ def _handle_admin_camp_create(request):
         camp.created_by = request.user
         camp.save()
         messages.success(request, "Blood camp created successfully.")
+        log_activity(request.user, "CAMP_ACTION", f"Scheduled blood camp: '{camp.title}' on {camp.date} at {camp.location}.")
         return True
     return False
 
@@ -248,14 +264,16 @@ def _handle_admin_nss_verify_donation(request):
         verified_now = donation_history.verify_by_nss(request.user)
         if verified_now:
             messages.success(request, f"NSS verification completed. Certificate {donation_history.certificate_id} generated.")
+            log_activity(request.user, "DONATION_COMPLETE", f"NSS verified donation audit for donor {donation_history.donor.full_name} (Request #{donation_history.request.request_code}) and generated certificate {donation_history.certificate_id}.")
         else:
             messages.info(request, f"Already NSS verified. Certificate {donation_history.certificate_id} is available.")
 
 def _handle_admin_hospital_create(request):
     form = HospitalForm(request.POST)
     if form.is_valid():
-        form.save()
+        h = form.save()
         messages.success(request, "Hospital added successfully.")
+        log_activity(request.user, "HOSPITAL_ACTION", f"Created hospital: '{h.name}' in {h.city}.")
         return True
     else:
         for field, errors in form.errors.items():
@@ -270,6 +288,7 @@ def _handle_admin_hospital_update(request):
     if form.is_valid():
         form.save()
         messages.success(request, f"Hospital '{hospital.name}' updated successfully.")
+        log_activity(request.user, "HOSPITAL_ACTION", f"Updated hospital details for '{hospital.name}' ({hospital.city}).")
         return True
     else:
         for field, errors in form.errors.items():
@@ -284,14 +303,16 @@ def _handle_admin_hospital_toggle(request):
     hospital.save(update_fields=["is_active"])
     status_str = "activated" if hospital.is_active else "deactivated"
     messages.success(request, f"Hospital '{hospital.name}' has been {status_str}.")
+    log_activity(request.user, "HOSPITAL_ACTION", f"Toggled status of hospital '{hospital.name}' to {status_str}.")
     return True
 
 
 def _handle_admin_blood_bank_create(request):
     form = BloodBankForm(request.POST)
     if form.is_valid():
-        form.save()
+        b = form.save()
         messages.success(request, "Blood Bank added successfully.")
+        log_activity(request.user, "BLOOD_BANK_ACTION", f"Created blood bank: '{b.name}' in {b.city}.")
         return True
     else:
         for field, errors in form.errors.items():
@@ -307,6 +328,7 @@ def _handle_admin_blood_bank_update(request):
     if form.is_valid():
         form.save()
         messages.success(request, f"Blood Bank '{bank.name}' updated successfully.")
+        log_activity(request.user, "BLOOD_BANK_ACTION", f"Updated blood bank details for '{bank.name}' ({bank.city}).")
         return True
     else:
         for field, errors in form.errors.items():
@@ -322,6 +344,7 @@ def _handle_admin_blood_bank_toggle(request):
     bank.save(update_fields=["is_active"])
     status_str = "activated" if bank.is_active else "deactivated"
     messages.success(request, f"Blood Bank '{bank.name}' has been {status_str}.")
+    log_activity(request.user, "BLOOD_BANK_ACTION", f"Toggled status of blood bank '{bank.name}' to {status_str}.")
     return True
 
 
@@ -338,6 +361,11 @@ def admin_dashboard(request):
     selected_city = request.GET.get("city", "")
     selected_start_date = request.GET.get("start_date", "")
     selected_end_date = request.GET.get("end_date", "")
+
+    activity_start_date = request.GET.get("activity_start_date", "")
+    activity_end_date = request.GET.get("activity_end_date", "")
+    activity_type = request.GET.get("activity_type", "")
+    activity_search = request.GET.get("activity_search", "")
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -476,6 +504,34 @@ def admin_dashboard(request):
             }
         )
 
+    activity_logs = ActivityLog.objects.select_related("user").all()
+
+    if activity_start_date:
+        activity_logs = activity_logs.filter(created_at__date__gte=activity_start_date)
+    if activity_end_date:
+        activity_logs = activity_logs.filter(created_at__date__lte=activity_end_date)
+    if activity_type:
+        activity_logs = activity_logs.filter(activity_type=activity_type)
+    if activity_search:
+        activity_logs = activity_logs.filter(
+            Q(details__icontains=activity_search) | 
+            Q(user_name__icontains=activity_search) |
+            Q(activity_type__icontains=activity_search)
+        )
+
+    ACTIVITY_TYPES = [
+        ("BLOOD_REQUEST", "New Blood Requests"),
+        ("DONATION_COMPLETE", "Completed Donations"),
+        ("DONOR_REGISTER", "New Donor Registrations"),
+        ("DONOR_VERIFICATION", "Donor Verification"),
+        ("HOSPITAL_ACTION", "Hospital Add/Edit/Delete"),
+        ("BLOOD_BANK_ACTION", "Blood Bank Add/Edit/Delete"),
+        ("CAMP_ACTION", "Blood Camp Activities"),
+        ("BROADCAST_ACTION", "Mass Message"),
+        ("ADMIN_LOGIN", "Admin Login History"),
+        ("REQUEST_DECISION", "Request Approvals/Rejections"),
+    ]
+
     context = {
         "total_donors": approved_donor_queryset.count(),
         "total_requests": request_queryset.count(),
@@ -503,5 +559,12 @@ def admin_dashboard(request):
         "requests_per_day_values": requests_per_day_values,
         "donors_by_group_labels": donors_by_group_labels,
         "donors_by_group_values": donors_by_group_values,
+        
+        "activity_logs": activity_logs[:200],
+        "activity_types": ACTIVITY_TYPES,
+        "selected_activity_start_date": activity_start_date,
+        "selected_activity_end_date": activity_end_date,
+        "selected_activity_type": activity_type,
+        "selected_activity_search": activity_search,
     }
     return render(request, "dashboard/admin_dashboard.html", context)

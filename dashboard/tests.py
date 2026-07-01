@@ -257,4 +257,80 @@ class BloodBankManagementTests(TestCase):
         self.assertFalse(self.bank.is_active)
 
 
+from donors.models import ActivityLog, log_activity
+
+class ActivityHistoryTests(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(username="admin_logs", password="adminpassword")
+        self.client.login(username="admin_logs", password="adminpassword")
+
+    def test_log_activity_creates_entry(self):
+        log_activity(self.admin_user, "TEST_ACTIVITY", "This is a test details message.")
+        self.assertEqual(ActivityLog.objects.filter(activity_type="TEST_ACTIVITY").count(), 1)
+        entry = ActivityLog.objects.get(activity_type="TEST_ACTIVITY")
+        self.assertEqual(entry.user, self.admin_user)
+        self.assertEqual(entry.details, "This is a test details message.")
+
+    def test_admin_login_creates_log(self):
+        # We logged in in setUp, so there should already be an ADMIN_LOGIN log!
+        self.assertTrue(ActivityLog.objects.filter(activity_type="ADMIN_LOGIN").exists())
+
+    def test_hospital_actions_logged(self):
+        # Create hospital
+        from requests.models import Hospital
+        response = self.client.post(
+            reverse("admin_dashboard"),
+            {
+                "action": "hospital_create",
+                "name": "PMCH Patna",
+                "city": "Patna",
+                "address": "Ashok Rajpath, Patna",
+                "is_active": "on"
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        h = Hospital.objects.get(name="PMCH Patna")
+        self.assertTrue(ActivityLog.objects.filter(activity_type="HOSPITAL_ACTION", details__contains="Created hospital: 'PMCH Patna'").exists())
+
+        # Update hospital
+        response = self.client.post(
+            reverse("admin_dashboard"),
+            {
+                "action": "hospital_update",
+                "hospital_id": h.pk,
+                "name": "PMCH Patna Updated",
+                "city": "Patna",
+                "address": "Ashok Rajpath, Patna",
+                "is_active": "on"
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(ActivityLog.objects.filter(activity_type="HOSPITAL_ACTION", details__contains="Updated hospital details for 'PMCH Patna Updated'").exists())
+
+        # Delete hospital
+        h.refresh_from_db()
+        h.delete()
+        self.assertTrue(ActivityLog.objects.filter(activity_type="HOSPITAL_ACTION", details__contains="Deleted hospital: PMCH Patna Updated").exists())
+
+    def test_activity_filters_in_dashboard(self):
+        # Let's create some dummy logs with different types and dates
+        log_activity(self.admin_user, "CAMP_ACTION", "Scheduled test camp")
+        log_activity(self.admin_user, "DONATION_COMPLETE", "Completed donation 1")
+
+        # Query all logs via GET
+        response = self.client.get(reverse("admin_dashboard"))
+        self.assertEqual(response.status_code, 200)
+        
+        # Test search query
+        response = self.client.get(reverse("admin_dashboard"), {"activity_search": "test camp"})
+        self.assertContains(response, "Scheduled test camp")
+        self.assertNotContains(response, "Completed donation 1")
+
+        # Test type query
+        response = self.client.get(reverse("admin_dashboard"), {"activity_type": "DONATION_COMPLETE"})
+        self.assertContains(response, "Completed donation 1")
+        self.assertNotContains(response, "Scheduled test camp")
+
+
+
 

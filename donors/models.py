@@ -196,3 +196,113 @@ class DonationHistory(models.Model):
             self.certificate_id = self._generate_certificate_id()
         self.save(update_fields=["nss_verified", "verified_by", "verified_at", "certificate_id"])
         return True
+
+
+class ActivityLog(models.Model):
+    ACTIVITY_TYPE_CHOICES = [
+        ("BLOOD_REQUEST", "New Blood Request"),
+        ("DONATION_COMPLETE", "Completed Donation"),
+        ("DONOR_REGISTER", "New Donor Registration"),
+        ("DONOR_VERIFICATION", "Donor Verification"),
+        ("HOSPITAL_ACTION", "Hospital Action"),
+        ("BLOOD_BANK_ACTION", "Blood Bank Action"),
+        ("CAMP_ACTION", "Blood Camp Activity"),
+        ("BROADCAST_ACTION", "Mass Message"),
+        ("ADMIN_LOGIN", "Admin Login"),
+        ("REQUEST_DECISION", "Request Approval/Rejection"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="activity_logs",
+    )
+    user_name = models.CharField(max_length=150, blank=True, null=True)
+    activity_type = models.CharField(max_length=50, choices=ACTIVITY_TYPE_CHOICES, db_index=True)
+    details = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        db_table = "blooddonation_activitylog"
+
+    def __str__(self):
+        return f"{self.activity_type} - {self.created_at}"
+
+
+def log_activity(user, activity_type, details):
+    user_name = user.username if user and not user.is_anonymous else "System"
+    ActivityLog.objects.create(
+        user=user if user and not user.is_anonymous else None,
+        user_name=user_name,
+        activity_type=activity_type,
+        details=details
+    )
+
+
+from django.contrib.auth.signals import user_logged_in
+from django.dispatch import receiver
+
+@receiver(user_logged_in)
+def log_admin_login(sender, request, user, **kwargs):
+    if user.is_staff:
+        log_activity(
+            user=user,
+            activity_type="ADMIN_LOGIN",
+            details=f"Admin/Staff user '{user.username}' successfully logged in."
+        )
+
+
+from django.db.models.signals import post_save, post_delete
+
+@receiver(post_save, sender=DonorProfile)
+def log_donor_registration(sender, instance, created, **kwargs):
+    if created:
+        log_activity(
+            user=instance.user,
+            activity_type="DONOR_REGISTER",
+            details=f"New Donor registered: {instance.full_name} ({instance.blood_group}) in district {instance.city}."
+        )
+
+
+@receiver(post_save)
+def log_blood_request_save(sender, instance, created, **kwargs):
+    if sender.__name__ == 'BloodRequest':
+        if instance.otp_verified:
+            already_logged = ActivityLog.objects.filter(
+                activity_type="BLOOD_REQUEST",
+                details__contains=f"Code #{instance.request_code}"
+            ).exists()
+            if not already_logged:
+                log_activity(
+                    user=instance.requester,
+                    activity_type="BLOOD_REQUEST",
+                    details=f"New Blood Request created: Code #{instance.request_code} for {instance.units} units of {instance.blood_group} at {instance.hospital_name} in {instance.city}."
+                )
+
+
+@receiver(post_delete)
+def log_model_deletes(sender, instance, **kwargs):
+    if sender.__name__ == 'Hospital':
+        log_activity(
+            user=None,
+            activity_type="HOSPITAL_ACTION",
+            details=f"Deleted hospital: {instance.name} in {instance.city}."
+        )
+    elif sender.__name__ == 'BloodBank':
+        log_activity(
+            user=None,
+            activity_type="BLOOD_BANK_ACTION",
+            details=f"Deleted blood bank: {instance.name} in {instance.city}."
+        )
+    elif sender.__name__ == 'BloodCamp':
+        log_activity(
+            user=None,
+            activity_type="CAMP_ACTION",
+            details=f"Deleted scheduled blood camp: {instance.title}."
+        )
+
+
+

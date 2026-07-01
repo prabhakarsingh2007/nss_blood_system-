@@ -5,7 +5,7 @@
     /* Styling to support JavaScript active state toggles in the sidebar */
     .admin-nav-link {
         position: relative;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.15s ease;
         border-left: 3px solid transparent;
     }
     .admin-nav-link:hover {
@@ -13,8 +13,8 @@
         color: #0f172a;
     }
     .admin-nav-link.active {
-        background-color: #fef2f2; /* brand-50 */
-        color: #dc2626 !important; /* brand-600 */
+        background-color: #fef2f2;
+        color: #dc2626 !important;
         border-left: 3px solid #dc2626;
         border-top-left-radius: 0px;
         border-bottom-left-radius: 0px;
@@ -23,39 +23,74 @@
     .admin-nav-link.active i {
         color: #ef4444 !important;
     }
+
+    /* Consistent custom input elements */
+    .admin-form-p p {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+    .admin-form-p label {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+    }
+    .admin-form-p input[type="text"],
+    .admin-form-p input[type="date"],
+    .admin-form-p textarea,
+    .admin-form-p select {
+        width: 100%;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 0.65rem 0.85rem;
+        border-radius: 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #0f172a;
+        outline: none;
+        transition: all 0.15s ease;
+    }
+    .admin-form-p input[type="text"]:focus,
+    .admin-form-p input[type="date"]:focus,
+    .admin-form-p textarea:focus,
+    .admin-form-p select:focus {
+        border-color: #ef4444;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+    }
+    .admin-form-p .helptext {
+        font-size: 10px;
+        color: #94a3b8;
+        font-weight: 500;
+    }
 </style>
 
 <div class="space-y-8 animate-fadeIn">
-    <!-- Hero Header Banner -->
+    <!-- Header Banner Section -->
     <section class="rounded-3xl border border-slate-200/60 bg-white p-6 md:p-8 shadow-sm relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-red-50/20 via-rose-50/10 to-transparent -z-10 rounded-full filter blur-3xl"></div>
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-slate-900 flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-toolbox text-2xl text-red-500"></i>
                 </div>
                 <div>
-                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Admin Portal</h2>
-                    <p class="text-xs text-slate-400 font-semibold mt-0.5">Approve donors, manage emergency alerts, schedule camps, and audit logs.</p>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight" id="active-panel-title">Admin Dashboard</h2>
+                    <p class="text-xs text-slate-400 font-semibold mt-0.5">NSS Emergency Blood Networks Administration.</p>
                 </div>
             </div>
-            <div class="flex gap-2 shrink-0 w-full md:w-auto">
-                <a href="#manage-camps" class="flex-1 md:flex-none text-center px-4 py-2.5 bg-red-650 bg-red-650 hover:bg-red-700 bg-red-600 text-white text-xs font-bold rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
-                    <i class="fa-solid fa-plus mr-1"></i> New Blood Camp
-                </a>
-                <a href="#mass-message" class="flex-1 md:flex-none text-center px-4 py-2.5 bg-white text-slate-700 text-xs font-bold border border-slate-250 rounded-xl hover:border-red-500 hover:text-red-650 transition-all hover:scale-[1.01] active:scale-[0.99]">
-                    <i class="fa-solid fa-bullhorn mr-1 text-red-500"></i> Publish Alert
-                </a>
-            </div>
+
         </div>
     </section>
 
     <!-- Main Grid Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- Sidebar Navigation & Filters -->
+        <!-- Sidebar Navigation -->
         <aside class="lg:col-span-3 space-y-6">
-            <!-- Sidebar Options -->
             <div class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4">
                 <h3 class="text-slate-900 font-extrabold text-[10px] uppercase tracking-wider border-b border-slate-100 pb-2.5">Menu Navigation</h3>
                 <nav class="space-y-1">
@@ -63,21 +98,13 @@
                         <i class="fa-solid fa-chart-pie text-sm text-slate-400"></i>
                         <span>Overview</span>
                     </a>
-                    <a href="#mass-message" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
-                        <i class="fa-solid fa-bullhorn text-sm text-slate-400"></i>
-                        <span>Mass Message</span>
-                    </a>
-                    <a href="#manage-camps" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
-                        <i class="fa-solid fa-tent text-sm text-slate-400"></i>
-                        <span>Manage Camps</span>
+                    <a href="#verify-requests" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
+                        <i class="fa-solid fa-clipboard-check text-sm text-slate-400"></i>
+                        <span>Verify Requests</span>
                     </a>
                     <a href="#verify-donors" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <i class="fa-solid fa-user-check text-sm text-slate-400"></i>
                         <span>Verify Donors</span>
-                    </a>
-                    <a href="#verify-requests" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
-                        <i class="fa-solid fa-clipboard-check text-sm text-slate-400"></i>
-                        <span>Verify Requests</span>
                     </a>
                     <a href="#verify-donations" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <i class="fa-solid fa-award text-sm text-slate-400"></i>
@@ -91,102 +118,111 @@
                         <i class="fa-solid fa-building-columns text-sm text-slate-400"></i>
                         <span>Manage Blood Banks</span>
                     </a>
+                    <a href="#manage-camps" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
+                        <i class="fa-solid fa-tent text-sm text-slate-400"></i>
+                        <span>Manage Camps</span>
+                    </a>
+                    <a href="#mass-message" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
+                        <i class="fa-solid fa-bullhorn text-sm text-slate-400"></i>
+                        <span>Mass Message</span>
+                    </a>
                     <a href="#blood-groups" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
-                        <i class="fa-solid fa-square-envelope text-sm text-slate-400"></i>
+                        <i class="fa-solid fa-folder text-sm text-slate-400"></i>
                         <span>Blood Directory</span>
+                    </a>
+                    <a href="#activity-history" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
+                        <i class="fa-solid fa-clock-rotate-left text-sm text-slate-400"></i>
+                        <span>Activity History</span>
                     </a>
                 </nav>
             </div>
-
-            <!-- Filters Card -->
-            <div class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4">
-                <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
-                    <i class="fa-solid fa-sliders text-slate-400 text-xs"></i>
-                    <h3 class="text-slate-900 font-extrabold text-[10px] uppercase tracking-wider">Dashboard Filters</h3>
-                </div>
-                <form method="get" class="space-y-4">
-                    <div class="space-y-1.5">
-                        <label for="city-filter" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">City / District</label>
-                        <select id="city-filter" name="city" class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer">
-                            <option value="">All Cities</option>
-                            {% for city in cities %}
-                            <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label for="blood-group-filter" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Blood Group</label>
-                        <select id="blood-group-filter" name="blood_group" class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer">
-                            <option value="">All Groups</option>
-                            {% for value, label in blood_groups %}
-                            <option value="{{ value }}" {% if selected_blood_group == value %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label for="start-date-filter" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Start Date</label>
-                        <input type="date" id="start-date-filter" name="start_date" value="{{ selected_start_date }}" class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none">
-                    </div>
-                    <div class="space-y-1.5">
-                        <label for="end-date-filter" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">End Date</label>
-                        <input type="date" id="end-date-filter" name="end_date" value="{{ selected_end_date }}" class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none">
-                    </div>
-                    <button type="submit" class="w-full py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
-                        Apply Filters
-                    </button>
-                    <a href="{% url 'admin_dashboard' %}" class="block text-center w-full py-2 border border-slate-200 text-slate-500 font-bold text-xs rounded-xl hover:bg-slate-50 transition-colors">
-                        Reset
-                    </a>
-                </form>
-            </div>
         </aside>
 
-        <!-- Main Display Panel -->
+        <!-- Main Display Panels -->
         <div class="lg:col-span-9 space-y-6">
             
-            <!-- OVERVIEW PANEL -->
-            <section id="overview" class="grid grid-cols-2 md:grid-cols-4 gap-4 admin-panel" data-admin-panel="overview">
-                <article class="bg-gradient-to-br from-rose-50/40 via-white to-white border border-slate-200/65 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group hover:shadow-md hover:border-red-200 transition-all duration-300">
-                    <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Total Donors</p>
-                    <div class="flex justify-between items-end">
-                        <p class="text-3xl font-black text-slate-900 tracking-tight leading-none">{{ total_donors }}</p>
-                        <span class="w-8 h-8 rounded-xl bg-red-50 text-red-600 border border-red-100/50 flex items-center justify-center text-xs group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all duration-300 shadow-sm"><i class="fa-solid fa-users"></i></span>
-                    </div>
-                </article>
-                <article class="bg-gradient-to-br from-slate-50/50 via-white to-white border border-slate-200/65 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group hover:shadow-md hover:border-slate-300 transition-all duration-300">
-                    <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Total Requests</p>
-                    <div class="flex justify-between items-end">
-                        <p class="text-3xl font-black text-slate-900 tracking-tight leading-none">{{ total_requests }}</p>
-                        <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 border border-slate-200/50 flex items-center justify-center text-xs group-hover:scale-110 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300 shadow-sm"><i class="fa-solid fa-clipboard-list"></i></span>
-                    </div>
-                </article>
-                <article class="bg-gradient-to-br from-amber-50/30 via-white to-white border border-slate-200/65 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group hover:shadow-md hover:border-amber-200 transition-all duration-300">
-                    <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Pending Requests</p>
-                    <div class="flex justify-between items-end">
-                        <p class="text-3xl font-black text-amber-600 tracking-tight leading-none">{{ pending_requests }}</p>
-                        <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 border border-amber-100/50 flex items-center justify-center text-xs group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 shadow-sm"><i class="fa-solid fa-spinner animate-spin"></i></span>
-                    </div>
-                </article>
-                <article class="bg-gradient-to-br from-red-50/60 via-white to-white border border-red-200/80 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 group hover:shadow-md hover:border-red-300 transition-all duration-300">
-                    <p class="text-[9px] uppercase font-bold tracking-wider text-red-650">Emergency Pending</p>
-                    <div class="flex justify-between items-end">
-                        <p class="text-3xl font-black text-red-650 tracking-tight leading-none">{{ emergency_requests }}</p>
-                        <span class="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center text-xs group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-md shadow-red-500/20"><i class="fa-solid fa-heartbeat animate-pulse"></i></span>
-                    </div>
-                </article>
-            </section>
-
-            <!-- Chart section inside Overview -->
-            <section class="grid grid-cols-1 md:grid-cols-2 gap-6 admin-panel" data-admin-panel="overview">
-                <div class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm">
-                    <h3 class="text-xs font-extrabold text-slate-900 border-b border-slate-100 pb-2.5 mb-4 uppercase tracking-wider"><i class="fa-solid fa-chart-line mr-1 text-red-500"></i> Requests per day (Last 7 days)</h3>
-                    <canvas id="requestsPerDayChart" height="150"></canvas>
+            <!-- OVERVIEW STATS (Dashboard Cards) -->
+            <div class="admin-panel space-y-6" data-admin-panel="overview">
+                
+                <!-- Compact & Modern Filters Section -->
+                <div class="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm">
+                    <form method="get" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-2 text-slate-700 shrink-0">
+                            <i class="fa-solid fa-sliders text-xs text-red-650"></i>
+                            <span class="text-xs font-black uppercase tracking-wider">Filters</span>
+                        </div>
+                        
+                        <div class="flex flex-wrap items-center gap-2">
+                            <select name="city" class="bg-slate-50 border border-slate-200 text-slate-750 rounded-xl px-2.5 py-1 text-xs font-semibold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer h-8">
+                                <option value="">All Districts</option>
+                                {% for city in cities %}
+                                <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
+                                {% endfor %}
+                            </select>
+                            
+                            <select name="blood_group" class="bg-slate-50 border border-slate-200 text-slate-750 rounded-xl px-2.5 py-1 text-xs font-semibold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer h-8">
+                                <option value="">All Groups</option>
+                                {% for val, label in blood_groups %}
+                                <option value="{{ val }}" {% if selected_blood_group == val %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            
+                            <div class="flex items-center gap-1.5 text-xs text-slate-400 font-bold">
+                                <input type="date" name="start_date" value="{{ selected_start_date }}" class="bg-slate-50 border border-slate-200 text-slate-750 rounded-xl px-2.5 py-1 text-xs font-semibold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none h-8">
+                                <span>to</span>
+                                <input type="date" name="end_date" value="{{ selected_end_date }}" class="bg-slate-50 border border-slate-200 text-slate-750 rounded-xl px-2.5 py-1 text-xs font-semibold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none h-8">
+                            </div>
+                            
+                            <button type="submit" class="px-4 py-1 bg-red-650 hover:bg-red-700 bg-red-600 text-white text-xs font-bold rounded-xl transition-all shadow-sm h-8 flex items-center justify-center">
+                                Apply
+                            </button>
+                            {% if selected_city or selected_blood_group or selected_start_date or selected_end_date %}
+                            <a href="{% url 'admin_dashboard' %}" class="px-4 py-1 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all h-8 flex items-center justify-center">
+                                Reset
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
                 </div>
-                <div class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm">
-                    <h3 class="text-xs font-extrabold text-slate-900 border-b border-slate-100 pb-2.5 mb-4 uppercase tracking-wider"><i class="fa-solid fa-chart-bar mr-1 text-slate-800"></i> Donors by Blood Group</h3>
-                    <canvas id="donorsByGroupChart" height="150"></canvas>
-                </div>
-            </section>
+                <section class="grid grid-cols-2 md:grid-cols-4 gap-5">
+                    <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between group">
+                        <div>
+                            <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Total Donors</p>
+                            <p class="text-3xl font-black text-slate-900 tracking-tight mt-1">{{ total_donors }}</p>
+                        </div>
+                        <div class="p-2.5 bg-slate-100 text-slate-500 rounded-xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </article>
+                    <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between group">
+                        <div>
+                            <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Total Requests</p>
+                            <p class="text-3xl font-black text-slate-900 tracking-tight mt-1">{{ total_requests }}</p>
+                        </div>
+                        <div class="p-2.5 bg-slate-100 text-slate-500 rounded-xl">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                    </article>
+                    <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between group">
+                        <div>
+                            <p class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Pending</p>
+                            <p class="text-3xl font-black text-amber-600 tracking-tight mt-1">{{ pending_requests }}</p>
+                        </div>
+                        <div class="p-2.5 bg-amber-50 text-amber-600 rounded-xl">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                        </div>
+                    </article>
+                    <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-start justify-between group">
+                        <div>
+                            <p class="text-[9px] uppercase font-bold tracking-wider text-red-650">Emergency Pending</p>
+                            <p class="text-3xl font-black text-red-650 tracking-tight mt-1">{{ emergency_requests }}</p>
+                        </div>
+                        <div class="p-2.5 bg-red-50 text-red-650 rounded-xl">
+                            <i class="fa-solid fa-heartbeat"></i>
+                        </div>
+                    </article>
+                </section>
+            </div>
 
             <!-- MASS MESSAGE PANEL -->
             <section id="mass-message" class="bg-white border border-slate-200/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm admin-panel" data-admin-panel="mass-message" hidden>
@@ -197,319 +233,74 @@
                         <p class="text-[10px] text-slate-400 font-semibold">Write a notification to display on the public notice board.</p>
                     </div>
                 </div>
-                <form method="post" class="space-y-4 admin-forms">
+                <form method="post" class="space-y-4 admin-form-p">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="broadcast_create">
                     {{ broadcast_form.as_p }}
-                    <button type="submit" class="px-5 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+                    <button type="submit" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
                         Publish Alert
                     </button>
                 </form>
             </section>
 
             <!-- CREATE CAMPS PANEL -->
-            <section id="manage-camps" class="bg-white border border-slate-200/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm admin-panel" data-admin-panel="manage-camps" hidden>
-                <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-tent text-red-500 text-lg"></i>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-950">Schedule Blood Camp</h3>
-                        <p class="text-[10px] text-slate-400 font-semibold">Coordinate and schedule a blood camp in Bihar districts.</p>
+            <div class="space-y-6 admin-panel" data-admin-panel="manage-camps" hidden>
+                <section id="manage-camps" class="bg-white border border-slate-200/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
+                    <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-tent text-red-500 text-lg"></i>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-950">Schedule Blood Camp</h3>
+                            <p class="text-[10px] text-slate-400 font-semibold">Coordinate and schedule a blood camp in Bihar districts.</p>
+                        </div>
                     </div>
-                </div>
-                <form method="post" class="space-y-4 admin-forms">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="camp_create">
-                    {{ camp_form.as_p }}
-                    <button type="submit" class="px-5 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
-                        Schedule Camp
-                    </button>
-                </form>
-            </section>
-
-            <!-- RECENT CAMPS LIST inside camps panel -->
-            <section class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm admin-panel" data-admin-panel="manage-camps" hidden>
-                <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-check text-slate-400"></i>
-                    <h4 class="text-xs font-bold text-slate-950 uppercase tracking-wider">Scheduled Blood Camps</h4>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                <th class="px-6 py-4">Title</th>
-                                <th class="px-6 py-4">Schedule Date</th>
-                                <th class="px-6 py-4">Venue Location</th>
-                                <th class="px-6 py-4">Registrations</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 text-xs">
-                            {% for camp in camps %}
-                            <tr class="hover:bg-slate-50/40 transition-colors">
-                                <td class="px-6 py-4 font-bold text-slate-850"><a href="{% url 'camp_detail' camp.id %}" class="hover:underline text-red-600">{{ camp.title }}</a></td>
-                                <td class="px-6 py-4 text-slate-500 font-semibold"><i class="fa-regular fa-calendar mr-1 text-slate-350"></i>{{ camp.date|date:'d M Y' }}</td>
-                                <td class="px-6 py-4 text-slate-500 font-medium"><i class="fa-solid fa-map-pin mr-1 text-slate-350"></i>{{ camp.location }}</td>
-                                <td class="px-6 py-4 font-black text-slate-700">
-                                    <span class="bg-slate-100 text-slate-750 px-2 py-0.5 rounded-md border border-slate-200">{{ camp.registered_count }}</span>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="px-6 py-12 text-center text-slate-400 italic">No scheduled blood camps found in records.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- MANAGE HOSPITALS PANEL -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 admin-panel" data-admin-panel="manage-hospitals" hidden>
-                <!-- Add/Edit Form -->
-                <div class="lg:col-span-4 bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 h-fit">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                        <h3 id="hospital-form-title" class="text-slate-900 font-extrabold text-xs uppercase tracking-wider">Add New Hospital</h3>
-                        <button id="hospital-cancel-btn" type="button" onclick="resetHospitalForm()" class="hidden text-slate-400 hover:text-red-500 transition-colors text-[10px] font-bold uppercase">Cancel</button>
-                    </div>
-                    
-                    <form method="post" class="space-y-4">
+                    <form method="post" class="space-y-4 admin-form-p">
                         {% csrf_token %}
-                        <input type="hidden" name="action" id="hospital-action-input" value="hospital_create">
-                        <input type="hidden" name="hospital_id" id="hospital-id-input" value="">
-                        
-                        <div class="space-y-1">
-                            <label for="hospital-name-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Hospital Name</label>
-                            <input type="text" name="name" id="hospital-name-input" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none">
-                        </div>
-
-                        <div class="space-y-1">
-                            <label for="hospital-city-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">District / City</label>
-                            <select name="city" id="hospital-city-input" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none cursor-pointer">
-                                <option value="">Select District</option>
-                                {% for choice_val, choice_lbl in hospital_form.fields.city.choices %}
-                                <option value="{{ choice_val }}">{{ choice_lbl }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="space-y-1">
-                            <label for="hospital-address-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Address details</label>
-                            <textarea name="address" id="hospital-address-input" rows="3" class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none"></textarea>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" name="is_active" id="hospital-active-input" checked class="w-4 h-4 text-red-650 bg-slate-50 border-slate-200 rounded focus:ring-red-500 cursor-pointer">
-                            <label for="hospital-active-input" class="text-xs font-semibold text-slate-655 cursor-pointer">Is Active</label>
-                        </div>
-
-                        <button type="submit" id="hospital-submit-btn" class="w-full text-center px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
-                            Save Hospital
+                        <input type="hidden" name="action" value="camp_create">
+                        {{ camp_form.as_p }}
+                        <button type="submit" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
+                            Schedule Camp
                         </button>
                     </form>
-                </div>
+                </section>
 
-                <!-- Existing Hospitals Table -->
-                <div class="lg:col-span-8 bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
+                <!-- Scheduled Blood Camps Table -->
+                <section class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
                     <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-2">
-                        <i class="fa-solid fa-hospital text-slate-400"></i>
-                        <h3 class="text-xs font-bold text-slate-950 uppercase tracking-wider">Registered Hospitals Directory</h3>
+                        <i class="fa-solid fa-calendar-check text-slate-400"></i>
+                        <h4 class="text-xs font-bold text-slate-950 uppercase tracking-wider">Scheduled Blood Camps</h4>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-xs">
                             <thead>
                                 <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                    <th class="px-5 py-3">Hospital Name</th>
-                                    <th class="px-5 py-3">District</th>
-                                    <th class="px-5 py-3">Address</th>
-                                    <th class="px-5 py-3">Status</th>
-                                    <th class="px-5 py-3 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-xs">
-                                {% for hospital in hospitals %}
-                                <tr class="hover:bg-slate-50/40 transition-colors">
-                                    <td class="px-5 py-3.5 font-bold text-slate-850">{{ hospital.name }}</td>
-                                    <td class="px-5 py-3.5 text-slate-500 font-semibold">
-                                        <i class="fa-solid fa-map-pin mr-1 text-slate-350"></i>{{ hospital.city }}
-                                    </td>
-                                    <td class="px-5 py-3.5 text-slate-500 truncate max-w-[180px]">{{ hospital.address|default:"--" }}</td>
-                                    <td class="px-5 py-3.5">
-                                        {% if hospital.is_active %}
-                                        <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100/80 inline-flex items-center gap-0.5"><span class="w-1 h-1 rounded-full bg-emerald-500"></span> Active</span>
-                                        {% else %}
-                                        <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-slate-100 text-slate-500 border border-slate-200 inline-flex items-center gap-0.5"><span class="w-1 h-1 rounded-full bg-slate-400"></span> Inactive</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-5 py-3.5 text-right inline-flex items-center justify-end gap-2">
-                                        <!-- Edit button triggers dynamic JS values loading -->
-                                        <button type="button" onclick="editHospital('{{ hospital.id }}', '{{ hospital.name|escapejs }}', '{{ hospital.city|escapejs }}', '{{ hospital.address|default_if_none:''|escapejs }}', '{{ hospital.is_active }}')" class="px-2.5 py-1.5 border border-slate-200 text-slate-650 text-[10px] font-bold rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-all inline-flex items-center gap-1">
-                                            <i class="fa-solid fa-pen-to-square"></i> Edit
-                                        </button>
-                                        
-                                        <!-- Toggle Status form -->
-                                        <form method="post" class="inline">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="action" value="hospital_toggle">
-                                            <input type="hidden" name="hospital_id" value="{{ hospital.id }}">
-                                            <button type="submit" class="px-2.5 py-1.5 text-[10px] font-bold rounded-lg transition-all inline-flex items-center gap-1
-                                                {% if hospital.is_active %} border border-amber-200 text-amber-700 hover:bg-amber-50 {% else %} border border-emerald-250 text-emerald-705 hover:bg-emerald-50 {% endif %}">
-                                                {% if hospital.is_active %}
-                                                <i class="fa-solid fa-ban"></i> Deactivate
-                                                {% else %}
-                                                <i class="fa-solid fa-circle-check"></i> Activate
-                                                {% endif %}
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="5" class="px-5 py-12 text-center text-slate-400 italic">No hospitals registered. Please add one.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Manage Blood Banks Panel -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 admin-panel" data-admin-panel="manage-blood-banks" hidden>
-                <!-- Add/Edit Blood Bank Form Card -->
-                <div class="lg:col-span-4 bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm self-start space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                        <h3 id="blood-bank-form-title" class="text-slate-900 font-extrabold text-xs uppercase tracking-wider">Add New Blood Bank</h3>
-                        <button id="blood-bank-cancel-btn" type="button" onclick="resetBloodBankForm()" class="hidden text-slate-400 hover:text-red-500 transition-colors text-[10px] font-bold uppercase">Cancel</button>
-                    </div>
-                    <form id="blood-bank-form" method="post" class="space-y-4">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" id="blood-bank-action-input" value="blood_bank_create">
-                        <input type="hidden" name="blood_bank_id" id="blood-bank-id-input" value="">
-                        
-                        <div class="space-y-1.5">
-                            <label for="blood-bank-name-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Blood Bank Name</label>
-                            <input type="text" id="blood-bank-name-input" name="name" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all">
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <label for="blood-bank-city-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">District / City</label>
-                            <select id="blood-bank-city-input" name="city" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer">
-                                {% for val, label in blood_bank_form.city.field.choices %}
-                                <option value="{{ val }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <label for="blood-bank-address-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Address details</label>
-                            <textarea id="blood-bank-address-input" name="address" rows="3" class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all"></textarea>
-                        </div>
-
-                        <div class="flex items-center gap-2.5 py-1">
-                            <input type="checkbox" id="blood-bank-active-input" name="is_active" checked class="w-4 h-4 rounded border-slate-300 text-red-650 focus:ring-red-500/20">
-                            <label for="blood-bank-active-input" class="text-xs font-bold text-slate-700">Mark as Active & Sourced</label>
-                        </div>
-
-                        <button id="blood-bank-submit-btn" type="submit" class="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-slate-900 text-white font-extrabold text-[10px] uppercase tracking-wider rounded-xl hover:bg-slate-800 transition-colors shadow-sm">
-                            Save Blood Bank
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Existing Blood Banks Table -->
-                <div class="lg:col-span-8 bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm flex flex-col">
-                    <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100">
-                        <h3 class="text-xs font-bold text-slate-950 uppercase tracking-wider">Registered Blood Banks Directory</h3>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                    <th class="px-5 py-3">Blood Bank Name</th>
-                                    <th class="px-5 py-3">District</th>
-                                    <th class="px-5 py-3">Address</th>
-                                    <th class="px-5 py-3">Status</th>
-                                    <th class="px-5 py-3 text-right">Actions</th>
+                                    <th class="px-6 py-4">Title</th>
+                                    <th class="px-6 py-4">Schedule Date</th>
+                                    <th class="px-6 py-4">Venue Location</th>
+                                    <th class="px-6 py-4">Registrations</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
-                                {% for bank in blood_banks_all %}
-                                <tr class="hover:bg-slate-50/30 transition-colors">
-                                    <td class="px-5 py-3.5 font-bold text-slate-850">{{ bank.name }}</td>
-                                    <td class="px-5 py-3.5 text-slate-500 font-semibold">
-                                        <i class="fa-solid fa-map-pin mr-1 text-slate-350"></i>{{ bank.city }}
+                                {% for camp in camps %}
+                                <tr>
+                                    <td class="px-6 py-4 font-bold text-slate-800">
+                                        <a href="{% url 'camp_detail' camp.id %}" class="hover:underline text-red-600">{{ camp.title }}</a>
                                     </td>
-                                    <td class="px-5 py-3.5 text-slate-500 truncate max-w-[180px]">{{ bank.address|default:"--" }}</td>
-                                    <td class="px-5 py-3.5">
-                                        {% if bank.is_active %}
-                                        <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100/80 inline-flex items-center gap-0.5"><span class="w-1 h-1 rounded-full bg-emerald-500"></span> Active</span>
-                                        {% else %}
-                                        <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-slate-100 text-slate-500 border border-slate-200 inline-flex items-center gap-0.5"><span class="w-1 h-1 rounded-full bg-slate-400"></span> Inactive</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-5 py-3.5 text-right inline-flex items-center justify-end gap-2">
-                                        <!-- Edit button -->
-                                        <button type="button" onclick="editBloodBank('{{ bank.id }}', '{{ bank.name|escapejs }}', '{{ bank.city|escapejs }}', '{{ bank.address|default_if_none:''|escapejs }}', '{{ bank.is_active }}')" class="px-2.5 py-1.5 border border-slate-200 text-slate-650 text-[10px] font-bold rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-all inline-flex items-center gap-1">
-                                            <i class="fa-solid fa-pen-to-square"></i> Edit
-                                        </button>
-                                        
-                                        <!-- Toggle Status form -->
-                                        <form method="post" class="inline">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="action" value="blood_bank_toggle">
-                                            <input type="hidden" name="blood_bank_id" value="{{ bank.id }}">
-                                            <button type="submit" class="px-2.5 py-1.5 text-[10px] font-bold rounded-lg transition-all inline-flex items-center gap-1
-                                                {% if bank.is_active %} border border-amber-200 text-amber-700 hover:bg-amber-50 {% else %} border border-emerald-250 text-emerald-705 hover:bg-emerald-50 {% endif %}">
-                                                {% if bank.is_active %}
-                                                <i class="fa-solid fa-ban"></i> Deactivate
-                                                {% else %}
-                                                <i class="fa-solid fa-circle-check"></i> Activate
-                                                {% endif %}
-                                            </button>
-                                        </form>
+                                    <td class="px-6 py-4 text-slate-500 font-semibold"><i class="fa-regular fa-calendar mr-1 text-slate-450"></i>{{ camp.date|date:'d M Y' }}</td>
+                                    <td class="px-6 py-4 text-slate-500 font-medium"><i class="fa-solid fa-map-pin mr-1 text-slate-450"></i>{{ camp.location }}</td>
+                                    <td class="px-6 py-4 font-black text-slate-700">
+                                        <span class="bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded border border-slate-200">{{ camp.registered_count }}</span>
                                     </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="5" class="px-5 py-12 text-center text-slate-400 italic">No blood banks registered. Please add one.</td>
+                                    <td colspan="4" class="px-6 py-12 text-center text-slate-400 italic">No scheduled blood camps found in records.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </section>
             </div>
-
-            <!-- BLOOD GROUPS SUMMARY PANEL -->
-            <section id="blood-groups" class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm admin-panel" data-admin-panel="blood-groups" hidden>
-                <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-folder text-slate-400"></i>
-                    <h3 class="text-xs font-bold text-slate-950 uppercase tracking-wider">Blood Directory Stats</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                <th class="px-6 py-4">Blood Group</th>
-                                <th class="px-6 py-4">Registered Volunteers</th>
-                                <th class="px-6 py-4">Active & Eligible</th>
-                                <th class="px-6 py-4">Unsatisfied Requests</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            {% for item in blood_group_summary %}
-                            <tr class="hover:bg-slate-50/40 transition-colors">
-                                <td class="px-6 py-4 font-bold text-slate-800">
-                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-50 text-red-650 border border-red-100/60 font-black text-xs">{{ item.label }}</span>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600 font-semibold">{{ item.donor_count }}</td>
-                                <td class="px-6 py-4 text-emerald-600 font-bold"><i class="fa-solid fa-check-circle mr-1"></i>{{ item.active_donor_count }}</td>
-                                <td class="px-6 py-4 text-red-500 font-bold"><i class="fa-solid fa-exclamation-triangle mr-1"></i>{{ item.pending_request_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
 
             <!-- VERIFY DONORS PANEL -->
             <section id="verify-donors" class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm admin-panel" data-admin-panel="verify-donors" hidden>
@@ -529,44 +320,40 @@
                                 <th class="px-4 py-3 text-right">Verification Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 text-xs">
+                        <tbody class="divide-y divide-slate-100">
                             {% for donor in donors %}
-                            <tr class="hover:bg-slate-50/40 transition-colors">
-                                <td class="px-4 py-3.5 font-bold text-slate-850">{{ donor.full_name }}</td>
-                                <td class="px-4 py-3.5 text-slate-600 font-bold">
+                            <tr>
+                                <td class="px-4 py-3.5 font-bold text-slate-800">{{ donor.full_name }}</td>
+                                <td class="px-4 py-3.5">
                                     <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-50 text-red-650 border border-red-100/60 font-bold text-[11px]">{{ donor.blood_group }}</span>
                                 </td>
-                                <td class="px-4 py-3.5 text-slate-500 font-semibold"><i class="fa-solid fa-map-pin mr-1 text-slate-350"></i>{{ donor.city }}</td>
+                                <td class="px-4 py-3.5 text-slate-500 font-semibold"><i class="fa-solid fa-map-pin mr-1 text-slate-450"></i>{{ donor.city }}</td>
                                 <td class="px-4 py-3.5">
                                     {% if donor.otp_verified %}
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100/80 inline-flex items-center gap-0.5"><i class="fa-solid fa-check text-[8px]"></i> Verified</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100/80 text-[9px] font-bold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-check text-[8px]"></i> Verified</span>
                                     {% else %}
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-amber-50 text-amber-700 border border-amber-100/80 inline-flex items-center gap-0.5"><i class="fa-solid fa-hourglass-half text-[8px]"></i> Pending</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100/80 text-[9px] font-bold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-hourglass-half text-[8px]"></i> Pending</span>
                                     {% endif %}
                                 </td>
                                 <td class="px-4 py-3.5">
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase inline-flex items-center gap-1
+                                    <span class="px-2.5 py-0.5 rounded text-[9px] font-bold uppercase inline-flex items-center gap-1
                                         {% if donor.verification_status == 'APPROVED' %} bg-emerald-50 text-emerald-700 border border-emerald-100/80
                                         {% elif donor.verification_status == 'REJECTED' %} bg-red-50 text-red-700 border border-red-100/80
                                         {% else %} bg-amber-50 text-amber-700 border border-amber-100/80 {% endif %}">
-                                        <span class="w-1 h-1 rounded-full 
-                                            {% if donor.verification_status == 'APPROVED' %} bg-emerald-500
-                                            {% elif donor.verification_status == 'REJECTED' %} bg-red-500
-                                            {% else %} bg-amber-500 {% endif %}"></span>
                                         {{ donor.get_verification_status_display }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3.5 text-right">
-                                    <form method="post" class="inline-flex items-center gap-2">
+                                    <form method="post" class="inline-flex items-center gap-2 justify-end animate-none">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="donor_verify">
                                         <input type="hidden" name="donor_id" value="{{ donor.id }}">
-                                        <select name="verification_status" class="bg-slate-50 border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none cursor-pointer">
+                                        <select name="verification_status" class="bg-white border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none cursor-pointer">
                                             <option value="PENDING" {% if donor.verification_status == 'PENDING' %}selected{% endif %}>Pending</option>
                                             <option value="APPROVED" {% if donor.verification_status == 'APPROVED' %}selected{% endif %}>Approve</option>
                                             <option value="REJECTED" {% if donor.verification_status == 'REJECTED' %}selected{% endif %}>Reject</option>
                                         </select>
-                                        <button type="submit" class="px-3.5 py-1.5 bg-slate-900 text-white font-bold text-[9px] rounded-lg hover:bg-slate-800 transition-colors shadow-sm">
+                                        <button type="submit" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[9px] rounded-lg transition-colors shadow-sm">
                                             Update
                                         </button>
                                     </form>
@@ -603,29 +390,29 @@
                                 <th class="px-4 py-3 text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 text-xs">
+                        <tbody class="divide-y divide-slate-100">
                             {% for item in requests %}
-                            <tr class="transition-colors {% if item.priority == 'CRITICAL' %}bg-red-50/25 hover:bg-red-50/40{% elif item.priority == 'URGENT' %}bg-amber-50/15 hover:bg-amber-50/30{% else %}hover:bg-slate-50/40{% endif %}">
-                                <td class="px-4 py-3.5 font-bold text-slate-850 {% if item.priority == 'CRITICAL' %}border-l-4 border-l-brand-600{% elif item.priority == 'URGENT' %}border-l-4 border-l-amber-500{% else %}border-l-4 border-l-transparent{% endif %}">{{ item.requester_name }}</td>
-                                <td class="px-4 py-3.5 text-slate-600 font-bold">
+                            <tr class="{% if item.priority == 'CRITICAL' %}bg-red-50/20{% elif item.priority == 'URGENT' %}bg-amber-50/15{% endif %}">
+                                <td class="px-4 py-3.5 font-bold text-slate-800 {% if item.priority == 'CRITICAL' %}border-l-4 border-l-red-650 pl-2{% elif item.priority == 'URGENT' %}border-l-4 border-l-amber-500 pl-2{% endif %}">{{ item.requester_name }}</td>
+                                <td class="px-4 py-3.5">
                                     <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-50 text-red-650 border border-red-100/60 font-bold text-[11px]">{{ item.blood_group }}</span>
                                 </td>
                                 <td class="px-4 py-3.5 text-slate-500 font-semibold">{{ item.units }} Units</td>
-                                <td class="px-4 py-3.5 text-slate-500 font-medium"><i class="fa-solid fa-map-pin mr-1 text-slate-350"></i>{{ item.city }}</td>
+                                <td class="px-4 py-3.5 text-slate-500 font-medium"><i class="fa-solid fa-map-pin mr-1 text-slate-450"></i>{{ item.city }}</td>
                                 <td class="px-4 py-3.5">
                                     {% if item.priority == 'CRITICAL' %}
-                                    <span class="px-2.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-100/80 text-[8px] font-extrabold uppercase animate-pulse inline-flex items-center gap-0.5"><i class="fa-solid fa-triangle-exclamation text-red-650 animate-bounce"></i> Critical</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-100/80 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5">Critical</span>
                                     {% elif item.priority == 'URGENT' %}
-                                    <span class="px-2.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100/80 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-circle-exclamation text-amber-600 animate-pulse"></i> Urgent</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100/80 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5">Urgent</span>
                                     {% else %}
                                     <span class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 text-[8px] font-extrabold uppercase">Normal</span>
                                     {% endif %}
                                 </td>
                                 <td class="px-4 py-3.5">
                                     {% if item.otp_verified %}
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100/80 inline-flex items-center gap-0.5"><i class="fa-solid fa-check text-[8px]"></i> Verified</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100/80 text-[9px] font-bold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-check text-[8px]"></i> Verified</span>
                                     {% else %}
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-amber-50 text-amber-700 border border-amber-100/80 inline-flex items-center gap-0.5"><i class="fa-solid fa-hourglass-half text-[8px]"></i> Pending</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100/80 text-[9px] font-bold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-hourglass-half text-[8px]"></i> Pending</span>
                                     {% endif %}
                                 </td>
                                 <td class="px-4 py-3.5">
@@ -636,7 +423,7 @@
                                             </a>
                                         {% else %}
                                             <a href="{{ item.prescription.url }}" target="_blank" class="inline-block relative group">
-                                                <img src="{{ item.prescription.url }}" alt="Prescription" class="w-8 h-8 object-cover rounded-lg border border-slate-200 hover:scale-105 transition-all">
+                                                <img src="{{ item.prescription.url }}" alt="Prescription" class="w-8 h-8 object-cover rounded-lg border border-slate-200">
                                                 <div class="hidden group-hover:block absolute bottom-10 left-0 z-50 p-1 bg-white border border-slate-200 rounded-lg shadow-lg w-40">
                                                     <img src="{{ item.prescription.url }}" class="w-full h-auto rounded-md">
                                                     <p class="text-[8px] text-slate-400 mt-1 text-center font-bold">Open Full View</p>
@@ -644,43 +431,38 @@
                                             </a>
                                         {% endif %}
                                     {% else %}
-                                        <span class="text-slate-450 italic text-[10px]">None</span>
+                                        <span class="text-slate-400 italic text-[10px]">None</span>
                                     {% endif %}
                                 </td>
                                 <td class="px-4 py-3.5">
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase inline-flex items-center gap-1
+                                    <span class="px-2.5 py-0.5 rounded text-[9px] font-bold uppercase inline-flex items-center gap-1
                                         {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %} bg-emerald-50 text-emerald-700 border border-emerald-100/80
-                                        {% elif item.status == 'ASSIGNED' %} bg-indigo-50 text-indigo-700 border border-indigo-100/80
+                                        {% elif item.status == 'ASSIGNED' %} bg-blue-50 text-blue-700 border border-blue-100/80
                                         {% elif item.status == 'REJECTED' %} bg-red-50 text-red-700 border border-red-100/80
                                         {% else %} bg-amber-50 text-amber-700 border border-amber-100/80 {% endif %}">
-                                        <span class="w-1.5 h-1.5 rounded-full 
-                                            {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %} bg-emerald-500
-                                            {% elif item.status == 'ASSIGNED' %} bg-indigo-500
-                                            {% elif item.status == 'REJECTED' %} bg-red-500
-                                            {% else %} bg-amber-500 {% endif %}"></span>
                                         {{ item.get_status_display }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3.5 text-right">
-                                    <form method="post" class="inline-flex items-center gap-2">
+                                    <form method="post" class="inline-flex items-center gap-2 justify-end">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="request_status">
                                         <input type="hidden" name="request_id" value="{{ item.id }}">
-                                        <select name="blood_bank" class="bg-slate-50 border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none cursor-pointer">
+                                        <select name="blood_bank" class="bg-white border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none cursor-pointer">
                                             <option value="">Select Blood Bank</option>
                                             {% for bank in blood_banks %}
                                                 <option value="{{ bank.name }}" {% if item.blood_bank == bank.name %}selected{% endif %}>{{ bank.name }}</option>
                                             {% endfor %}
                                         </select>
-                                        <select name="status" class="bg-slate-50 border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none cursor-pointer">
+                                        <select name="status" class="bg-white border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none cursor-pointer">
                                             <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
                                             <option value="APPROVED" {% if item.status == 'APPROVED' %}selected{% endif %}>Approved</option>
                                             <option value="ASSIGNED" {% if item.status == 'ASSIGNED' %}selected{% endif %}>Donor Assigned</option>
                                             <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
                                             <option value="COMPLETED" {% if item.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
                                         </select>
-                                        <input type="text" name="rejection_reason" placeholder="Rejection reason..." value="{{ item.rejection_reason|default:'' }}" class="bg-slate-55 border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none w-36 placeholder-slate-450">
-                                        <button type="submit" class="px-3.5 py-1.5 bg-slate-900 text-white font-bold text-[9px] rounded-lg hover:bg-slate-800 transition-colors shadow-sm">
+                                        <input type="text" name="rejection_reason" placeholder="Rejection reason..." value="{{ item.rejection_reason|default:'' }}" class="bg-white border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none w-36 placeholder-slate-400">
+                                        <button type="submit" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[9px] rounded-lg transition-colors shadow-sm">
                                             Update
                                         </button>
                                     </form>
@@ -715,28 +497,28 @@
                                 <th class="px-4 py-3 text-right">Verification Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 text-xs">
+                        <tbody class="divide-y divide-slate-100">
                             {% for history in recent_donations %}
-                            <tr class="hover:bg-slate-50/40 transition-colors">
-                                <td class="px-4 py-3.5 text-slate-500 font-semibold"><i class="fa-regular fa-calendar mr-1 text-slate-350"></i>{{ history.date|date:'d M Y' }}</td>
-                                <td class="px-4 py-3.5 font-bold text-slate-850">{{ history.donor.full_name }}</td>
+                            <tr>
+                                <td class="px-4 py-3.5 text-slate-500 font-semibold"><i class="fa-regular fa-calendar mr-1 text-slate-450"></i>{{ history.date|date:'d M Y' }}</td>
+                                <td class="px-4 py-3.5 font-bold text-slate-800">{{ history.donor.full_name }}</td>
                                 <td class="px-4 py-3.5 text-slate-650 font-mono">#{{ history.request.request_code }}</td>
-                                <td class="px-4 py-3.5 font-black text-slate-700">
+                                <td class="px-4 py-3.5">
                                     <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-50 text-red-650 border border-red-100/60 font-bold text-xs">{{ history.request.blood_group }}</span>
                                 </td>
                                 <td class="px-4 py-3.5">
                                     {% if history.nss_verified %}
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100/80 inline-flex items-center gap-0.5"><i class="fa-solid fa-circle-check"></i> Audit Complete</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100/80 text-[9px] font-bold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-circle-check"></i> Audit Complete</span>
                                     {% else %}
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-amber-50 text-amber-700 border border-amber-100/80 inline-flex items-center gap-0.5"><i class="fa-solid fa-spinner animate-spin"></i> Audit Pending</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-100/80 text-[9px] font-bold uppercase inline-flex items-center gap-0.5"><i class="fa-solid fa-spinner"></i> Audit Pending</span>
                                     {% endif %}
                                 </td>
-                                <td class="px-4 py-3.5 font-mono text-slate-550 font-semibold text-xs">{{ history.certificate_id|default:'-' }}</td>
+                                <td class="px-4 py-3.5 font-mono text-slate-600 font-semibold">{{ history.certificate_id|default:'-' }}</td>
                                 <td class="px-4 py-3.5 text-right">
                                     {% if history.status != 'SUCCESS' %}
                                     <span class="text-slate-400 text-xs italic">Only success eligible</span>
                                     {% elif history.nss_verified %}
-                                    <a class="px-3.5 py-1.5 border border-red-200 text-red-600 text-xs font-bold rounded-xl hover:bg-red-50 hover:text-red-700 transition-all inline-flex items-center gap-1" href="{% url 'donation_certificate' history.id %}" target="_blank">
+                                    <a class="px-3.5 py-1.5 border border-red-200 text-red-600 text-xs font-bold rounded-xl hover:bg-red-50 transition-all inline-flex items-center gap-1" href="{% url 'donation_certificate' history.id %}" target="_blank">
                                         <i class="fa-solid fa-eye"></i> View Certificate
                                     </a>
                                     {% else %}
@@ -744,7 +526,7 @@
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="nss_verify_donation">
                                         <input type="hidden" name="history_id" value="{{ history.id }}">
-                                        <button type="submit" class="px-3.5 py-1.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition-colors shadow-sm inline-flex items-center gap-1">
+                                        <button type="submit" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm">
                                             <i class="fa-solid fa-stamp"></i> Verify & Issue
                                         </button>
                                     </form>
@@ -761,15 +543,374 @@
                 </div>
             </section>
 
+            <!-- Manage Hospitals Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 admin-panel" data-admin-panel="manage-hospitals" hidden>
+                <!-- Add/Edit Hospital Form Card -->
+                <div class="lg:col-span-4 bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm self-start">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                        <h3 id="hospital-form-title" class="text-slate-900 font-extrabold text-xs uppercase tracking-wider">Add New Hospital</h3>
+                        <button id="hospital-cancel-btn" type="button" onclick="resetHospitalForm()" class="hidden text-slate-400 hover:text-red-500 transition-colors text-[10px] font-bold uppercase">Cancel</button>
+                    </div>
+                    <form id="hospital-form" method="post" class="space-y-4 mt-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" id="hospital-action-input" value="hospital_create">
+                        <input type="hidden" name="hospital_id" id="hospital-id-input" value="">
+                        
+                        <div class="space-y-1.5">
+                            <label for="hospital-name-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Hospital Name</label>
+                            <input type="text" id="hospital-name-input" name="name" required class="w-full bg-slate-50 border border-slate-200 text-slate-950 font-semibold rounded-xl block p-2.5 text-xs outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="hospital-city-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">District / City</label>
+                            <select id="hospital-city-input" name="city" required class="w-full bg-slate-50 border border-slate-200 text-slate-955 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer">
+                                {% for val, label in hospital_form.city.field.choices %}
+                                <option value="{{ val }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="hospital-address-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Address details</label>
+                            <textarea id="hospital-address-input" name="address" rows="3" class="w-full bg-slate-50 border border-slate-200 text-slate-955 font-semibold rounded-xl block p-2.5 text-xs outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all"></textarea>
+                        </div>
+
+                        <div class="flex items-center gap-2.5 py-1">
+                            <input type="checkbox" id="hospital-active-input" name="is_active" checked class="w-4 h-4 rounded border-slate-300 text-red-650 focus:ring-red-500/20">
+                            <label for="hospital-active-input" class="text-xs font-bold text-slate-700">Mark as Active</label>
+                        </div>
+
+                        <button id="hospital-submit-btn" type="submit" class="w-full px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
+                            Save Hospital
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Existing Hospitals Table -->
+                <div class="lg:col-span-8 bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm flex flex-col">
+                    <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-hospital text-slate-450"></i>
+                        <h3 class="text-xs font-bold text-slate-950 uppercase tracking-wider">Registered Hospitals Directory</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <th class="px-4 py-3">Hospital Name</th>
+                                    <th class="px-4 py-3">District</th>
+                                    <th class="px-4 py-3">Address</th>
+                                    <th class="px-4 py-3">Status</th>
+                                    <th class="px-4 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {% for hospital in hospitals %}
+                                <tr>
+                                    <td class="px-4 py-3.5 font-bold text-slate-800">{{ hospital.name }}</td>
+                                    <td class="px-4 py-3.5 text-slate-500 font-semibold">
+                                        <i class="fa-solid fa-map-pin mr-1 text-slate-450"></i>{{ hospital.city }}
+                                    </td>
+                                    <td class="px-4 py-3.5 text-slate-500 truncate max-w-[180px]">{{ hospital.address|default:"--" }}</td>
+                                    <td class="px-4 py-3.5">
+                                        {% if hospital.is_active %}
+                                        <span class="px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100/80 text-[9px] font-bold uppercase inline-flex items-center gap-0.5">Active</span>
+                                        {% else %}
+                                        <span class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-550 border border-slate-200 text-[9px] font-bold uppercase inline-flex items-center gap-0.5">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-3.5 text-right inline-flex items-center justify-end gap-2 w-full">
+                                        <button type="button" onclick="editHospital('{{ hospital.id }}', '{{ hospital.name|escapejs }}', '{{ hospital.city|escapejs }}', '{{ hospital.address|default_if_none:''|escapejs }}', '{{ hospital.is_active }}')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm">
+                                            Edit
+                                        </button>
+                                        
+                                        <form method="post" class="inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="hospital_toggle">
+                                            <input type="hidden" name="hospital_id" value="{{ hospital.id }}">
+                                            <button type="submit" class="px-3 py-1.5 border border-slate-200 text-slate-750 text-xs font-bold rounded-xl transition-all shadow-sm {% if hospital.is_active %} hover:bg-red-50 hover:text-red-650 {% else %} hover:bg-emerald-50 hover:text-emerald-700 {% endif %}">
+                                                {% if hospital.is_active %}Deactivate{% else %}Activate{% endif %}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="px-4 py-12 text-center text-slate-400 italic">No hospitals registered. Please add one.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Blood Banks Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 admin-panel" data-admin-panel="manage-blood-banks" hidden>
+                <!-- Add/Edit Blood Bank Form Card -->
+                <div class="lg:col-span-4 bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm self-start">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                        <h3 id="blood-bank-form-title" class="text-slate-900 font-extrabold text-xs uppercase tracking-wider">Add New Blood Bank</h3>
+                        <button id="blood-bank-cancel-btn" type="button" onclick="resetBloodBankForm()" class="hidden text-slate-400 hover:text-red-500 transition-colors text-[10px] font-bold uppercase">Cancel</button>
+                    </div>
+                    <form id="blood-bank-form" method="post" class="space-y-4 mt-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" id="blood-bank-action-input" value="blood_bank_create">
+                        <input type="hidden" name="blood_bank_id" id="blood-bank-id-input" value="">
+                        
+                        <div class="space-y-1.5">
+                            <label for="blood-bank-name-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Blood Bank Name</label>
+                            <input type="text" id="blood-bank-name-input" name="name" required class="w-full bg-slate-50 border border-slate-200 text-slate-950 font-semibold rounded-xl block p-2.5 text-xs outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="blood-bank-city-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">District / City</label>
+                            <select id="blood-bank-city-input" name="city" required class="w-full bg-slate-50 border border-slate-200 text-slate-955 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer">
+                                {% for val, label in blood_bank_form.city.field.choices %}
+                                <option value="{{ val }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="blood-bank-address-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Address details</label>
+                            <textarea id="blood-bank-address-input" name="address" rows="3" class="w-full bg-slate-50 border border-slate-200 text-slate-955 font-semibold rounded-xl block p-2.5 text-xs outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all"></textarea>
+                        </div>
+
+                        <div class="flex items-center gap-2.5 py-1">
+                            <input type="checkbox" id="blood-bank-active-input" name="is_active" checked class="w-4 h-4 rounded border-slate-300 text-red-650 focus:ring-red-500/20">
+                            <label for="blood-bank-active-input" class="text-xs font-bold text-slate-700">Mark as Active & Sourced</label>
+                        </div>
+
+                        <button id="blood-bank-submit-btn" type="submit" class="w-full px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
+                            Save Blood Bank
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Existing Blood Banks Table -->
+                <div class="lg:col-span-8 bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm flex flex-col">
+                    <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-building-columns text-slate-450"></i>
+                        <h3 class="text-xs font-bold text-slate-955 uppercase tracking-wider">Registered Blood Banks Directory</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <th class="px-4 py-3">Blood Bank Name</th>
+                                    <th class="px-4 py-3">District</th>
+                                    <th class="px-4 py-3">Address</th>
+                                    <th class="px-4 py-3">Status</th>
+                                    <th class="px-4 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {% for bank in blood_banks_all %}
+                                <tr>
+                                    <td class="px-4 py-3.5 font-bold text-slate-800">{{ bank.name }}</td>
+                                    <td class="px-4 py-3.5 text-slate-500 font-semibold">
+                                        <i class="fa-solid fa-map-pin mr-1 text-slate-450"></i>{{ bank.city }}
+                                    </td>
+                                    <td class="px-4 py-3.5 text-slate-500 truncate max-w-[180px]">{{ bank.address|default:"--" }}</td>
+                                    <td class="px-4 py-3.5">
+                                        {% if bank.is_active %}
+                                        <span class="px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100/80 text-[9px] font-bold uppercase inline-flex items-center gap-0.5">Active</span>
+                                        {% else %}
+                                        <span class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-550 border border-slate-200 text-[9px] font-bold uppercase inline-flex items-center gap-0.5">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-3.5 text-right inline-flex items-center justify-end gap-2 w-full">
+                                        <button type="button" onclick="editBloodBank('{{ bank.id }}', '{{ bank.name|escapejs }}', '{{ bank.city|escapejs }}', '{{ bank.address|default_if_none:''|escapejs }}', '{{ bank.is_active }}')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm">
+                                            Edit
+                                        </button>
+                                        
+                                        <form method="post" class="inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="blood_bank_toggle">
+                                            <input type="hidden" name="blood_bank_id" value="{{ bank.id }}">
+                                            <button type="submit" class="px-3 py-1.5 border border-slate-200 text-slate-750 text-xs font-bold rounded-xl transition-all shadow-sm {% if bank.is_active %} hover:bg-red-50 hover:text-red-650 {% else %} hover:bg-emerald-50 hover:text-emerald-700 {% endif %}">
+                                                {% if bank.is_active %}Deactivate{% else %}Activate{% endif %}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="px-4 py-12 text-center text-slate-400 italic">No blood banks registered. Please add one.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOOD GROUPS SUMMARY PANEL -->
+            <section id="blood-groups" class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm admin-panel" data-admin-panel="blood-groups" hidden>
+                <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-folder text-slate-400"></i>
+                    <h3 class="text-xs font-bold text-slate-950 uppercase tracking-wider">Blood Directory Stats</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                <th class="px-6 py-4">Blood Group</th>
+                                <th class="px-6 py-4">Registered Volunteers</th>
+                                <th class="px-6 py-4">Active & Eligible</th>
+                                <th class="px-6 py-4">Unsatisfied Requests</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in blood_group_summary %}
+                            <tr>
+                                <td class="px-6 py-4 font-bold">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-50 text-red-650 border border-red-100/60 font-black text-xs">{{ item.label }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-slate-600 font-semibold">{{ item.donor_count }}</td>
+                                <td class="px-6 py-4 text-emerald-600 font-bold"><i class="fa-solid fa-check-circle mr-1 text-emerald-500"></i>{{ item.active_donor_count }}</td>
+                                <td class="px-6 py-4 text-red-500 font-bold"><i class="fa-solid fa-circle-exclamation mr-1 text-red-500"></i>{{ item.pending_request_count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ACTIVITY HISTORY PANEL -->
+            <section id="activity-history" class="space-y-6 admin-panel" data-admin-panel="activity-history" hidden>
+                <!-- Filters & Search Card -->
+                <div class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm">
+                    <form method="get" action="{% url 'admin_dashboard' %}#activity-history" class="space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                            <i class="fa-solid fa-clock-rotate-left text-red-650 text-base"></i>
+                            <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Filter Activity History</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">From Date</label>
+                                <input type="date" name="activity_start_date" value="{{ selected_activity_start_date }}" class="w-full bg-slate-50 border border-slate-200 text-slate-750 rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">To Date</label>
+                                <input type="date" name="activity_end_date" value="{{ selected_activity_end_date }}" class="w-full bg-slate-50 border border-slate-200 text-slate-750 rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Activity Type</label>
+                                <select name="activity_type" class="w-full bg-slate-50 border border-slate-200 text-slate-750 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer">
+                                    <option value="">All Activities</option>
+                                    {% for type_val, type_label in activity_types %}
+                                    <option value="{{ type_val }}" {% if selected_activity_type == type_val %}selected{% endif %}>{{ type_label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Search Keywords</label>
+                                <input type="text" name="activity_search" value="{{ selected_activity_search }}" placeholder="Details, user name..." class="w-full bg-slate-50 border border-slate-200 text-slate-750 rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none">
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end gap-2 pt-2">
+                            <button type="submit" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-filter text-[10px]"></i>
+                                Apply Filters
+                            </button>
+                            <a href="{% url 'admin_dashboard' %}#activity-history" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5">
+                                <i class="fa-solid fa-arrow-rotate-left text-[10px]"></i>
+                                Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Activities Timeline / Table -->
+                <div class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
+                    <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-list-ul text-slate-400"></i>
+                            <h3 class="text-xs font-bold text-slate-950 uppercase tracking-wider">Activity Logs</h3>
+                        </div>
+                        <span class="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">Showing last 200 logs</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <th class="px-6 py-4">Date & Time</th>
+                                    <th class="px-6 py-4">Actor</th>
+                                    <th class="px-6 py-4">Activity Type</th>
+                                    <th class="px-6 py-4">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if activity_logs %}
+                                    {% for log in activity_logs %}
+                                    <tr class="border-b border-slate-100/50 hover:bg-slate-50/30 transition-colors">
+                                        <td class="px-6 py-4 text-slate-500 font-medium whitespace-nowrap">
+                                            {{ log.created_at|date:"d M Y, h:i A" }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-[10px] uppercase border border-slate-200">
+                                                    {{ log.user_name|slice:":2" }}
+                                                </div>
+                                                <span class="text-slate-700 font-bold">{{ log.user_name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2.5 py-1 text-[9px] font-black rounded-full uppercase tracking-wider
+                                                {% if log.activity_type == 'ADMIN_LOGIN' %}
+                                                    bg-indigo-50 text-indigo-600 border border-indigo-100
+                                                {% elif log.activity_type == 'BLOOD_REQUEST' %}
+                                                    bg-blue-50 text-blue-600 border border-blue-100
+                                                {% elif log.activity_type == 'REQUEST_DECISION' %}
+                                                    bg-rose-50 text-rose-600 border border-rose-100
+                                                {% elif log.activity_type == 'DONOR_REGISTER' %}
+                                                    bg-teal-50 text-teal-600 border border-teal-100
+                                                {% elif log.activity_type == 'DONOR_VERIFICATION' %}
+                                                    bg-cyan-50 text-cyan-600 border border-cyan-100
+                                                {% elif log.activity_type == 'DONATION_COMPLETE' %}
+                                                    bg-emerald-50 text-emerald-600 border border-emerald-100
+                                                {% elif log.activity_type == 'HOSPITAL_ACTION' %}
+                                                    bg-amber-50 text-amber-600 border border-amber-100
+                                                {% elif log.activity_type == 'BLOOD_BANK_ACTION' %}
+                                                    bg-purple-50 text-purple-600 border border-purple-100
+                                                {% elif log.activity_type == 'CAMP_ACTION' %}
+                                                    bg-orange-50 text-orange-600 border border-orange-100
+                                                {% else %}
+                                                    bg-slate-50 text-slate-600 border border-slate-100
+                                                {% endif %}">
+                                                {{ log.get_activity_type_display|default:log.activity_type }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-slate-600 font-semibold max-w-xs md:max-w-md break-words">
+                                            {{ log.details }}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="px-6 py-10 text-center text-slate-400 font-medium">
+                                            <i class="fa-regular fa-folder-open text-2xl mb-2 block"></i>
+                                            No activities found for the selected criteria.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-{{ requests_per_day_labels|json_script:"requests-per-day-labels" }}
-{{ requests_per_day_values|json_script:"requests-per-day-values" }}
-{{ donors_by_group_labels|json_script:"donors-by-group-labels" }}
-{{ donors_by_group_values|json_script:"donors-by-group-values" }}
+{{ total_donors|json_script:"total-donors" }}
+{{ total_requests|json_script:"total-requests" }}
+{{ pending_requests|json_script:"pending-requests" }}
+{{ emergency_requests|json_script:"emergency-requests" }}
 
 <script>
     const adminNavLinks = document.querySelectorAll('.admin-nav-link');
@@ -777,7 +918,7 @@
 
     const getActivePanelName = () => {
         const hashValue = (window.location.hash || '#overview').slice(1);
-        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'verify-donations', 'manage-hospitals', 'manage-blood-banks', 'blood-groups'];
+        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'verify-donations', 'manage-hospitals', 'manage-blood-banks', 'blood-groups', 'activity-history'];
         return knownPanels.includes(hashValue) ? hashValue : 'overview';
     };
 
@@ -800,6 +941,22 @@
                 panel.classList.add('hidden');
             }
         });
+        
+        // Dynamically update Top Navbar Panel Title
+        const titleMap = {
+            'overview': 'Overview Dashboard',
+            'mass-message': 'Publish Mass Alert',
+            'manage-camps': 'Manage Camps Coordination',
+            'verify-donors': 'Approve Registered Donors',
+            'verify-requests': 'Verify & Approve Emergency Requests',
+            'verify-donations': 'Audit Donations & Generate Certificates',
+            'manage-hospitals': 'Manage Hospitals Directory',
+            'manage-blood-banks': 'Manage Sourced Blood Banks',
+            'blood-groups': 'Blood Directory Summary',
+            'activity-history': 'Admin & System Activity History'
+        };
+        const activeTitle = titleMap[panelName] || 'Overview Dashboard';
+        document.getElementById('active-panel-title').innerText = activeTitle;
     };
 
     adminNavLinks.forEach((link) => {
@@ -812,74 +969,17 @@
         });
     });
 
+    // Handle hash route changes
     window.addEventListener('hashchange', () => {
-        const panelName = getActivePanelName();
-        setActiveAdminLink(panelName);
-        setActiveAdminPanel(panelName);
+        const activePanel = getActivePanelName();
+        setActiveAdminLink(activePanel);
+        setActiveAdminPanel(activePanel);
     });
 
-    const initialPanelName = getActivePanelName();
-    setActiveAdminLink(initialPanelName);
-    setActiveAdminPanel(initialPanelName);
-
-    // Initialize ChartJS
-    const requestsPerDayLabels = JSON.parse(document.getElementById('requests-per-day-labels').textContent);
-    const requestsPerDayData = JSON.parse(document.getElementById('requests-per-day-values').textContent);
-    const donorsByGroupLabels = JSON.parse(document.getElementById('donors-by-group-labels').textContent);
-    const donorsByGroupData = JSON.parse(document.getElementById('donors-by-group-values').textContent);
-
-    const requestsPerDayCtx = document.getElementById('requestsPerDayChart');
-    if (requestsPerDayCtx) {
-        new Chart(requestsPerDayCtx, {
-            type: 'line',
-            data: {
-                labels: requestsPerDayLabels,
-                datasets: [{
-                    label: 'Requests',
-                    data: requestsPerDayData,
-                    borderColor: '#dc2626', // brand-600
-                    backgroundColor: 'rgba(220, 38, 38, 0.03)',
-                    fill: true,
-                    tension: 0.3,
-                    borderWidth: 2.5,
-                    pointBackgroundColor: '#dc2626'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, ticks: { precision: 0, color: '#94a3b8' }, grid: { color: '#f1f5f9' } },
-                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
-                }
-            }
-        });
-    }
-
-    const donorsByGroupCtx = document.getElementById('donorsByGroupChart');
-    if (donorsByGroupCtx) {
-        new Chart(donorsByGroupCtx, {
-            type: 'bar',
-            data: {
-                labels: donorsByGroupLabels,
-                datasets: [{
-                    label: 'Donors',
-                    data: donorsByGroupData,
-                    backgroundColor: '#0f172a', // slate-900
-                    borderRadius: 6,
-                    barThickness: 16
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, ticks: { precision: 0, color: '#94a3b8' }, grid: { color: '#f1f5f9' } },
-                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
-                }
-            }
-        });
-    }
+    // Run once on load
+    const initialPanel = getActivePanelName();
+    setActiveAdminLink(initialPanel);
+    setActiveAdminPanel(initialPanel);
 
     window.editHospital = function(id, name, city, address, isActive) {
         document.getElementById('hospital-action-input').value = 'hospital_update';
@@ -891,7 +991,6 @@
         document.getElementById('hospital-form-title').innerText = 'Edit Hospital Details';
         document.getElementById('hospital-submit-btn').innerText = 'Update Hospital';
         document.getElementById('hospital-cancel-btn').classList.remove('hidden');
-        // Scroll form into view
         document.getElementById('hospital-name-input').focus();
     }
 
@@ -932,42 +1031,4 @@
         document.getElementById('blood-bank-cancel-btn').classList.add('hidden');
     }
 </script>
-
-<style>
-    /* Injected Django input styling consistency inside Admin Forms */
-    .admin-forms input[type="text"],
-    .admin-forms textarea,
-    .admin-forms select {
-        width: 100%;
-        background-color: #ffffff;
-        border: 1px solid #cbd5e1;
-        padding: 0.65rem 0.85rem;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #0f172a;
-        outline: none;
-        transition: all 0.2s ease;
-        margin-top: 4px;
-        margin-bottom: 12px;
-    }
-    .admin-forms input[type="text"]:focus,
-    .admin-forms textarea:focus,
-    .admin-forms select:focus {
-        border-color: #dc2626;
-        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
-    }
-    .admin-forms textarea {
-        height: 6rem;
-        resize: none;
-    }
-    .admin-forms input[type="checkbox"] {
-        width: 1rem;
-        height: 1rem;
-        accent-color: #dc2626;
-        border-radius: 0.25rem;
-        border: 1px solid #cbd5e1;
-        cursor: pointer;
-    }
-</style>
 {% endblock %}
