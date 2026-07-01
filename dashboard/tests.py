@@ -67,13 +67,15 @@ class CoordinatorApprovalCooldownTests(TestCase):
             {
                 "action": "request_status",
                 "request_id": req.pk,
-                "status": "APPROVED"
+                "status": "APPROVED",
+                "blood_bank": "City Central Blood Bank"
             }
         )
         self.assertEqual(response.status_code, 302)
         
         req.refresh_from_db()
-        self.assertEqual(req.status, "APPROVED")
+        self.assertEqual(req.status, "ASSIGNED")
+        self.assertEqual(req.blood_bank, "City Central Blood Bank")
         # Check that the assigned donor is donor_available, NOT donor_cooldown!
         self.assertEqual(req.assigned_donor, self.donor_available)
 
@@ -196,5 +198,63 @@ class DashboardDateFilterTests(TestCase):
         requests = response.context["requests"]
         self.assertTrue(any(r.pk == self.request1.pk for r in requests))
         self.assertFalse(any(r.pk == self.request2.pk for r in requests))
+
+
+from requests.models import BloodBank
+
+class BloodBankManagementTests(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(username="admin_coord", password="adminpassword")
+        self.bank = BloodBank.objects.create(
+            name="City Blood Center",
+            city="Patna",
+            address="Gandhi Maidan, Patna",
+            is_active=True
+        )
+        self.client.login(username="admin_coord", password="adminpassword")
+
+    def test_blood_bank_create(self):
+        response = self.client.post(
+            reverse("admin_dashboard"),
+            {
+                "action": "blood_bank_create",
+                "name": "NSS Central Blood Bank",
+                "city": "Patna",
+                "address": "NSS Office, Patna",
+                "is_active": "on"
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(BloodBank.objects.filter(name="NSS Central Blood Bank").exists())
+
+    def test_blood_bank_update(self):
+        response = self.client.post(
+            reverse("admin_dashboard"),
+            {
+                "action": "blood_bank_update",
+                "blood_bank_id": self.bank.pk,
+                "name": "City Blood Center Updated",
+                "city": "Gaya",
+                "address": "Gaya Circle",
+                "is_active": "on"
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        self.bank.refresh_from_db()
+        self.assertEqual(self.bank.name, "City Blood Center Updated")
+        self.assertEqual(self.bank.city, "Gaya")
+
+    def test_blood_bank_toggle(self):
+        response = self.client.post(
+            reverse("admin_dashboard"),
+            {
+                "action": "blood_bank_toggle",
+                "blood_bank_id": self.bank.pk
+            }
+        )
+        self.assertEqual(response.status_code, 302)
+        self.bank.refresh_from_db()
+        self.assertFalse(self.bank.is_active)
+
 
 

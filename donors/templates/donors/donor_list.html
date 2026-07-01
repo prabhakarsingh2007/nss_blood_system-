@@ -7,9 +7,14 @@
             <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Active Donors</h2>
             <p class="text-xs text-neutral-400 font-semibold mt-0.5">Filters: Blood Group = <strong class="text-neutral-700 font-bold">{{ blood_group|default:'Any' }}</strong>, City = <strong class="text-neutral-700 font-bold">{{ city|default:'Any' }}</strong></p>
         </div>
-        <a class="px-4 py-2 border border-neutral-200 text-neutral-600 text-xs font-bold rounded-xl hover:bg-neutral-50 transition-all hover:scale-[1.01] active:scale-[0.99] text-center" href="{% url 'search_donors' %}">
-            Back to Search
-        </a>
+        <div class="flex flex-wrap gap-2">
+            <a class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] text-center shadow-sm shadow-red-500/10" href="{% url 'request_form' %}?blood_group={{ blood_group|default:'' }}&city={{ city|default:'' }}">
+                Request Blood Support
+            </a>
+            <a class="px-4 py-2 border border-neutral-200 text-neutral-600 text-xs font-bold rounded-xl hover:bg-neutral-50 transition-all hover:scale-[1.01] active:scale-[0.99] text-center" href="{% url 'search_donors' %}">
+                Back to Search
+            </a>
+        </div>
     </div>
 
     <div class="bg-white border border-neutral-200/40 rounded-2xl overflow-hidden shadow-sm shadow-zinc-100/50 premium-card">
@@ -49,7 +54,12 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="px-6 py-16 text-center text-neutral-400 font-medium italic">No active, approved donors found matching your criteria. Try expanding your search area.</td>
+                        <td colspan="5" class="px-6 py-16 text-center text-neutral-400 font-semibold italic">
+                            <p class="mb-4 text-neutral-500">No active, approved donors found matching your criteria. Try expanding your search area.</p>
+                            <a class="px-4 py-2 bg-red-650 hover:bg-red-700 bg-red-600 text-white text-xs font-bold rounded-xl transition-all inline-block shadow-md shadow-red-600/10" href="{% url 'request_form' %}?blood_group={{ blood_group|default:'' }}&city={{ city|default:'' }}">
+                                Submit Request for {{ blood_group|default:'Any Blood Group' }} in {{ city|default:'Any City' }}
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

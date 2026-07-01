@@ -35,10 +35,11 @@ class Hospital(models.Model):
 
 class BloodRequest(models.Model):
     STATUS_CHOICES = [
-        ("PENDING", "Pending"),
+        ("PENDING", "Pending Verification"),
         ("APPROVED", "Approved"),
-        ("REJECTED", "Rejected"),
+        ("ASSIGNED", "Donor Assigned"),
         ("COMPLETED", "Completed"),
+        ("REJECTED", "Rejected"),
     ]
 
     BLOOD_GROUP_CHOICES = [
@@ -80,8 +81,15 @@ class BloodRequest(models.Model):
     otp_created_at = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="PENDING", db_index=True)
     rejection_reason = models.TextField(blank=True, null=True)
+    prescription = models.FileField(upload_to="prescriptions/", null=True, blank=True)
     requested_at = models.DateTimeField(auto_now_add=True, db_index=True)
     approved_at = models.DateTimeField(blank=True, null=True)
+
+    @property
+    def is_pdf(self):
+        if self.prescription:
+            return self.prescription.name.lower().endswith('.pdf')
+        return False
     assigned_donor = models.ForeignKey(
         'donors.DonorProfile',
         on_delete=models.SET_NULL,

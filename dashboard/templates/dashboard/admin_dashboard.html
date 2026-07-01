@@ -87,6 +87,10 @@
                         <i class="fa-solid fa-hospital text-sm text-slate-400"></i>
                         <span>Manage Hospitals</span>
                     </a>
+                    <a href="#manage-blood-banks" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
+                        <i class="fa-solid fa-building-columns text-sm text-slate-400"></i>
+                        <span>Manage Blood Banks</span>
+                    </a>
                     <a href="#blood-groups" class="admin-nav-link flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <i class="fa-solid fa-square-envelope text-sm text-slate-400"></i>
                         <span>Blood Directory</span>
@@ -368,6 +372,113 @@
                 </div>
             </div>
 
+            <!-- Manage Blood Banks Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 admin-panel" data-admin-panel="manage-blood-banks" hidden>
+                <!-- Add/Edit Blood Bank Form Card -->
+                <div class="lg:col-span-4 bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm self-start space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                        <h3 id="blood-bank-form-title" class="text-slate-900 font-extrabold text-xs uppercase tracking-wider">Add New Blood Bank</h3>
+                        <button id="blood-bank-cancel-btn" type="button" onclick="resetBloodBankForm()" class="hidden text-slate-400 hover:text-red-500 transition-colors text-[10px] font-bold uppercase">Cancel</button>
+                    </div>
+                    <form id="blood-bank-form" method="post" class="space-y-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" id="blood-bank-action-input" value="blood_bank_create">
+                        <input type="hidden" name="blood_bank_id" id="blood-bank-id-input" value="">
+                        
+                        <div class="space-y-1.5">
+                            <label for="blood-bank-name-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Blood Bank Name</label>
+                            <input type="text" id="blood-bank-name-input" name="name" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="blood-bank-city-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">District / City</label>
+                            <select id="blood-bank-city-input" name="city" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer">
+                                {% for val, label in blood_bank_form.city.field.choices %}
+                                <option value="{{ val }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="blood-bank-address-input" class="block text-[9px] font-bold text-slate-450 uppercase tracking-wider">Address details</label>
+                            <textarea id="blood-bank-address-input" name="address" rows="3" class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-semibold rounded-xl block p-2.5 text-xs outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all"></textarea>
+                        </div>
+
+                        <div class="flex items-center gap-2.5 py-1">
+                            <input type="checkbox" id="blood-bank-active-input" name="is_active" checked class="w-4 h-4 rounded border-slate-300 text-red-650 focus:ring-red-500/20">
+                            <label for="blood-bank-active-input" class="text-xs font-bold text-slate-700">Mark as Active & Sourced</label>
+                        </div>
+
+                        <button id="blood-bank-submit-btn" type="submit" class="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-slate-900 text-white font-extrabold text-[10px] uppercase tracking-wider rounded-xl hover:bg-slate-800 transition-colors shadow-sm">
+                            Save Blood Bank
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Existing Blood Banks Table -->
+                <div class="lg:col-span-8 bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm flex flex-col">
+                    <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100">
+                        <h3 class="text-xs font-bold text-slate-950 uppercase tracking-wider">Registered Blood Banks Directory</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <th class="px-5 py-3">Blood Bank Name</th>
+                                    <th class="px-5 py-3">District</th>
+                                    <th class="px-5 py-3">Address</th>
+                                    <th class="px-5 py-3">Status</th>
+                                    <th class="px-5 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {% for bank in blood_banks_all %}
+                                <tr class="hover:bg-slate-50/30 transition-colors">
+                                    <td class="px-5 py-3.5 font-bold text-slate-850">{{ bank.name }}</td>
+                                    <td class="px-5 py-3.5 text-slate-500 font-semibold">
+                                        <i class="fa-solid fa-map-pin mr-1 text-slate-350"></i>{{ bank.city }}
+                                    </td>
+                                    <td class="px-5 py-3.5 text-slate-500 truncate max-w-[180px]">{{ bank.address|default:"--" }}</td>
+                                    <td class="px-5 py-3.5">
+                                        {% if bank.is_active %}
+                                        <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100/80 inline-flex items-center gap-0.5"><span class="w-1 h-1 rounded-full bg-emerald-500"></span> Active</span>
+                                        {% else %}
+                                        <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-slate-100 text-slate-500 border border-slate-200 inline-flex items-center gap-0.5"><span class="w-1 h-1 rounded-full bg-slate-400"></span> Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right inline-flex items-center justify-end gap-2">
+                                        <!-- Edit button -->
+                                        <button type="button" onclick="editBloodBank('{{ bank.id }}', '{{ bank.name|escapejs }}', '{{ bank.city|escapejs }}', '{{ bank.address|default_if_none:''|escapejs }}', '{{ bank.is_active }}')" class="px-2.5 py-1.5 border border-slate-200 text-slate-650 text-[10px] font-bold rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-all inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                        </button>
+                                        
+                                        <!-- Toggle Status form -->
+                                        <form method="post" class="inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="blood_bank_toggle">
+                                            <input type="hidden" name="blood_bank_id" value="{{ bank.id }}">
+                                            <button type="submit" class="px-2.5 py-1.5 text-[10px] font-bold rounded-lg transition-all inline-flex items-center gap-1
+                                                {% if bank.is_active %} border border-amber-200 text-amber-700 hover:bg-amber-50 {% else %} border border-emerald-250 text-emerald-705 hover:bg-emerald-50 {% endif %}">
+                                                {% if bank.is_active %}
+                                                <i class="fa-solid fa-ban"></i> Deactivate
+                                                {% else %}
+                                                <i class="fa-solid fa-circle-check"></i> Activate
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="px-5 py-12 text-center text-slate-400 italic">No blood banks registered. Please add one.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- BLOOD GROUPS SUMMARY PANEL -->
             <section id="blood-groups" class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm admin-panel" data-admin-panel="blood-groups" hidden>
                 <div class="px-5 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center gap-2">
@@ -487,6 +598,7 @@
                                 <th class="px-4 py-3">District</th>
                                 <th class="px-4 py-3">Priority</th>
                                 <th class="px-4 py-3">OTP State</th>
+                                <th class="px-4 py-3">Prescription</th>
                                 <th class="px-4 py-3">Status</th>
                                 <th class="px-4 py-3 text-right">Action</th>
                             </tr>
@@ -517,12 +629,33 @@
                                     {% endif %}
                                 </td>
                                 <td class="px-4 py-3.5">
+                                    {% if item.prescription %}
+                                        {% if item.is_pdf %}
+                                            <a href="{{ item.prescription.url }}" target="_blank" class="px-2 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg hover:bg-blue-100 transition inline-flex items-center gap-1 font-bold text-[9px]">
+                                                <i class="fa-solid fa-file-pdf"></i> PDF
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ item.prescription.url }}" target="_blank" class="inline-block relative group">
+                                                <img src="{{ item.prescription.url }}" alt="Prescription" class="w-8 h-8 object-cover rounded-lg border border-slate-200 hover:scale-105 transition-all">
+                                                <div class="hidden group-hover:block absolute bottom-10 left-0 z-50 p-1 bg-white border border-slate-200 rounded-lg shadow-lg w-40">
+                                                    <img src="{{ item.prescription.url }}" class="w-full h-auto rounded-md">
+                                                    <p class="text-[8px] text-slate-400 mt-1 text-center font-bold">Open Full View</p>
+                                                </div>
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-slate-450 italic text-[10px]">None</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3.5">
                                     <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase inline-flex items-center gap-1
                                         {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %} bg-emerald-50 text-emerald-700 border border-emerald-100/80
+                                        {% elif item.status == 'ASSIGNED' %} bg-indigo-50 text-indigo-700 border border-indigo-100/80
                                         {% elif item.status == 'REJECTED' %} bg-red-50 text-red-700 border border-red-100/80
                                         {% else %} bg-amber-50 text-amber-700 border border-amber-100/80 {% endif %}">
-                                        <span class="w-1 h-1 rounded-full 
+                                        <span class="w-1.5 h-1.5 rounded-full 
                                             {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %} bg-emerald-500
+                                            {% elif item.status == 'ASSIGNED' %} bg-indigo-500
                                             {% elif item.status == 'REJECTED' %} bg-red-500
                                             {% else %} bg-amber-500 {% endif %}"></span>
                                         {{ item.get_status_display }}
@@ -533,9 +666,16 @@
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="request_status">
                                         <input type="hidden" name="request_id" value="{{ item.id }}">
+                                        <select name="blood_bank" class="bg-slate-50 border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none cursor-pointer">
+                                            <option value="">Select Blood Bank</option>
+                                            {% for bank in blood_banks %}
+                                                <option value="{{ bank.name }}" {% if item.blood_bank == bank.name %}selected{% endif %}>{{ bank.name }}</option>
+                                            {% endfor %}
+                                        </select>
                                         <select name="status" class="bg-slate-50 border border-slate-200 text-slate-900 rounded-lg p-1.5 text-[10px] font-semibold outline-none cursor-pointer">
                                             <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
                                             <option value="APPROVED" {% if item.status == 'APPROVED' %}selected{% endif %}>Approved</option>
+                                            <option value="ASSIGNED" {% if item.status == 'ASSIGNED' %}selected{% endif %}>Donor Assigned</option>
                                             <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
                                             <option value="COMPLETED" {% if item.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
                                         </select>
@@ -548,7 +688,7 @@
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="8" class="px-4 py-12 text-center text-slate-400 italic">No emergency blood requests found.</td>
+                                <td colspan="9" class="px-4 py-12 text-center text-slate-400 italic">No emergency blood requests found.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -637,7 +777,7 @@
 
     const getActivePanelName = () => {
         const hashValue = (window.location.hash || '#overview').slice(1);
-        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'verify-donations', 'manage-hospitals', 'blood-groups'];
+        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'verify-donations', 'manage-hospitals', 'manage-blood-banks', 'blood-groups'];
         return knownPanels.includes(hashValue) ? hashValue : 'overview';
     };
 
@@ -765,6 +905,31 @@
         document.getElementById('hospital-form-title').innerText = 'Add New Hospital';
         document.getElementById('hospital-submit-btn').innerText = 'Save Hospital';
         document.getElementById('hospital-cancel-btn').classList.add('hidden');
+    }
+
+    window.editBloodBank = function(id, name, city, address, isActive) {
+        document.getElementById('blood-bank-action-input').value = 'blood_bank_update';
+        document.getElementById('blood-bank-id-input').value = id;
+        document.getElementById('blood-bank-name-input').value = name;
+        document.getElementById('blood-bank-city-input').value = city;
+        document.getElementById('blood-bank-address-input').value = address;
+        document.getElementById('blood-bank-active-input').checked = (isActive === 'True' || isActive === true);
+        document.getElementById('blood-bank-form-title').innerText = 'Edit Blood Bank Details';
+        document.getElementById('blood-bank-submit-btn').innerText = 'Update Blood Bank';
+        document.getElementById('blood-bank-cancel-btn').classList.remove('hidden');
+        document.getElementById('blood-bank-name-input').focus();
+    }
+
+    window.resetBloodBankForm = function() {
+        document.getElementById('blood-bank-action-input').value = 'blood_bank_create';
+        document.getElementById('blood-bank-id-input').value = '';
+        document.getElementById('blood-bank-name-input').value = '';
+        document.getElementById('blood-bank-city-input').value = '';
+        document.getElementById('blood-bank-address-input').value = '';
+        document.getElementById('blood-bank-active-input').checked = true;
+        document.getElementById('blood-bank-form-title').innerText = 'Add New Blood Bank';
+        document.getElementById('blood-bank-submit-btn').innerText = 'Save Blood Bank';
+        document.getElementById('blood-bank-cancel-btn').classList.add('hidden');
     }
 </script>
 

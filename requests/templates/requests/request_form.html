@@ -10,10 +10,18 @@
         </span>
         <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Request Blood Support</h2>
         <p class="text-xs text-neutral-400 font-semibold">Fill in patient and hospital details to connect with volunteer donors.</p>
+        
+        {% if form.blood_group.value %}
+        <div class="mt-3 flex justify-center">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-red-50/80 border border-red-100 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
+                <i class="fa-solid fa-droplet text-red-500 animate-bounce"></i> Requesting Blood Group: {{ form.blood_group.value }}
+            </span>
+        </div>
+        {% endif %}
     </div>
 
     <div class="bg-white border border-neutral-200/40 rounded-2xl p-6 md:p-8 shadow-sm shadow-zinc-100/50 premium-card">
-        <form method="post" class="space-y-5">
+        <form method="post" enctype="multipart/form-data" class="space-y-5">
             {% csrf_token %}
             
             {% if form.non_field_errors %}
@@ -24,25 +32,29 @@
 
             <div class="space-y-4 premium-inputs">
                 {% for field in form %}
-                    <div class="space-y-1.5">
-                        <label for="{{ field.id_for_label }}" class="block text-[9px] font-bold text-neutral-450 uppercase tracking-wider">
-                            {{ field.label }}
-                        </label>
-                        <div class="relative">
-                            {% if field.field.widget.input_type == 'checkbox' %}
-                                <div class="flex items-center gap-3 py-2 bg-neutral-50/50 px-3.5 rounded-xl border border-neutral-200/60">
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <div class="space-y-1.5">
+                            <label for="{{ field.id_for_label }}" class="block text-[9px] font-bold text-neutral-450 uppercase tracking-wider">
+                                {{ field.label }}
+                            </label>
+                            <div class="relative">
+                                {% if field.field.widget.input_type == 'checkbox' %}
+                                    <div class="flex items-center gap-3 py-2 bg-neutral-50/50 px-3.5 rounded-xl border border-neutral-200/60">
+                                        {{ field }}
+                                        <span class="text-xs text-brand-700 font-bold uppercase tracking-wider">This is an urgent medical emergency</span>
+                                    </div>
+                                {% else %}
                                     {{ field }}
-                                    <span class="text-xs text-brand-700 font-bold uppercase tracking-wider">This is an urgent medical emergency</span>
-                                </div>
-                            {% else %}
-                                {{ field }}
-                            {% endif %}
-                            
-                            {% if field.errors %}
-                                <p class="text-[10px] text-brand-600 mt-1 font-semibold">{{ field.errors.0 }}</p>
-                            {% endif %}
+                                {% endif %}
+                                
+                                {% if field.errors %}
+                                    <p class="text-[10px] text-brand-600 mt-1 font-semibold">{{ field.errors.0 }}</p>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                 {% endfor %}
             </div>
 

@@ -78,19 +78,27 @@
                 </div>
             </div>
 
-            {% elif item.status == 'APPROVED' %}
-            <!-- APPROVED GREEN CARD -->
-            <div class="bg-emerald-50/50 border border-emerald-200/80 rounded-2xl p-6 shadow-sm space-y-5 relative overflow-hidden animate-fadeIn">
-                <div class="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
+            {% elif item.status == 'APPROVED' or item.status == 'ASSIGNED' %}
+            <!-- APPROVED OR ASSIGNED GREEN/INDIGO CARD -->
+            <div class="{% if item.status == 'ASSIGNED' %}bg-indigo-50/50 border-indigo-200/80{% else %}bg-emerald-50/50 border-emerald-200/80{% endif %} border rounded-2xl p-6 shadow-sm space-y-5 relative overflow-hidden animate-fadeIn">
+                <div class="absolute top-0 left-0 w-full h-1 {% if item.status == 'ASSIGNED' %}bg-indigo-500{% else %}bg-emerald-500{% endif %}"></div>
                 <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-6">
                     <div class="space-y-1">
+                        {% if item.status == 'ASSIGNED' %}
+                        <span class="inline-flex items-center gap-1 text-[9px] font-black text-indigo-700 bg-indigo-100/50 px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">
+                            <i class="fa-solid fa-circle-check text-indigo-600 animate-bounce"></i> Donor Assigned
+                        </span>
+                        <h4 class="text-base font-black text-slate-900 tracking-tight mt-1.5">Request ID: #{{ item.request_code }}</h4>
+                        <p class="text-xs text-indigo-800 font-semibold mt-1">A volunteer donor has been assigned to your request! Please contact them below.</p>
+                        {% else %}
                         <span class="inline-flex items-center gap-1 text-[9px] font-black text-emerald-700 bg-emerald-100/50 px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">
                             <i class="fa-solid fa-circle-check text-emerald-600 animate-bounce"></i> Request Approved
                         </span>
                         <h4 class="text-base font-black text-slate-900 tracking-tight mt-1.5">Request ID: #{{ item.request_code }}</h4>
                         <p class="text-xs text-emerald-800 font-semibold mt-1">A coordinator has verified and approved your blood request!</p>
+                        {% endif %}
                     </div>
-                    <div class="text-xs text-slate-450 font-semibold bg-white/80 border border-slate-100 rounded-xl p-3 shadow-inner min-w-[150px]">
+                    <div class="text-xs text-slate-455 font-semibold bg-white/80 border border-slate-100 rounded-xl p-3 shadow-inner min-w-[150px]">
                         <p>Patient: <strong class="text-slate-800 font-bold">{{ item.requester_name }}</strong></p>
                         <p class="mt-1">Blood Group: <strong class="text-brand-500 font-black">{{ item.blood_group }}</strong></p>
                         {% if item.blood_bank %}
@@ -102,9 +110,9 @@
                 <!-- Volunteer Donor Details -->
                 {% with donor=item.assigned_donor|default:item.fulfilled_by %}
                     {% if donor %}
-                    <div class="p-4 bg-white/95 border border-emerald-100/60 rounded-xl space-y-4 shadow-sm">
+                    <div class="p-4 bg-white/95 border {% if item.status == 'ASSIGNED' %}border-indigo-100/60{% else %}border-emerald-100/60{% endif %} rounded-xl space-y-4 shadow-sm">
                         <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm shadow-sm">
+                            <div class="w-9 h-9 rounded-full {% if item.status == 'ASSIGNED' %}bg-indigo-100 text-indigo-600{% else %}bg-emerald-100 text-emerald-600{% endif %} flex items-center justify-center font-bold text-sm shadow-sm">
                                 <i class="fa-solid fa-user-shield"></i>
                             </div>
                             <div>

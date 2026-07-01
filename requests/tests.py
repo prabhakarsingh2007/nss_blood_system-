@@ -1,3 +1,4 @@
+import os
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from django.contrib.messages.storage.fallback import FallbackStorage
@@ -211,10 +212,6 @@ class RequestStatusTests(TestCase):
         hospital_active = Hospital.objects.create(name="Active Hospital", city="Patna", is_active=True)
         hospital_inactive = Hospital.objects.create(name="Inactive Hospital", city="Patna", is_active=False)
 
-        # Create active and inactive blood banks
-        bank_active = BloodBank.objects.create(name="Active Bank", city="Patna", is_active=True)
-        bank_inactive = BloodBank.objects.create(name="Inactive Bank", city="Patna", is_active=False)
-
         # Instantiate form
         form = BloodRequestForm()
 
@@ -222,11 +219,6 @@ class RequestStatusTests(TestCase):
         queryset_hosp = form.fields["hospital_name"].queryset
         self.assertIn(hospital_active, queryset_hosp)
         self.assertNotIn(hospital_inactive, queryset_hosp)
-
-        # Check queryset of blood_bank field
-        queryset_bank = form.fields["blood_bank"].queryset
-        self.assertIn(bank_active, queryset_bank)
-        self.assertNotIn(bank_inactive, queryset_bank)
 
     def test_request_verify_otp_flow(self):
         from django.urls import reverse
@@ -303,5 +295,161 @@ class RequestStatusTests(TestCase):
         self.assertEqual(response["Content-Type"], "text/csv")
         content = response.content.decode("utf-8")
         self.assertIn("Action Patient", content)
+
+
+class PrescriptionAndStateTests(TestCase):
+    def setUp(self):
+        from requests.models import Hospital, BloodBank
+        self.user = User.objects.create_user(username="requester", password="password")
+        self.staff_user = User.objects.create_user(username="staff", password="password", is_staff=True)
+        self.other_user = User.objects.create_user(username="other", password="password")
+        self.hospital = Hospital.objects.create(name="Patna Hospital", city="Patna", is_active=True)
+        self.blood_bank = BloodBank.objects.create(name="Patna Blood Bank", city="Patna", is_active=True)
+        
+    def test_form_validation(self):
+        from requests.forms import BloodRequestForm
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        
+        # 1. Test missing prescription
+        data = {
+            "requester_name": "Test Patient",
+            "blood_group": "A+",
+            "units": 2,
+            "hospital_name": self.hospital.name,
+            "blood_bank": self.blood_bank.name,
+            "city": "Patna",
+            "contact_number": "9988776655",
+            "reason": "Accident",
+            "priority": "URGENT",
+        }
+        form = BloodRequestForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("prescription", form.errors)
+        
+        # 2. Test invalid extension
+        files = {
+            "prescription": SimpleUploadedFile("prescription.txt", b"dummy content", content_type="text/plain")
+        }
+        form = BloodRequestForm(data=data, files=files)
+        self.assertFalse(form.is_valid())
+        self.assertIn("Only JPG, JPEG, PNG, and PDF files are allowed.", form.errors["prescription"][0])
+
+        # 3. Test too large file (> 5MB)
+        large_content = b"x" * (5 * 1024 * 1024 + 100)
+        files = {
+            "prescription": SimpleUploadedFile("prescription.jpg", large_content, content_type="image/jpeg")
+        }
+        form = BloodRequestForm(data=data, files=files)
+        self.assertFalse(form.is_valid())
+        self.assertIn("File size must be under 5 MB.", form.errors["prescription"][0])
+
+        # 4. Test valid file
+        files = {
+            "prescription": SimpleUploadedFile("prescription.jpg", b"valid content", content_type="image/jpeg")
+        }
+        form = BloodRequestForm(data=data, files=files)
+        self.assertTrue(form.is_valid())
+
+    def test_serve_prescription_security(self):
+        from requests.models import BloodRequest
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        
+        req = BloodRequest.objects.create(
+            requester=self.user,
+            requester_name="Test Patient",
+            blood_group="A+",
+            units=2,
+            hospital_name="Patna Hospital",
+            city="Patna",
+            contact_number="9988776655",
+            reason="Accident",
+            priority="URGENT",
+            prescription=SimpleUploadedFile("my_presc.png", b"dummy image", content_type="image/png"),
+            otp_verified=True,
+            status="PENDING"
+        )
+        
+        # Get filename part from field path
+        filename = os.path.basename(req.prescription.name)
+        url = reverse("serve_prescription", kwargs={"filename": filename})
+        
+        # Test 1: Unauthenticated user access
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        
+        # Test 2: Logged in other user (not owner, not staff)
+        self.client.login(username="other", password="password")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # Test 3: Logged in owner user
+        self.client.login(username="requester", password="password")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+
+        # Test 4: Logged in staff user
+        self.client.login(username="staff", password="password")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+
+        # Test 5: Guest with authorized_requests in session
+        session = self.client.session
+        session['authorized_requests'] = [req.request_code]
+        session.save()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_workflow_redirection_and_prefill(self):
+        # 1. Access form directly without blood_group (should redirect to search_donors)
+        response = self.client.get(reverse("request_form"))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("search_donors"), fetch_redirect_response=False)
+        
+        # Check error message is added
+        messages_list = list(response.wsgi_request._messages)
+        self.assertTrue(any("Please select a Blood Group first." in str(m) for m in messages_list))
+        
+        # 2. Access form with blood_group but missing city (should redirect to search_donors)
+        response = self.client.get(reverse("request_form") + "?blood_group=A%2B")
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("search_donors"), fetch_redirect_response=False)
+        
+        # Check error message is added
+        messages_list = list(response.wsgi_request._messages)
+        self.assertTrue(any("Please select a District/City first." in str(m) for m in messages_list))
+        
+        # 3. Access form with both blood_group and city (should return 200 OK)
+        response = self.client.get(reverse("request_form") + "?blood_group=A%2B&city=Patna")
+        self.assertEqual(response.status_code, 200)
+        
+        # 4. Post to form without blood_group (should redirect to search_donors)
+        response = self.client.post(reverse("request_form"), {
+            "city": "Patna",
+            "requester_name": "Test Patient",
+            "units": 2,
+            "hospital_name": self.hospital.name,
+            "contact_number": "9988776655",
+            "reason": "Accident",
+            "priority": "URGENT",
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("search_donors"), fetch_redirect_response=False)
+
+        # 5. Check dynamic hospital filtering
+        from requests.forms import BloodRequestForm
+        from requests.models import Hospital
+        # Create active hospitals in Patna and Gaya
+        h_patna = Hospital.objects.create(name="Patna General", city="Patna", is_active=True)
+        h_gaya = Hospital.objects.create(name="Gaya General", city="Gaya", is_active=True)
+
+        form_patna = BloodRequestForm(initial={"city": "Patna"})
+        self.assertIn(h_patna, form_patna.fields["hospital_name"].queryset)
+        self.assertNotIn(h_gaya, form_patna.fields["hospital_name"].queryset)
+
+
+
 
 

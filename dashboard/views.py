@@ -8,8 +8,8 @@ from django.urls import reverse
 from django.utils import timezone
 from donors.models import DonorProfile, BloodCamp, DonationHistory
 from donors.forms import BloodCampForm
-from requests.models import BloodRequest, Hospital
-from requests.forms import HospitalForm
+from requests.models import BloodRequest, Hospital, BloodBank
+from requests.forms import HospitalForm, BloodBankForm
 from .models import BroadcastMessage
 from .forms import BroadcastMessageForm
 from core.tasks import send_sms_async
@@ -29,7 +29,7 @@ def user_dashboard(request):
         "my_requests": my_requests[:20],
         "total_requests": my_requests.count(),
         "pending_requests": my_requests.filter(status="PENDING").count(),
-        "approved_requests": my_requests.filter(status="APPROVED").count(),
+        "approved_requests": my_requests.filter(status__in=["APPROVED", "ASSIGNED"]).count(),
         "completed_requests": my_requests.filter(status="COMPLETED").count(),
     }
     return render(request, "dashboard/user_dashboard.html", context)
@@ -54,7 +54,7 @@ def donor_dashboard(request):
 
     if profile.verification_status == "APPROVED":
         open_requests = BloodRequest.objects.select_related("requester").filter(
-            status="APPROVED",
+            Q(status="APPROVED") | Q(status="ASSIGNED", assigned_donor=profile),
             blood_group=profile.blood_group,
             city__iexact=profile.city,
             fulfilled_by__isnull=True,
@@ -80,12 +80,17 @@ def _handle_admin_request_status(request):
     new_status = request.POST.get("status")
     req = get_object_or_404(BloodRequest, pk=req_id)
 
-    if new_status in {"APPROVED", "REJECTED", "COMPLETED"} and not req.otp_verified:
+    blood_bank_name = request.POST.get("blood_bank", "").strip()
+    if blood_bank_name:
+        req.blood_bank = blood_bank_name
+        req.save(update_fields=["blood_bank"])
+
+    if new_status in {"APPROVED", "ASSIGNED", "REJECTED", "COMPLETED"} and not req.otp_verified:
         req.otp_verified = True
         req.save(update_fields=["otp_verified"])
         messages.info(request, "OTP was not verified, so admin override verification was applied.")
 
-    if new_status in {"PENDING", "APPROVED", "REJECTED", "COMPLETED"}:
+    if new_status in {"PENDING", "APPROVED", "ASSIGNED", "REJECTED", "COMPLETED"}:
         if new_status == "APPROVED":
             req.status = new_status
             req.approved_at = timezone.now()
@@ -105,6 +110,7 @@ def _handle_admin_request_status(request):
                 )
                 if matching_donor:
                     req.assigned_donor = matching_donor
+                    req.status = "ASSIGNED"
 
             req.save(update_fields=["status", "approved_at", "assigned_donor"])
             messages.success(request, "Request status updated.")
@@ -126,6 +132,49 @@ def _handle_admin_request_status(request):
                     f"at {req.hospital_name}. Contact: {req.contact_number}."
                 )
                 send_sms_async.delay(req.assigned_donor.phone, donor_msg)
+
+        elif new_status == "ASSIGNED":
+            req.status = new_status
+            if req.assigned_donor is None:
+                cooldown_limit = timezone.localdate() - timedelta(days=90)
+                matching_donor = (
+                    DonorProfile.objects.filter(
+                        blood_group=req.blood_group,
+                        city__iexact=req.city,
+                        verification_status="APPROVED",
+                        otp_verified=True,
+                        available=True,
+                    )
+                    .filter(Q(last_donation_date__isnull=True) | Q(last_donation_date__lte=cooldown_limit))
+                    .order_by("created_at")
+                    .first()
+                )
+                if matching_donor:
+                    req.assigned_donor = matching_donor
+                    req.save(update_fields=["status", "assigned_donor"])
+                    messages.success(request, "Request status updated and donor assigned.")
+                    
+                    # Send SMS alerts
+                    requester_msg = (
+                        f"NSS Blood: Your request #{req.request_code} has been approved! "
+                        f"Volunteer donor {req.assigned_donor.full_name} ({req.assigned_donor.phone}) "
+                        f"has been assigned. Please coordinate with them."
+                    )
+                    send_sms_async.delay(req.contact_number, requester_msg)
+                    
+                    donor_msg = (
+                        f"NSS Blood Emergency! You are assigned to request #{req.request_code} "
+                        f"for patient {req.requester_name} ({req.blood_group}) "
+                        f"at {req.hospital_name}. Contact: {req.contact_number}."
+                    )
+                    send_sms_async.delay(req.assigned_donor.phone, donor_msg)
+                else:
+                    messages.warning(request, "No matching volunteer donor found to assign.")
+                    req.status = "APPROVED"
+                    req.save(update_fields=["status"])
+            else:
+                req.save(update_fields=["status"])
+                messages.success(request, "Request status updated.")
 
         elif new_status == "COMPLETED":
             donor = req.assigned_donor or req.fulfilled_by
@@ -237,6 +286,45 @@ def _handle_admin_hospital_toggle(request):
     messages.success(request, f"Hospital '{hospital.name}' has been {status_str}.")
     return True
 
+
+def _handle_admin_blood_bank_create(request):
+    form = BloodBankForm(request.POST)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Blood Bank added successfully.")
+        return True
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"{field.capitalize()}: {error}")
+    return False
+
+
+def _handle_admin_blood_bank_update(request):
+    bank_id = request.POST.get("blood_bank_id")
+    bank = get_object_or_404(BloodBank, pk=bank_id)
+    form = BloodBankForm(request.POST, instance=bank)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f"Blood Bank '{bank.name}' updated successfully.")
+        return True
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"{field.capitalize()}: {error}")
+    return False
+
+
+def _handle_admin_blood_bank_toggle(request):
+    bank_id = request.POST.get("blood_bank_id")
+    bank = get_object_or_404(BloodBank, pk=bank_id)
+    bank.is_active = not bank.is_active
+    bank.save(update_fields=["is_active"])
+    status_str = "activated" if bank.is_active else "deactivated"
+    messages.success(request, f"Blood Bank '{bank.name}' has been {status_str}.")
+    return True
+
+
 @login_required
 def admin_dashboard(request):
     if not request.user.is_staff:
@@ -245,6 +333,7 @@ def admin_dashboard(request):
     broadcast_form = BroadcastMessageForm()
     camp_form = BloodCampForm()
     hospital_form = HospitalForm()
+    blood_bank_form = BloodBankForm()
     selected_blood_group = request.GET.get("blood_group", "")
     selected_city = request.GET.get("city", "")
     selected_start_date = request.GET.get("start_date", "")
@@ -284,7 +373,20 @@ def admin_dashboard(request):
             _handle_admin_hospital_toggle(request)
             return redirect(f"{reverse('admin_dashboard')}#manage-hospitals")
 
+        elif action == "blood_bank_create":
+            if _handle_admin_blood_bank_create(request):
+                return redirect(f"{reverse('admin_dashboard')}#manage-blood-banks")
+
+        elif action == "blood_bank_update":
+            if _handle_admin_blood_bank_update(request):
+                return redirect(f"{reverse('admin_dashboard')}#manage-blood-banks")
+
+        elif action == "blood_bank_toggle":
+            _handle_admin_blood_bank_toggle(request)
+            return redirect(f"{reverse('admin_dashboard')}#manage-blood-banks")
+
     hospitals = Hospital.objects.all().order_by("name")
+    blood_banks_all = BloodBank.objects.all().order_by("name")
     donor_queryset = DonorProfile.objects.select_related("user").order_by("-created_at")
     request_queryset = BloodRequest.objects.select_related("requester", "assigned_donor", "fulfilled_by").order_by("-requested_at")
 
@@ -384,10 +486,13 @@ def admin_dashboard(request):
         "broadcast_form": broadcast_form,
         "camp_form": camp_form,
         "hospital_form": hospital_form,
+        "blood_bank_form": blood_bank_form,
         "hospitals": hospitals,
+        "blood_banks_all": blood_banks_all,
         "camps": camps,
         "recent_donations": recent_donations,
         "blood_groups": DonorProfile.BLOOD_GROUP_CHOICES,
+        "blood_banks": BloodBank.objects.filter(is_active=True).order_by("name"),
         "cities": cities,
         "selected_blood_group": selected_blood_group,
         "selected_city": selected_city,

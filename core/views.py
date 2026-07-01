@@ -6,7 +6,7 @@ from dashboard.models import BroadcastMessage
 
 def home(request):
     emergency_cases = BloodRequest.objects.filter(
-        status__in=["PENDING", "APPROVED"],
+        status__in=["PENDING", "APPROVED", "ASSIGNED"],
         priority__in=["URGENT", "CRITICAL"]
     ).annotate(
         priority_order=Case(

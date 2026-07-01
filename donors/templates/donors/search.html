@@ -62,14 +62,34 @@
 
             </div>
 
-            <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-neutral-900 text-white font-bold text-xs rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
-                <span>Search Directory</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </button>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button type="submit" class="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-neutral-900 text-white font-bold text-xs rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm">
+                    <span>Search Directory</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+                <button type="button" id="btn-request-blood" class="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-red-600/10">
+                    <span>Request Blood</span>
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                </button>
+            </div>
         </form>
     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btnRequest = document.getElementById('btn-request-blood');
+    if (btnRequest) {
+        btnRequest.addEventListener('click', () => {
+            const bloodGroup = document.getElementById('blood_group').value;
+            const city = document.getElementById('city').value;
+            const baseUrl = "{% url 'request_form' %}";
+            window.location.href = `${baseUrl}?blood_group=${encodeURIComponent(bloodGroup)}&city=${encodeURIComponent(city)}`;
+        });
+    }
+});
+</script>
 
     <!-- Features badge row -->
     <div class="mt-10 flex justify-center gap-6 text-[10px] font-bold uppercase tracking-wider text-neutral-400">

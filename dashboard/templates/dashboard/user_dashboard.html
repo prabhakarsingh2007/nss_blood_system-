@@ -132,38 +132,42 @@
                         </td>
                         <td class="px-6 py-4 text-slate-500 font-medium"><i class="fa-solid fa-map-pin text-slate-350 mr-1.5"></i>{{ item.city }}</td>
                         <td class="px-6 py-4">
-                            <span class="px-3 py-1 rounded-xl text-[9px] font-extrabold uppercase tracking-wider inline-flex items-center gap-1
-                                {% if item.status == 'PENDING' %} bg-amber-50 text-amber-700 border border-amber-100/80
-                                {% elif item.status == 'APPROVED' %} bg-blue-50 text-blue-700 border border-blue-100/80
-                                {% elif item.status == 'COMPLETED' %} bg-emerald-50 text-emerald-700 border border-emerald-100/80
-                                {% else %} bg-slate-100 text-slate-500 border border-slate-205 {% endif %}">
-                                <span class="w-1.5 h-1.5 rounded-full 
-                                    {% if item.status == 'PENDING' %} bg-amber-500
-                                    {% elif item.status == 'APPROVED' %} bg-blue-500
-                                    {% elif item.status == 'COMPLETED' %} bg-emerald-500
-                                    {% else %} bg-slate-400 {% endif %}"></span>
-                                {{ item.get_status_display }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            {% if item.status == 'APPROVED' or item.status == 'COMPLETED' %}
-                                {% with donor=item.assigned_donor|default:item.fulfilled_by %}
-                                    {% if donor %}
-                                        <div class="flex flex-col items-end gap-1">
-                                            <span class="text-slate-900 font-bold text-xs tracking-tight">{{ donor.full_name }}</span>
-                                            <span class="text-slate-500 font-mono text-[11px]">{{ donor.phone }}</span>
-                                            <a href="https://wa.me/{{ donor.phone }}" target="_blank" 
-                                               class="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500 hover:bg-emerald-600 text-white text-[9px] font-bold rounded-lg transition-colors uppercase tracking-wider shadow-sm shadow-emerald-500/10">
-                                                <i class="fa-brands fa-whatsapp text-[10px]"></i> <span>WhatsApp Chat</span>
-                                            </a>
-                                        </div>
-                                    {% else %}
-                                        <span class="text-slate-400 text-[9px] font-bold uppercase italic tracking-wider animate-pulse">Assigning Volunteer...</span>
-                                    {% endif %}
-                                {% endwith %}
-                            {% else %}
-                                <span class="text-slate-300 italic text-[11px] font-medium">Pending Approval</span>
-                            {% endif %}
+                             <span class="px-3 py-1 rounded-xl text-[9px] font-extrabold uppercase tracking-wider inline-flex items-center gap-1
+                                 {% if item.status == 'PENDING' %} bg-amber-50 text-amber-700 border border-amber-100/80
+                                 {% elif item.status == 'APPROVED' %} bg-blue-50 text-blue-700 border border-blue-100/80
+                                 {% elif item.status == 'ASSIGNED' %} bg-indigo-50 text-indigo-700 border border-indigo-100/80
+                                 {% elif item.status == 'COMPLETED' %} bg-emerald-50 text-emerald-700 border border-emerald-100/80
+                                 {% else %} bg-red-50 text-red-700 border border-red-100/80 {% endif %}">
+                                 <span class="w-1.5 h-1.5 rounded-full 
+                                     {% if item.status == 'PENDING' %} bg-amber-500
+                                     {% elif item.status == 'APPROVED' %} bg-blue-500
+                                     {% elif item.status == 'ASSIGNED' %} bg-indigo-500
+                                     {% elif item.status == 'COMPLETED' %} bg-emerald-500
+                                     {% else %} bg-red-500 {% endif %}"></span>
+                                 {{ item.get_status_display }}
+                             </span>
+                         </td>
+                         <td class="px-6 py-4 text-right">
+                             {% if item.status == 'APPROVED' or item.status == 'ASSIGNED' or item.status == 'COMPLETED' %}
+                                 {% with donor=item.assigned_donor|default:item.fulfilled_by %}
+                                     {% if donor %}
+                                         <div class="flex flex-col items-end gap-1">
+                                             <span class="text-slate-900 font-bold text-xs tracking-tight">{{ donor.full_name }}</span>
+                                             <span class="text-slate-500 font-mono text-[11px]">{{ donor.phone }}</span>
+                                             <a href="https://wa.me/{{ donor.phone }}" target="_blank" 
+                                                class="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500 hover:bg-emerald-600 text-white text-[9px] font-bold rounded-lg transition-colors uppercase tracking-wider shadow-sm shadow-emerald-500/10">
+                                                 <i class="fa-brands fa-whatsapp text-[10px]"></i> <span>WhatsApp Chat</span>
+                                             </a>
+                                         </div>
+                                     {% else %}
+                                         <span class="text-slate-400 text-[9px] font-bold uppercase italic tracking-wider animate-pulse">Assigning Volunteer...</span>
+                                     {% endif %}
+                                 {% endwith %}
+                             {% elif item.status == 'PENDING' %}
+                                 <span class="text-slate-350 italic text-[11px] font-medium">Pending Approval</span>
+                             {% elif item.status == 'REJECTED' %}
+                                 <span class="text-red-500 text-[10px] font-bold block max-w-[180px] truncate" title="{{ item.rejection_reason }}">Rejected: {{ item.rejection_reason }}</span>
+                             {% endif %}
                         </td>
                     </tr>
                     {% empty %}
