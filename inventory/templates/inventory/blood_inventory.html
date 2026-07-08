@@ -109,8 +109,9 @@
                     <!-- Custom progress bar -->
                     <div class="w-full bg-neutral-100 rounded-full h-2 overflow-hidden">
                         <!-- Calculate width percentage (capped at 100%) -->
+                        {% widthratio stock.units 30 100 as pct %}
                         <div class="h-2 rounded-full transition-all duration-500 {% if stock.stock_status == 'NORMAL' %}bg-emerald-500{% elif stock.stock_status == 'LOW' %}bg-amber-500{% else %}bg-red-500{% endif %}"
-                            style="width: {% widthratio stock.units 30 100 %}%"></div>
+                            data-width="{{ pct }}"></div>
                     </div>
                 </div>
             </div>
@@ -149,4 +150,10 @@
                         </div>
                 </article>
             </div>
+
+            <script>
+                document.querySelectorAll('[data-width]').forEach(el => {
+                    el.style.width = el.getAttribute('data-width') + '%';
+                });
+            </script>
             {% endblock %}

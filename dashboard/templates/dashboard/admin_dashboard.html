@@ -619,9 +619,11 @@
                                         {% endif %}
                                     </td>
                                     <td class="px-4 py-3.5 text-right inline-flex items-center justify-end gap-2 w-full">
-                                        <button type="button" onclick="editHospital('{{ hospital.id }}', '{{ hospital.name|escapejs }}', '{{ hospital.city|escapejs }}', '{{ hospital.address|default_if_none:''|escapejs }}', '{{ hospital.is_active }}')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm">
+                                        {% with hospital_address_js=hospital.address|default_if_none:"" %}
+                                        <button type="button" onclick="editHospital('{{ hospital.id }}', '{{ hospital.name|escapejs }}', '{{ hospital.city|escapejs }}', '{{ hospital_address_js|escapejs }}', '{{ hospital.is_active }}')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm">
                                             Edit
                                         </button>
+                                        {% endwith %}
                                         
                                         <form method="post" class="inline">
                                             {% csrf_token %}
@@ -720,9 +722,11 @@
                                         {% endif %}
                                     </td>
                                     <td class="px-4 py-3.5 text-right inline-flex items-center justify-end gap-2 w-full">
-                                        <button type="button" onclick="editBloodBank('{{ bank.id }}', '{{ bank.name|escapejs }}', '{{ bank.city|escapejs }}', '{{ bank.address|default_if_none:''|escapejs }}', '{{ bank.is_active }}')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm">
+                                        {% with bank_address_js=bank.address|default_if_none:"" %}
+                                        <button type="button" onclick="editBloodBank('{{ bank.id }}', '{{ bank.name|escapejs }}', '{{ bank.city|escapejs }}', '{{ bank_address_js|escapejs }}', '{{ bank.is_active }}')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm">
                                             Edit
                                         </button>
+                                        {% endwith %}
                                         
                                         <form method="post" class="inline">
                                             {% csrf_token %}
