@@ -185,7 +185,9 @@ CSP_IMG_SRC = ("'self'", "data:", "lh3.googleusercontent.com", "*.googleusercont
 CSP_CONNECT_SRC = ("'self'",)
 
 # Sentry Error Monitoring Integration
+# pyrefly: ignore [missing-import]
 import sentry_sdk
+# pyrefly: ignore [missing-import]
 from sentry_sdk.integrations.django import DjangoIntegration
 
 SENTRY_DSN = env("SENTRY_DSN", default="")
@@ -198,6 +200,7 @@ if SENTRY_DSN and not DEBUG:
     )
 
 # Celery Beat Periodic Task Scheduling
+# pyrefly: ignore [missing-import]
 from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
