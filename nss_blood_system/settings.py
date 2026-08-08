@@ -174,6 +174,7 @@ AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 2  # hours
 AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]
 AXES_LOCKOUT_TEMPLATE = "core/lockout.html"
+AXES_DISABLE_ACCESS_LOG = True
 
 # Content Security Policy (CSP) Settings
 CSP_DEFAULT_SRC = ("'self'",)
