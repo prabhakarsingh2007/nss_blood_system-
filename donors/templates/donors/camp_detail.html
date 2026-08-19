@@ -1,73 +1,243 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="max-w-xl mx-auto py-8 space-y-6">
-    <!-- Camp Card Details -->
-    <section class="bg-white border border-neutral-200/40 rounded-2xl p-6 md:p-8 space-y-5 shadow-sm shadow-zinc-100/50 premium-card">
-        <div class="space-y-2">
-            <span class="inline-flex items-center gap-1.5 bg-brand-50 text-brand-700 px-2.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border border-brand-100">
-                <span class="w-1 h-1 rounded-full bg-brand-500 animate-pulse"></span>
-                Coordinator Approved
+<div class="max-w-5xl mx-auto py-8 px-4 space-y-8 animate-fadeIn">
+
+    <!-- Top Nav / Back button -->
+    <div class="flex items-center justify-between">
+        <a href="{% url 'camp_list' %}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors">
+            <i class="fa-solid fa-arrow-left"></i> Back to Camp Directory
+        </a>
+        <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-slate-200">
+                Status: {{ camp_status|title }}
             </span>
-            <h2 class="text-2xl font-black text-neutral-900 tracking-tight leading-snug">{{ camp.title }}</h2>
-            <p class="text-xs text-neutral-500 leading-relaxed font-medium">{{ camp.description }}</p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4 py-4 border-t border-b border-neutral-100 text-xs">
-            <div>
-                <p class="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Date & Schedule</p>
-                <p class="text-neutral-900 font-bold mt-1 flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    {{ camp.date|date:'d M Y' }}
-                </p>
-            </div>
-            <div>
-                <p class="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Venue Location</p>
-                <p class="text-neutral-900 font-bold mt-1 flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                    {{ camp.location }}
-                </p>
-            </div>
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-between sm:items-center pt-2">
-            <div>
-                <p class="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Registrations</p>
-                <p class="text-neutral-900 font-black text-lg mt-0.5">{{ camp.registered_count }} Volunteers</p>
-            </div>
-            
-            {% if is_approved_donor %}
-                {% if has_registered %}
-                    <span class="px-4 py-2.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-100 block text-center">Already Registered</span>
-                {% else %}
-                    <a class="px-5 py-2.5 bg-brand-500 text-white text-xs font-bold rounded-xl hover:bg-brand-600 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm text-center" href="{% url 'register_camp' camp.id %}">
-                        Register for Camp
-                    </a>
-                {% endif %}
-            {% else %}
-                <span class="px-4 py-2.5 bg-neutral-50 text-neutral-400 text-xs font-bold rounded-xl border border-neutral-200/50 block text-center">Only Approved Donors Eligible</span>
+            {% if request.user.is_authenticated and request.user.is_staff %}
+            <span class="bg-red-50 text-red-650 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-red-100">
+                <i class="fa-solid fa-user-shield"></i> Coordinator View
+            </span>
             {% endif %}
         </div>
-    </section>
+    </div>
 
-    <!-- Roster -->
-    <section class="bg-white border border-neutral-200/40 rounded-2xl p-6 md:p-8 space-y-4 shadow-sm shadow-zinc-100/50 premium-card">
-        <h3 class="text-base font-bold text-neutral-950 border-b border-neutral-100 pb-2">Registered NSS Donors</h3>
-        <ul class="divide-y divide-neutral-100 text-xs text-neutral-600">
-            {% for registration in registrations %}
-            <li class="py-3.5 first:pt-0 last:pb-0 flex justify-between items-center">
-                <div class="space-y-0.5">
-                    <p class="font-bold text-neutral-800">{{ registration.donor.full_name }}</p>
-                    <p class="text-[9px] text-neutral-400 font-medium">Registered: {{ registration.registered_at|date:'d M Y, h:i A' }}</p>
+    <!-- MAIN GRID CONTAINER -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- LEFT COLUMN: Main Details & Photo Gallery (8 cols) -->
+        <div class="lg:col-span-8 space-y-8">
+
+            <!-- Hero Cover Area -->
+            <section class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm relative group">
+                {% if camp.cover_image %}
+                <div class="h-64 sm:h-80 w-full bg-slate-100 overflow-hidden relative">
+                    <img src="{{ camp.cover_image.url }}" alt="{{ camp.title }}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 </div>
-                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-neutral-100 border border-neutral-200/50 text-neutral-500">
-                    {{ registration.get_status_display }}
-                </span>
-            </li>
-            {% empty %}
-            <li class="py-4 text-neutral-400 italic text-center font-medium">No donor registrations submitted for this camp yet.</li>
-            {% endfor %}
-        </ul>
-    </section>
+                {% else %}
+                <div class="h-64 w-full bg-gradient-to-br from-slate-900 via-slate-800 to-red-950 flex flex-col justify-center p-8 relative overflow-hidden">
+                    <div class="absolute top-2 right-2 text-white/5 text-9xl font-black select-none pointer-events-none">NSS</div>
+                    <i class="fa-solid fa-tent text-white/10 text-8xl absolute right-10 bottom-6"></i>
+                    <h4 class="text-white/80 text-xs font-extrabold uppercase tracking-widest">Bihar NSS Blood Camp</h4>
+                    <h2 class="text-white font-black text-2xl sm:text-3xl mt-2 leading-tight">{{ camp.title }}</h2>
+                </div>
+                {% endif %}
+
+                <!-- Details Header Overlay or Bottom Content -->
+                <div class="p-6 sm:p-8 space-y-4">
+                    {% if camp.cover_image %}
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight leading-snug">{{ camp.title }}</h2>
+                    {% endif %}
+                    <div class="prose max-w-none text-xs text-slate-500 font-medium leading-relaxed">
+                        {{ camp.description|linebreaks }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- PHOTO GALLERY SECTION -->
+            <section class="bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+                <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-regular fa-images text-red-500 text-base"></i>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-950">Camp Gallery & Photos</h3>
+                            <p class="text-[9px] text-slate-400 font-semibold">Real photos captured during the blood donation camp.</p>
+                        </div>
+                    </div>
+                    {% if camp_status == 'COMPLETED' %}
+                    <span class="bg-red-50 text-red-650 px-2.5 py-0.5 rounded text-[10px] font-bold border border-red-100">
+                        {{ successful_donations }} Bags Donated
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Photos Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {% for img in gallery_images %}
+                    <div class="relative rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60 aspect-video group">
+                        <a href="{{ img.image.url }}" target="_blank" class="block w-full h-full">
+                            <img src="{{ img.image.url }}" alt="Camp Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                        </a>
+
+                        <!-- Admin delete image button overlay -->
+                        {% if request.user.is_authenticated and request.user.is_staff %}
+                        <form method="post" class="absolute top-2 right-2 animate-none" style="margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_gallery_image">
+                            <input type="hidden" name="image_id" value="{{ img.id }}">
+                            <button type="submit" class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-750 transition-colors border-0 cursor-pointer shadow-md" title="Delete Photo">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="col-span-2 sm:col-span-3 py-10 text-center text-slate-400 italic font-semibold text-xs">
+                        <i class="fa-regular fa-image text-slate-350 text-3xl mb-2 block"></i>
+                        No photos have been uploaded to this camp's gallery yet.
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Coordinator Image Upload Widget -->
+                {% if request.user.is_authenticated and request.user.is_staff %}
+                <div class="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-red-500"></i> Add Photos to Gallery</h4>
+                    <form method="post" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="upload_gallery">
+                        <div class="flex-grow">
+                            <input type="file" name="gallery_images" multiple accept="image/*" class="w-full bg-white border border-slate-200 text-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none">
+                        </div>
+                        <button type="submit" class="px-5 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all shrink-0 cursor-pointer border-0">
+                            Upload Photos
+                        </button>
+                    </form>
+                    <p class="text-[9px] text-slate-400 font-medium">JPEG, PNG, WEBP, GIF (Max 5MB each file).</p>
+                </div>
+                {% endif %}
+            </section>
+        </div>
+
+        <!-- RIGHT COLUMN: Registration & Roster (4 cols) -->
+        <div class="lg:col-span-4 space-y-6">
+
+            <!-- Details Card (Dates, venue, etc) -->
+            <section class="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm space-y-4">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2.5">Camp Schedule</h3>
+
+                <div class="space-y-3 text-xs">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-regular fa-calendar text-slate-400 mt-0.5 text-sm shrink-0"></i>
+                        <div>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Date</p>
+                            <p class="text-slate-800 font-extrabold mt-0.5">{{ camp.date|date:'d M Y' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <i class="fa-regular fa-clock text-slate-400 mt-0.5 text-sm shrink-0"></i>
+                        <div>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Time / Hours</p>
+                            <p class="text-slate-800 font-extrabold mt-0.5">
+                                {{ camp.start_time|time:'H:i'|default:'09:00' }} - {{ camp.end_time|time:'H:i'|default:'17:00' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-map-pin text-slate-400 mt-0.5 text-sm shrink-0"></i>
+                        <div>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Venue Location</p>
+                            <p class="text-slate-800 font-extrabold mt-0.5">{{ camp.location }}</p>
+                            <span class="text-[10px] font-bold text-red-650 inline-block mt-0.5"><i class="fa-solid fa-location-dot"></i> {{ camp.district }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-user-tie text-slate-400 mt-0.5 text-sm shrink-0"></i>
+                        <div>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Organizer / Coordinator</p>
+                            <p class="text-slate-800 font-extrabold mt-0.5">{{ camp.organizer_name }}</p>
+                            {% if camp.organizer_contact %}
+                            <p class="text-slate-500 font-semibold text-[10px] mt-0.5">{{ camp.organizer_contact }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Block -->
+                <div class="pt-4 border-t border-slate-100 space-y-3">
+                    {% if camp_status == 'COMPLETED' %}
+                    <div class="p-3 bg-slate-50 text-slate-600 text-[11px] font-bold rounded-2xl border border-slate-200/60 text-center flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-slate-400"></i> Camp Completed
+                    </div>
+                    {% else %}
+                        {% if is_approved_donor %}
+                            {% if has_registered %}
+                            <div class="p-3 bg-emerald-50 text-emerald-700 text-[11px] font-bold rounded-2xl border border-emerald-100 text-center flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-check-double"></i> Registered for Camp
+                            </div>
+                            {% else %}
+                            <a href="{% url 'register_camp' camp.id %}" class="w-full text-center py-2.5 bg-red-600 hover:bg-red-750 text-white text-xs font-bold rounded-2xl shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-1.5 border-0 cursor-pointer">
+                                <i class="fa-solid fa-user-plus"></i> Register for Camp
+                            </a>
+                            {% endif %}
+                        {% else %}
+                            <div class="p-3 bg-slate-50 text-slate-400 text-[10px] font-bold rounded-2xl border border-slate-200/50 text-center">
+                                Only Verified NSS Donors Can Register
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Admin Cover Image Manager Widget -->
+            {% if request.user.is_authenticated and request.user.is_staff %}
+            <section class="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm space-y-4">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2.5">Manage Cover Image</h3>
+
+                <form method="post" enctype="multipart/form-data" class="space-y-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="replace_cover">
+                    <input type="file" name="cover_image" accept="image/*" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-2 py-1 text-xs font-semibold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none">
+                    <button type="submit" class="w-full text-center py-1.5 bg-slate-900 text-white text-[11px] font-bold rounded-xl hover:bg-slate-800 transition-colors border-0 cursor-pointer">
+                        Upload/Replace Cover
+                    </button>
+                </form>
+
+                {% if camp.cover_image %}
+                <form method="post" class="animate-none" style="margin: 0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_cover">
+                    <button type="submit" class="w-full text-center py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-[11px] font-bold rounded-xl transition-colors border-0 cursor-pointer">
+                        Delete Cover Image
+                    </button>
+                </form>
+                {% endif %}
+            </section>
+            {% endif %}
+
+            <!-- Roster Section -->
+            <section class="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm space-y-4">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2.5">Registered NSS Donors</h3>
+                <ul class="divide-y divide-slate-100 text-xs text-slate-600">
+                    {% for reg in registrations %}
+                    <li class="py-3 first:pt-0 last:pb-0 flex justify-between items-center">
+                        <div class="space-y-0.5">
+                            <!-- Showing only name, absolutely no phone or personal email visible publicly -->
+                            <p class="font-extrabold text-slate-800">{{ reg.donor.full_name }}</p>
+                            <p class="text-[9px] text-slate-400 font-semibold">Registered: {{ reg.registered_at|date:'d M Y' }}</p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-slate-100 border border-slate-200 text-slate-500">
+                            {{ reg.get_status_display }}
+                        </span>
+                    </li>
+                    {% empty %}
+                    <li class="py-4 text-slate-400 italic text-center font-medium">No registrations submitted yet.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </div>
 </div>
 {% endblock %}

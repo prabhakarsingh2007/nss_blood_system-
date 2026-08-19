@@ -1,9 +1,23 @@
 from datetime import timedelta
+import os
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from core.utils import generate_secure_otp
+
+def validate_camp_image(image):
+    if not image:
+        return
+    limit = 5 * 1024 * 1024
+    if image.size > limit:
+        raise ValidationError("File size must not exceed 5MB.")
+    ext = os.path.splitext(image.name)[1].lower()
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif']
+    if ext not in valid_extensions:
+        raise ValidationError("Unsupported file format. Please upload JPEG, PNG, WEBP, or GIF.")
+
 
 class DonorProfile(models.Model):
     BLOOD_GROUP_CHOICES = [
@@ -13,6 +27,10 @@ class DonorProfile(models.Model):
         ("B-", "B-"),
         ("AB+", "AB+"),
         ("AB-", "AB-"),
+
+
+
+        
         ("O+", "O+"),
         ("O-", "O-"),
     ]
@@ -96,10 +114,26 @@ class DonorProfile(models.Model):
 
 
 class BloodCamp(models.Model):
+    STATUS_CHOICES = [
+        ("AUTO", "Automatic (Based on Date/Time)"),
+        ("UPCOMING", "Upcoming"),
+        ("ONGOING", "Ongoing"),
+        ("COMPLETED", "Completed"),
+    ]
+
     title = models.CharField(max_length=180)
     description = models.TextField()
     date = models.DateField(db_index=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
     location = models.CharField(max_length=180)
+    district = models.CharField(max_length=100, db_index=True, default="Purnia")
+    organizer_name = models.CharField(max_length=120, default="NSS Coordinator")
+    organizer_contact = models.CharField(max_length=15, blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="AUTO", db_index=True)
+    cover_image = models.ImageField(upload_to="camps/covers/", null=True, blank=True, validators=[validate_camp_image])
+    manual_donation_count = models.PositiveIntegerField(default=0, blank=True)
+
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -115,6 +149,46 @@ class BloodCamp(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title} ({self.date})"
+
+    @property
+    def current_status(self) -> str:
+        if self.status != "AUTO":
+            return self.status
+
+        today = timezone.localdate()
+        if self.date < today:
+            return "COMPLETED"
+        elif self.date > today:
+            return "UPCOMING"
+        else:
+            # Same day
+            now_time = timezone.localtime().time()
+            if self.start_time and now_time < self.start_time:
+                return "UPCOMING"
+            elif self.end_time and now_time > self.end_time:
+                return "COMPLETED"
+            else:
+                return "ONGOING"
+
+    @property
+    def successful_donations_count(self) -> int:
+        db_count = self.donations.filter(status="SUCCESS", nss_verified=True).count()
+        if db_count > 0:
+            return db_count
+        return self.manual_donation_count
+
+
+class CampImage(models.Model):
+    camp = models.ForeignKey(BloodCamp, on_delete=models.CASCADE, related_name="gallery_images")
+    image = models.ImageField(upload_to="camps/gallery/", validators=[validate_camp_image])
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'blooddonation_campimage'
+
+    def __str__(self) -> str:
+        return f"Image for {self.camp.title} ({self.id})"
+
 
 
 class CampRegistration(models.Model):
@@ -151,6 +225,7 @@ class DonationHistory(models.Model):
 
     donor = models.ForeignKey('DonorProfile', on_delete=models.SET_NULL, null=True, blank=True, related_name="donation_histories")
     request = models.ForeignKey('requests.BloodRequest', on_delete=models.SET_NULL, null=True, blank=True, related_name="donation_histories")
+    camp = models.ForeignKey('BloodCamp', on_delete=models.SET_NULL, null=True, blank=True, related_name="donations")
     date = models.DateTimeField(auto_now_add=True, db_index=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_SUCCESS)
     nss_verified = models.BooleanField(default=False)

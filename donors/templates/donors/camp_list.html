@@ -1,99 +1,198 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto py-8 space-y-8">
-    <div class="border-b border-neutral-200/40 pb-5">
-        <h2 class="text-3xl font-black text-neutral-900 tracking-tight">Upcoming Blood Camps</h2>
-        <p class="text-xs text-neutral-400 font-semibold mt-0.5">Find coordinated blood donation camps in Bihar and register to donate.</p>
+<div class="max-w-6xl mx-auto py-8 px-4 space-y-10 animate-fadeIn">
+    <!-- Header Title Area -->
+    <div class="rounded-3xl border border-slate-200/60 bg-white p-6 md:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-red-50/20 via-rose-50/10 to-transparent -z-10 rounded-full filter blur-3xl"></div>
+        <div>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight">NSS Blood Donation Camps</h2>
+            <p class="text-xs text-slate-400 font-semibold mt-0.5">Find coordinated blood donation camps in Bihar and browse our camp history.</p>
+        </div>
+
+        <!-- Interactive Filter Bar -->
+        <form method="get" class="flex flex-wrap items-center gap-3 shrink-0">
+            <div>
+                <select name="district" class="bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer h-9">
+                    <option value="">All Districts</option>
+                    {% for d in districts %}
+                    <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <select name="year" class="bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-red-500/10 focus:border-red-500 cursor-pointer h-9">
+                    <option value="">All Years</option>
+                    {% for y in years %}
+                    <option value="{{ y }}" {% if selected_year|stringformat:"s" == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="px-4 py-1.5 bg-red-650 hover:bg-red-700 bg-red-600 text-white text-xs font-bold rounded-xl transition-all shadow-sm h-9 flex items-center justify-center border-0 cursor-pointer">
+                <i class="fa-solid fa-filter mr-1.5"></i> Filter
+            </button>
+            {% if selected_district or selected_year %}
+            <a href="{% url 'camp_list' %}" class="px-4 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all h-9 flex items-center justify-center">
+                Reset
+            </a>
+            {% endif %}
+        </form>
     </div>
 
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {% for camp in camps %}
-        <article class="bg-white border border-neutral-200/40 rounded-2xl p-6 flex flex-col justify-between space-y-5 shadow-sm shadow-zinc-100/50 premium-card">
-            <div class="space-y-2">
-                <span class="inline-flex items-center gap-1.5 bg-brand-50 text-brand-700 px-2.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border border-brand-100">
-                    <span class="w-1 h-1 rounded-full bg-brand-500 animate-ping"></span>
-                    Scheduled Camp
-                </span>
-                <h3 class="text-neutral-950 font-bold text-base leading-snug">{{ camp.title }}</h3>
-                <p class="text-xs text-neutral-500 leading-relaxed font-medium">{{ camp.description }}</p>
-            </div>
-            
-            <div class="pt-4 border-t border-neutral-100 flex justify-between items-center text-xs">
-                <div class="space-y-1.5">
-                    <p class="text-neutral-400 font-medium flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        Date: <strong class="text-neutral-700 font-bold">{{ camp.date|date:'d M Y' }}</strong>
-                    </p>
-                    <p class="text-neutral-400 font-medium flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                        Venue: <strong class="text-neutral-700 font-bold">{{ camp.location }}</strong>
-                    </p>
-                </div>
-                <div class="text-right">
-                    <p class="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Registered</p>
-                    <p class="text-neutral-900 font-black text-base tracking-tight">{{ camp.registered_count }} Donors</p>
-                </div>
-            </div>
-
-            <a class="w-full text-center px-4 py-2.5 bg-neutral-900 text-white text-xs font-bold rounded-xl hover:bg-neutral-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm pt-3" href="{% url 'camp_detail' camp.id %}">
-                View Camp Details
-            </a>
-        </article>
-        {% empty %}
-        <article class="col-span-2 bg-white border border-neutral-200/40 rounded-2xl p-12 text-center text-neutral-400 italic">
-            No blood donation camps are currently scheduled in the directory.
-        </article>
-        {% endfor %}
-    </section>
-
-    <!-- Pagination Navigation Controls -->
-    {% if page_obj.has_other_pages %}
-    <nav class="flex items-center justify-between border-t border-neutral-200/40 px-4 py-3 sm:px-6 mt-6 bg-white rounded-2xl border premium-card shadow-sm shadow-zinc-100/50">
-        <div class="flex flex-1 justify-between sm:hidden">
-            {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-md border border-neutral-200 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50">Previous</a>
-            {% else %}
-            <span class="relative inline-flex items-center rounded-md border border-neutral-100 bg-neutral-50 px-4 py-2 text-xs font-medium text-neutral-400 cursor-not-allowed">Previous</span>
-            {% endif %}
-            
-            {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center rounded-md border border-neutral-200 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50">Next</a>
-            {% else %}
-            <span class="relative inline-flex items-center rounded-md border border-neutral-100 bg-neutral-50 px-4 py-2 text-xs font-medium text-neutral-400 cursor-not-allowed">Next</span>
-            {% endif %}
-        </div>
-        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <div>
-                <p class="text-xs text-neutral-500 font-medium">
-                    Showing page <span class="font-bold text-neutral-900">{{ page_obj.number }}</span> of <span class="font-bold text-neutral-900">{{ page_obj.paginator.num_pages }}</span>
-                </p>
+    <!-- Section 1: UPCOMING & ACTIVE CAMPS -->
+    <div class="space-y-6">
+        <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+            <div class="w-8 h-8 rounded-xl bg-red-50 flex items-center justify-center text-red-600 shrink-0">
+                <i class="fa-solid fa-calendar-days text-sm"></i>
             </div>
             <div>
-                <div class="inline-flex rounded-xl border border-neutral-200 bg-white p-1 gap-1" aria-label="Pagination">
-                    {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-neutral-500 hover:bg-neutral-50">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                    </a>
-                    {% endif %}
-                    
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                        <span class="relative inline-flex items-center rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-bold text-white shadow-sm shadow-brand-500/10">{{ num }}</span>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <a href="?page={{ num }}" class="relative inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-semibold text-neutral-500 hover:bg-neutral-50">{{ num }}</a>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-neutral-500 hover:bg-neutral-50">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
-                    {% endif %}
-                </div>
+                <h3 class="text-lg font-black text-slate-900 tracking-tight">Active & Upcoming Blood Camps</h3>
+                <p class="text-[10px] text-slate-400 font-semibold">Join us at these scheduled camps to donate blood and save lives.</p>
             </div>
         </div>
-    </nav>
-    {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for camp in upcoming_camps %}
+            <article class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 relative group">
+                <div>
+                    <!-- Cover Image or Default Header -->
+                    {% if camp.cover_image %}
+                    <div class="h-44 w-full bg-slate-100 overflow-hidden relative">
+                        <img src="{{ camp.cover_image.url }}" alt="{{ camp.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                    </div>
+                    {% else %}
+                    <div class="h-44 w-full bg-gradient-to-br from-slate-900 via-slate-800 to-red-950 flex flex-col justify-center p-6 relative overflow-hidden">
+                        <div class="absolute top-2 right-2 text-white/5 text-9xl font-black select-none pointer-events-none">NSS</div>
+                        <i class="fa-solid fa-tent text-white/10 text-6xl absolute right-6 bottom-4"></i>
+                        <h4 class="text-white/80 text-[10px] font-extrabold uppercase tracking-widest">Vidya Vihar NSS Camp</h4>
+                        <p class="text-white font-extrabold text-sm mt-1 leading-snug">{{ camp.location }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Body details -->
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border border-red-100/60">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-650 animate-pulse"></span>
+                                {{ camp.current_status }}
+                            </span>
+                            <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded-md"><i class="fa-solid fa-location-dot"></i> {{ camp.district }}</span>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <h4 class="text-slate-900 font-extrabold text-sm leading-snug group-hover:text-red-600 transition-colors">{{ camp.title }}</h4>
+                            <p class="text-xs text-slate-400 font-semibold line-clamp-3 leading-relaxed">{{ camp.description }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Stats -->
+                <div class="p-6 pt-0 space-y-4">
+                    <div class="pt-4 border-t border-slate-100 flex justify-between items-center text-xs">
+                        <div class="space-y-1">
+                            <p class="text-slate-400 font-bold text-[10px] flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-slate-400"></i>
+                                {{ camp.date|date:'d M Y' }}
+                            </p>
+                            <p class="text-slate-400 font-bold text-[10px] flex items-center gap-1.5">
+                                <i class="fa-regular fa-clock text-slate-400"></i>
+                                {{ camp.start_time|time:'H:i'|default:'09:00' }} - {{ camp.end_time|time:'H:i'|default:'17:00' }}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Registered</p>
+                            <p class="text-slate-900 font-black text-sm tracking-tight">{{ camp.registered_count }} Donors</p>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'camp_detail' camp.id %}" class="w-full text-center py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm flex items-center justify-center gap-2 border-0 cursor-pointer">
+                        <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i> View Camp & Register
+                    </a>
+                </div>
+            </article>
+            {% empty %}
+            <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-white border border-slate-200/60 rounded-3xl p-12 text-center text-slate-400 font-semibold italic shadow-sm">
+                <i class="fa-solid fa-tent-slash text-slate-300 text-4xl mb-3 block"></i>
+                No upcoming blood donation camps match your search criteria.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Section 2: PAST / COMPLETED BLOOD CAMPS (GALLERY / HISTORY) -->
+    <div class="space-y-6">
+        <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+            <div class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
+                <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-black text-slate-900 tracking-tight">Past Blood Camps & Gallery</h3>
+                <p class="text-[10px] text-slate-400 font-semibold">Browse records, photos and successful donation metrics from completed camps.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for camp in past_camps %}
+            <article class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 group">
+                <div>
+                    <!-- Cover Image or Default Header -->
+                    {% if camp.cover_image %}
+                    <div class="h-44 w-full bg-slate-100 overflow-hidden relative">
+                        <img src="{{ camp.cover_image.url }}" alt="{{ camp.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                    </div>
+                    {% else %}
+                    <div class="h-44 w-full bg-gradient-to-br from-slate-200 to-slate-100 flex flex-col justify-center p-6 relative overflow-hidden">
+                        <div class="absolute top-2 right-2 text-slate-300/40 text-9xl font-black select-none pointer-events-none">NSS</div>
+                        <i class="fa-solid fa-circle-check text-slate-400/20 text-7xl absolute right-6 bottom-4"></i>
+                        <h4 class="text-slate-500 text-[10px] font-extrabold uppercase tracking-widest">Completed NSS Camp</h4>
+                        <p class="text-slate-700 font-extrabold text-sm mt-1 leading-snug">{{ camp.location }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Body details -->
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="inline-flex items-center bg-slate-200 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border border-slate-300/60 text-slate-750">
+                                Completed
+                            </span>
+                            <span class="text-[10px] font-black text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md"><i class="fa-solid fa-location-dot"></i> {{ camp.district }}</span>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <h4 class="text-slate-900 font-extrabold text-sm leading-snug group-hover:text-red-600 transition-colors">{{ camp.title }}</h4>
+                            <p class="text-xs text-slate-400 font-semibold line-clamp-3 leading-relaxed">{{ camp.description }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Stats -->
+                <div class="p-6 pt-0 space-y-4">
+                    <div class="pt-4 border-t border-slate-100 flex justify-between items-center text-xs">
+                        <div class="space-y-1">
+                            <p class="text-slate-400 font-bold text-[10px] flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-slate-400"></i>
+                                {{ camp.date|date:'d M Y' }}
+                            </p>
+                            <p class="text-slate-400 font-bold text-[10px] flex items-center gap-1.5">
+                                <i class="fa-solid fa-user-check text-slate-400"></i>
+                                {{ camp.organizer_name }}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] text-red-600 font-bold uppercase tracking-wider">Donations</p>
+                            <p class="text-red-600 font-black text-base tracking-tight">{{ camp.successful_donations_count }} Bags</p>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'camp_detail' camp.id %}" class="w-full text-center py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-100 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm flex items-center justify-center gap-2 border-0 cursor-pointer">
+                        <i class="fa-regular fa-image text-xs"></i> View Gallery & Details
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}

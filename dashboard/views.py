@@ -245,15 +245,44 @@ def _handle_admin_broadcast_create(request):
     return False
 
 def _handle_admin_camp_create(request):
-    form = BloodCampForm(request.POST)
+    form = BloodCampForm(request.POST, request.FILES)
     if form.is_valid():
         camp = form.save(commit=False)
         camp.created_by = request.user
         camp.save()
+
+        # Handle multiple gallery images
+        gallery_images = request.FILES.getlist("gallery_images")
+        from donors.models import CampImage
+        for img in gallery_images:
+            CampImage.objects.create(camp=camp, image=img)
+
         messages.success(request, "Blood camp created successfully.")
         log_activity(request.user, "CAMP_ACTION", f"Scheduled blood camp: '{camp.title}' on {camp.date} at {camp.location}.")
         return True
     return False
+
+def _handle_admin_camp_update_status(request):
+    camp_id = request.POST.get("camp_id")
+    new_status = request.POST.get("status")
+    camp = get_object_or_404(BloodCamp, pk=camp_id)
+    if new_status in {"AUTO", "UPCOMING", "ONGOING", "COMPLETED"}:
+        camp.status = new_status
+        camp.save(update_fields=["status"])
+        messages.success(request, f"Camp '{camp.title}' status updated to {camp.get_status_display()}.")
+        log_activity(request.user, "CAMP_ACTION", f"Updated status of blood camp '{camp.title}' to {new_status}.")
+        return True
+    return False
+
+def _handle_admin_camp_delete(request):
+    camp_id = request.POST.get("camp_id")
+    camp = get_object_or_404(BloodCamp, pk=camp_id)
+    camp_title = camp.title
+    camp.delete()
+    messages.success(request, f"Camp '{camp_title}' has been deleted successfully.")
+    log_activity(request.user, "CAMP_ACTION", f"Deleted blood camp '{camp_title}'.")
+    return True
+
 
 def _handle_admin_nss_verify_donation(request):
     history_id = request.POST.get("history_id")
@@ -384,6 +413,14 @@ def admin_dashboard(request):
         elif action == "camp_create":
             if _handle_admin_camp_create(request):
                 return redirect(f"{reverse('admin_dashboard')}#manage-camps")
+
+        elif action == "camp_update_status":
+            _handle_admin_camp_update_status(request)
+            return redirect(f"{reverse('admin_dashboard')}#manage-camps")
+
+        elif action == "camp_delete":
+            _handle_admin_camp_delete(request)
+            return redirect(f"{reverse('admin_dashboard')}#manage-camps")
 
         elif action == "nss_verify_donation":
             _handle_admin_nss_verify_donation(request)

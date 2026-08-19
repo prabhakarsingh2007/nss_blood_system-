@@ -53,19 +53,18 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;850&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #f8fafc;
         }
 
         h1, h2, h3, h4, .brand-font {
-            font-family: 'Plus Jakarta Sans', sans-serif;
             letter-spacing: -0.02em;
         }
 
@@ -86,7 +85,7 @@
         }
 
         /* Forms Styling Override */
-        input[type="text"],
+        input[type="text"]:not(.pl-custom),
         input[type="password"],
         input[type="email"],
         input[type="number"],
@@ -103,6 +102,10 @@
             outline: none !important;
             transition: all 0.2s ease !important;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
+        }
+
+        .pl-custom {
+            padding-left: 2.25rem !important;
         }
 
         input[type="text"]:focus,
@@ -165,77 +168,72 @@
 
 <body class="text-slate-700 min-h-screen flex flex-col antialiased bg-slate-50/50">
 
-    <!-- Top Accent Branding Bar -->
-    <div class="h-1 bg-red-600 w-full z-50"></div>
+    <!-- ================= 1. TOP ANNOUNCEMENT BAR ================= -->
+    <header class="bg-black text-white text-[11px] sm:text-xs py-2 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+            <!-- Left Info Details -->
+            <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 text-slate-200">
+                <div class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-location-dot text-[#dc2626]"></i>
+                    <span>Vidya Vihar Institute of Technology, Purnea, Bihar</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <i class="fa-regular fa-envelope text-slate-300"></i>
+                    <span>nssbloodnetwork@gmail.com</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-phone text-slate-300"></i>
+                    <span>+91 9876543210</span>
+                </div>
+            </div>
 
-    <!-- Sticky Navigation Navbar -->
-    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/95 border-b border-slate-200/80 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-            <div class="flex justify-between items-center h-16">
+            <!-- Right Social Icons -->
+            <div class="flex items-center gap-4 text-slate-300">
+                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+        </div>
+    </header>
 
-                <!-- Logo Section -->
-                <a href="{% url 'home' %}" class="flex items-center gap-2 group" aria-label="NSS Blood Network">
-                    <div class="w-8 h-8 rounded-lg bg-red-650 flex items-center justify-center shadow-md bg-red-600 transform group-hover:scale-105 transition-transform">
-                        <i class="fa-solid fa-droplet text-white text-sm"></i>
-                    </div>
-                    <span class="brand-font font-black text-lg text-slate-900 tracking-tight">
-                        NSS<span class="text-red-600 font-bold ml-0.5">Blood</span>
+    <!-- ================= 2. MAIN NAVIGATION BAR ================= -->
+    <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            
+            <!-- Logo & Brand Header -->
+            <a href="{% url 'home' %}" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 rounded-full border-2 border-blue-900 flex items-center justify-center overflow-hidden shadow-sm shrink-0 bg-white transform group-hover:scale-105 transition-transform">
+                    <img src="{% static 'images/nss-logo.jpg' %}" alt="NSS Logo" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <span class="block text-blue-950 font-black text-base sm:text-lg leading-tight uppercase tracking-tight">
+                        NSS Emergency
                     </span>
-                </a>
+                    <span class="block text-[#dc2626] font-black text-sm sm:text-base leading-tight">
+                        Blood Network Bihar
+                    </span>
+                    <span class="block text-slate-500 text-[10px] font-semibold tracking-wider">
+                        Donate Blood • Save Lives
+                    </span>
+                </div>
+            </a>
 
-                <!-- Desktop Core Links -->
-                <nav class="hidden md:flex items-center gap-2 lg:gap-4">
-                    <a href="{% url 'home' %}"
-                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'home' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
-                       <i class="fa-solid fa-house-chimney mr-1"></i> Home
-                    </a>
-                    <a href="{% url 'search_donors' %}"
-                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'search_donors' or request.resolver_match.url_name == 'donor_list' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
-                       <i class="fa-solid fa-magnifying-glass-location mr-1"></i> Find Donors
-                    </a>
-                    <a href="{% url 'request_form' %}"
-                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'request_form' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
-                       <i class="fa-solid fa-kit-medical mr-1"></i> Request Blood
-                    </a>
-                    <a href="{% url 'camp_list' %}"
-                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'camp_list' or request.resolver_match.url_name == 'camp_detail' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
-                       <i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps
-                    </a>
-                    <a href="{% url 'eligibility_checker' %}"
-                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'eligibility_checker' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
-                       <i class="fa-solid fa-heart-pulse mr-1"></i> Am I Eligible?
-                    </a>
+            <!-- Center Navigation Links -->
+            <div class="hidden lg:flex items-center gap-6 font-bold text-xs sm:text-xs xl:text-sm text-slate-700">
+                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">Home</a>
+                <a href="{% url 'home' %}#about" class="hover:text-[#dc2626] transition-colors py-1">About NSS</a>
+                <a href="{% url 'search_donors' %}" class="{% if request.resolver_match.url_name == 'search_donors' or request.resolver_match.url_name == 'donor_list' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">Find a Donor</a>
+                <a href="{% url 'request_form' %}" class="{% if request.resolver_match.url_name == 'request_form' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">Request Blood</a>
+                <a href="{% url 'camp_list' %}" class="{% if request.resolver_match.url_name == 'camp_list' or request.resolver_match.url_name == 'camp_detail' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">Blood Camps</a>
+                <a href="{% url 'verify_certificate' %}" class="{% if request.resolver_match.url_name == 'verify_certificate' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">Certificates</a>
+                <a href="{% url 'home' %}#contact" class="hover:text-[#dc2626] transition-colors py-1">Contact</a>
+            </div>
 
-                    <span class="h-4 w-px bg-slate-200 mx-1"></span>
-
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard_router' %}"
-                       class="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-transparent transition-all text-slate-600 hover:text-red-600 hover:bg-slate-100/60 {% if request.resolver_match.url_name == 'user_dashboard' or request.resolver_match.url_name == 'donor_dashboard' or request.resolver_match.url_name == 'admin_dashboard' or request.resolver_match.url_name == 'dashboard_router' %}text-red-600 bg-red-50/80 border-red-100{% endif %}">
-                       <i class="fa-solid fa-gauge-high mr-1"></i> Dashboard
-                    </a>
-                    {% if user.is_staff %}
-                    <a href="{% url 'admin_dashboard' %}"
-                       class="px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 text-[9px] font-bold rounded uppercase tracking-wider">Staff</a>
-                    {% endif %}
-                    <a href="{% url 'logout' %}"
-                       class="text-xs font-bold text-slate-400 hover:text-red-600 transition-colors px-2 py-1"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-                    {% else %}
-                    <a href="{% url 'login' %}"
-                       class="text-xs font-bold text-slate-600 hover:text-red-600 transition-colors px-2 py-1"><i class="fa-solid fa-user-lock mr-1"></i> Login</a>
-                    <a href="{% url 'register' %}"
-                       class="text-xs font-bold text-slate-600 hover:text-red-600 transition-colors px-2 py-1"><i class="fa-solid fa-user-plus mr-1"></i> Register</a>
-                    {% endif %}
-
-                    {% if not user.is_authenticated or not user.donor_profile %}
-                    <a href="{% url 'donor_register' %}"
-                       class="flex items-center gap-1.5 px-3.5 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-all hover:scale-[1.02] shadow-sm ml-2">
-                        <i class="fa-solid fa-hand-holding-heart animate-pulse"></i> Become Donor
-                    </a>
-                    {% endif %}
-                </nav>
-
+            <!-- Right Action Buttons -->
+            <div class="flex items-center gap-3">
                 <!-- Mobile Menu Navigation Button Trigger -->
-                <div class="md:hidden flex items-center">
+                <div class="lg:hidden flex items-center">
                     <button id="mobileMenuBtn"
                             class="text-slate-600 p-2 focus:outline-none hover:bg-slate-100 rounded-lg transition-colors"
                             aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNavMenu">
@@ -245,40 +243,56 @@
                         </svg>
                     </button>
                 </div>
-            </div>
 
-            <!-- Responsive Mobile Dropdown Links -->
-            <nav id="mobileNavMenu" class="md:hidden hidden border-t border-slate-100 py-3 space-y-1">
-                <a href="{% url 'home' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-house-chimney mr-1"></i> Home</a>
-                <a href="{% url 'search_donors' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-magnifying-glass-location mr-1"></i> Find Donors</a>
-                <a href="{% url 'request_form' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-kit-medical mr-1"></i> Request Blood</a>
-                <a href="{% url 'camp_list' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps</a>
-                <a href="{% url 'eligibility_checker' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-heart-pulse mr-1"></i> Am I Eligible?</a>
-                
-                {% if user.is_authenticated %}
-                <a href="{% url 'dashboard_router' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-gauge-high mr-1"></i> Dashboard</a>
-                <a href="{% url 'logout' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-400 hover:bg-slate-50"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-                {% else %}
-                <a href="{% url 'login' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-user-lock mr-1"></i> Login</a>
-                <a href="{% url 'register' %}"
-                   class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-user-plus mr-1"></i> Register</a>
-                {% endif %}
-                
-                {% if not user.is_authenticated or not user.donor_profile %}
-                <a href="{% url 'donor_register' %}"
-                   class="block text-center mt-2 px-4 py-2.5 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition-colors">Become Donor</a>
-                {% endif %}
-            </nav>
+                <div class="hidden lg:flex items-center gap-3">
+                    {% if not user.is_authenticated or not user.donor_profile %}
+                    <a href="{% url 'donor_register' %}" class="inline-flex items-center gap-2 bg-[#dc2626] hover:bg-[#b91c1c] text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-sm transition-all">
+                        <i class="fa-solid fa-user-plus text-xs"></i>
+                        <span class="text-left leading-none">
+                            Register<br/><span class="text-[10px] font-medium">as Donor</span>
+                        </span>
+                    </a>
+                    {% endif %}
+                    
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard_router' %}" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-blue-950 text-blue-950 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-sm transition-all">
+                        <i class="fa-solid fa-gauge-high text-xs"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{% url 'logout' %}" class="text-xs font-bold text-slate-500 hover:text-[#dc2626] transition-colors px-2 py-1"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-blue-950 text-blue-950 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-sm transition-all">
+                        <i class="fa-solid fa-lock text-xs"></i>
+                        <span>Admin Login</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    </header>
+
+        <!-- Responsive Mobile Dropdown Links -->
+        <nav id="mobileNavMenu" class="lg:hidden hidden border-t border-slate-150 py-3 px-4 space-y-1">
+            <a href="{% url 'home' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-house-chimney mr-1"></i> Home</a>
+            <a href="{% url 'home' %}#about" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-circle-info mr-1"></i> About NSS</a>
+            <a href="{% url 'search_donors' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-magnifying-glass-location mr-1"></i> Find Donors</a>
+            <a href="{% url 'request_form' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-kit-medical mr-1"></i> Request Blood</a>
+            <a href="{% url 'camp_list' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps</a>
+            <a href="{% url 'verify_certificate' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-award mr-1"></i> Certificates</a>
+            <a href="{% url 'home' %}#contact" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-address-book mr-1"></i> Contact</a>
+            
+            <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
+                {% if not user.is_authenticated or not user.donor_profile %}
+                <a href="{% url 'donor_register' %}" class="block text-center px-4 py-2.5 rounded-lg text-xs font-bold text-white bg-[#dc2626] hover:bg-[#b91c1c] transition-colors">Become Donor</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard_router' %}" class="block text-center px-4 py-2.5 rounded-lg text-xs font-bold text-blue-950 border border-blue-950 hover:bg-slate-50 transition-colors">Dashboard</a>
+                <a href="{% url 'logout' %}" class="block text-center text-xs font-bold text-slate-500 hover:text-[#dc2626] transition-colors py-2"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="block text-center px-4 py-2.5 rounded-lg text-xs font-bold text-blue-950 border border-blue-950 hover:bg-slate-50 transition-colors">Admin Login</a>
+                {% endif %}
+            </div>
+        </nav>
+    </nav>
 
     <!-- Core Content Container Injector -->
     <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
@@ -321,8 +335,8 @@
                 <!-- Brand Info -->
                 <div class="md:col-span-6 space-y-3">
                     <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-red-650 flex items-center justify-center shadow-sm bg-red-600">
-                            <i class="fa-solid fa-droplet text-white text-xs"></i>
+                        <div class="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center shadow-sm bg-white">
+                            <img src="{% static 'images/nss-logo.jpg' %}" alt="NSS Logo" class="w-full h-full object-cover">
                         </div>
                         <span class="text-slate-900 text-sm font-bold tracking-tight">NSS <span class="text-red-600">Blood Network</span></span>
                     </div>

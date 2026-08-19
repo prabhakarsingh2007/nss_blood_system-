@@ -9,5 +9,6 @@ urlpatterns = [
     path("camps/<int:camp_id>/", views.camp_detail, name="camp_detail"),
     path("camps/<int:camp_id>/register/", views.register_camp, name="register_camp"),
     path("certificate/<int:history_id>/", views.donation_certificate, name="donation_certificate"),
+    path("verify-certificate/", views.verify_certificate, name="verify_certificate"),
     path("search/", views.search_donors, name="search_donors"),
 ]

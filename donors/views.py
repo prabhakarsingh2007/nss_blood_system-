@@ -154,24 +154,113 @@ def donor_verify_otp(request):
 
 def camp_list(request):
     today = timezone.localdate()
-    camps_qs = (
-        BloodCamp.objects.filter(date__gte=today)
-        .annotate(registered_count=Count("registrations", distinct=True))
-        .order_by("date", "created_at")
-    )
-    paginator = Paginator(camps_qs, 10)  # 10 camps per page
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    now_time = timezone.localtime().time()
 
-    return render(request, "donors/camp_list.html", {"camps": page_obj, "page_obj": page_obj, "today": today})
+    # Get filters
+    district = request.GET.get("district", "")
+    year = request.GET.get("year", "")
+
+    camps_qs = BloodCamp.objects.annotate(registered_count=Count("registrations", distinct=True)).all()
+
+    if district:
+        camps_qs = camps_qs.filter(district__iexact=district)
+    if year:
+        camps_qs = camps_qs.filter(date__year=year)
+
+    # Q filters matching property logic for completed/upcoming
+    completed_q = Q(status="COMPLETED") | (
+        Q(status="AUTO") & (
+            Q(date__lt=today) |
+            Q(date=today, end_time__lt=now_time)
+        )
+    )
+
+    upcoming_q = Q(status__in=["UPCOMING", "ONGOING"]) | (
+        Q(status="AUTO") & (
+            Q(date__gt=today) |
+            Q(date=today, end_time__isnull=True) |
+            Q(date=today, end_time__gte=now_time)
+        )
+    )
+
+    upcoming_camps = camps_qs.filter(upcoming_q).order_by("date", "start_time")
+    past_camps = camps_qs.filter(completed_q).order_by("-date", "-start_time")
+
+    # Fetch unique districts and years dynamically
+    all_camps = BloodCamp.objects.all()
+    districts = sorted(list(set(all_camps.exclude(district="").values_list("district", flat=True))))
+    years = sorted(list(set(all_camps.values_list("date__year", flat=True))), reverse=True)
+
+    context = {
+        "upcoming_camps": upcoming_camps,
+        "past_camps": past_camps,
+        "districts": districts,
+        "years": years,
+        "selected_district": district,
+        "selected_year": year,
+        "today": today,
+    }
+    return render(request, "donors/camp_list.html", context)
+
 
 def camp_detail(request, camp_id):
-    today = timezone.localdate()
+    import os
     camp = get_object_or_404(
         BloodCamp.objects.annotate(registered_count=Count("registrations", distinct=True)),
         pk=camp_id,
-        date__gte=today,
     )
+
+    # Handle Admin-only image uploads and deletions
+    if request.method == "POST" and request.user.is_authenticated and request.user.is_staff:
+        action = request.POST.get("action")
+        if action == "upload_gallery":
+            from donors.models import CampImage, validate_camp_image
+            images = request.FILES.getlist("gallery_images")
+            valid_uploads = 0
+            errors = []
+            for img in images:
+                try:
+                    validate_camp_image(img)
+                    CampImage.objects.create(camp=camp, image=img)
+                    valid_uploads += 1
+                except Exception as e:
+                    errors.append(f"{img.name}: {str(e)}")
+
+            if valid_uploads > 0:
+                messages.success(request, f"Successfully uploaded {valid_uploads} photo(s) to the gallery.")
+            if errors:
+                for err in errors:
+                    messages.error(request, err)
+            return redirect("camp_detail", camp_id=camp.id)
+
+        elif action == "delete_gallery_image":
+            from donors.models import CampImage
+            image_id = request.POST.get("image_id")
+            img = get_object_or_404(CampImage, pk=image_id, camp=camp)
+            img_name = os.path.basename(img.image.name) if img.image else "image"
+            img.delete()
+            messages.success(request, f"Deleted gallery photo '{img_name}'.")
+            return redirect("camp_detail", camp_id=camp.id)
+
+        elif action == "delete_cover":
+            if camp.cover_image:
+                camp.cover_image.delete(save=True)
+                messages.success(request, "Deleted camp cover image.")
+            return redirect("camp_detail", camp_id=camp.id)
+
+        elif action == "replace_cover":
+            cover_file = request.FILES.get("cover_image")
+            if cover_file:
+                try:
+                    from donors.models import validate_camp_image
+                    validate_camp_image(cover_file)
+                    camp.cover_image = cover_file
+                    camp.save()
+                    messages.success(request, "Cover image updated successfully.")
+                except Exception as e:
+                    messages.error(request, f"Failed to upload cover: {str(e)}")
+            return redirect("camp_detail", camp_id=camp.id)
+
     is_approved_donor = False
     has_registered = False
     donor_profile = None
@@ -183,17 +272,26 @@ def camp_detail(request, camp_id):
             has_registered = CampRegistration.objects.filter(donor=donor_profile, camp=camp).exists()
 
     registrations = camp.registrations.select_related("donor").order_by("registered_at")
+    gallery_images = camp.gallery_images.all().order_by("uploaded_at")
+
+    camp_status = camp.current_status
+    successful_donations = camp.successful_donations_count
+
     return render(
         request,
         "donors/camp_detail.html",
         {
             "camp": camp,
             "registrations": registrations,
+            "gallery_images": gallery_images,
             "is_approved_donor": is_approved_donor,
             "has_registered": has_registered,
             "donor_profile": donor_profile,
+            "camp_status": camp_status,
+            "successful_donations": successful_donations,
         },
     )
+
 
 @login_required
 def register_camp(request, camp_id):
@@ -202,7 +300,11 @@ def register_camp(request, camp_id):
         messages.error(request, "Only approved donors can register for a blood camp.")
         return redirect("camp_detail", camp_id=camp_id)
 
-    camp = get_object_or_404(BloodCamp, pk=camp_id, date__gte=timezone.localdate())
+    camp = get_object_or_404(BloodCamp, pk=camp_id)
+    if camp.current_status == "COMPLETED":
+        messages.error(request, "Registration is closed as this blood camp has already ended.")
+        return redirect("camp_detail", camp_id=camp_id)
+
     registration, created = CampRegistration.objects.get_or_create(donor=donor_profile, camp=camp)
 
     if created:
@@ -211,6 +313,21 @@ def register_camp(request, camp_id):
         messages.info(request, "You are already registered for this camp.")
 
     return redirect("camp_detail", camp_id=camp.id)
+
+
+def verify_certificate(request):
+    cert_id = request.GET.get("cert_id", "").strip()
+    donation = None
+    searched = False
+    if cert_id:
+        searched = True
+        donation = DonationHistory.objects.filter(certificate_id__iexact=cert_id, nss_verified=True).select_related("donor", "request", "verified_by").first()
+    return render(
+        request,
+        "donors/verify_certificate.html",
+        {"donation": donation, "searched": searched, "cert_id": cert_id}
+    )
+
 
 @login_required
 def donation_certificate(request, history_id):
