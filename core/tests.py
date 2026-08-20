@@ -14,3 +14,9 @@ class CoreViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "core/eligibility.html")
 
+    def test_about_view(self):
+        url = reverse("about")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/about.html")
+

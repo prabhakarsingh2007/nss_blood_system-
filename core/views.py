@@ -58,5 +58,27 @@ def home(request):
 def eligibility_checker(request):
     return render(request, "core/eligibility.html")
 
+def about(request):
+    today = timezone.localdate()
+    now_time = timezone.localtime().time()
+
+    completed_q = Q(status="COMPLETED") | (
+        Q(status="AUTO") & (
+            Q(date__lt=today) |
+            Q(date=today, end_time__lt=now_time)
+        )
+    )
+
+    completed_camps = BloodCamp.objects.filter(completed_q).order_by("-date", "-start_time")[:6]
+
+    context = {
+        "donor_count": DonorProfile.objects.filter(verification_status="APPROVED", otp_verified=True).count(),
+        "total_requests": BloodRequest.objects.count(),
+        "successful_donations": DonationHistory.objects.filter(status="SUCCESS", nss_verified=True).count(),
+        "total_camps": BloodCamp.objects.count(),
+        "completed_camps": completed_camps,
+    }
+    return render(request, "core/about.html", context)
+
 
 

@@ -222,7 +222,7 @@
             <!-- Center Navigation Links -->
             <div class="hidden lg:flex items-center gap-6 font-bold text-xs sm:text-xs xl:text-sm text-slate-700">
                 <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">Home</a>
-                <a href="{% url 'home' %}#about" class="hover:text-[#dc2626] transition-colors py-1">About NSS</a>
+                <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">About NSS</a>
                 <a href="{% url 'search_donors' %}" class="{% if request.resolver_match.url_name == 'search_donors' or request.resolver_match.url_name == 'donor_list' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">Find a Donor</a>
                 <a href="{% url 'request_form' %}" class="{% if request.resolver_match.url_name == 'request_form' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">Request Blood</a>
                 <a href="{% url 'camp_list' %}" class="{% if request.resolver_match.url_name == 'camp_list' or request.resolver_match.url_name == 'camp_detail' %}text-[#dc2626] border-b border-[#dc2626]{% else %}hover:text-[#dc2626] transition-colors{% endif %} py-1">Blood Camps</a>
@@ -273,7 +273,7 @@
         <!-- Responsive Mobile Dropdown Links -->
         <nav id="mobileNavMenu" class="lg:hidden hidden border-t border-slate-150 py-3 px-4 space-y-1">
             <a href="{% url 'home' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-house-chimney mr-1"></i> Home</a>
-            <a href="{% url 'home' %}#about" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-circle-info mr-1"></i> About NSS</a>
+            <a href="{% url 'about' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-circle-info mr-1"></i> About NSS</a>
             <a href="{% url 'search_donors' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-magnifying-glass-location mr-1"></i> Find Donors</a>
             <a href="{% url 'request_form' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-kit-medical mr-1"></i> Request Blood</a>
             <a href="{% url 'camp_list' %}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-tent-assets mr-1"></i> Blood Camps</a>
