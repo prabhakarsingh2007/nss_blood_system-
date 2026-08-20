@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 <!-- ================= DYNAMIC SEO BLOCKS ================= -->
 {% block title %}NSS Emergency Blood Network Bihar | Vidya Vihar Institute of Technology{% endblock %}
@@ -17,7 +18,7 @@
     }
 </style>
 
-<div class="space-y-16 relative">
+<div class="relative w-full">
 
     <!-- Smooth Light Background Gradient Layout Overrides -->
     <div class="absolute top-10 left-1/4 w-80 h-80 bg-slate-100 rounded-full filter blur-3xl opacity-60 -z-10 animate-pulse"
@@ -25,81 +26,118 @@
     <div class="absolute top-40 right-1/4 w-96 h-96 bg-rose-50/60 rounded-full filter blur-3xl opacity-60 -z-10 animate-pulse"
         style="animation-duration: 12s;"></div>
 
-    <!-- ===== 1. HERO BANNER SECTION ===== -->
-    <section class="relative rounded-3xl overflow-hidden shadow-sm border border-slate-200 min-h-[460px] flex items-center bg-slate-950">
-        <!-- College Campus Background -->
-        <div class="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay" 
-             style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDfWSeK_9b1OaRlwn-rH1YR6SNMIj7rlBMbF7adNvi6jRu2EOFsBMVwGVj_yXGdv5uOT_4e9c2YsFHEQndxkxSpaNwVO9k1yLZh_P4D01N9dXRFabR8HbK-QhjN6u6HGmb_W9YrYY8obftTC1xpa0zk5v6qMm02QzmWu5t4FmC8NplrJTWs_9ZiD6fOdHE2Zgpf85aQAhqmYFdn6fqTCLpl59FGB3yhYl53HsIIO7ktfwXYt8yYPJlxbf_Peo106S63G5nv6jVbtw');">
-        </div>
-        
-        <!-- Contrast Dark Navy Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-950 via-blue-950/85 to-transparent"></div>
-
-        <div class="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 sm:p-10 lg:p-12 items-center">
+    <!-- ===== 1. CLEAN HERO BANNER SECTION ===== -->
+    <section class="w-full">
+        <div class="relative w-full overflow-hidden shadow-lg min-h-[380px] sm:min-h-[420px] flex items-center bg-slate-900">
             
-            <!-- Left Details -->
-            <div class="lg:col-span-8 space-y-6">
-                <!-- Initiative Label -->
-                <div class="inline-flex items-center gap-2.5 bg-red-600/10 border border-red-500/20 px-3.5 py-1 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-red-650 animate-ping"></span>
-                    <span class="text-red-500 text-[10px] font-black uppercase tracking-wider">An NSS Initiative for Emergency Blood Support</span>
-                </div>
+            <!-- Clean Campus Background (No pre-printed text) -->
+            <img src="{% static 'images/vvit-campus.jpg' %}" 
+                 alt="VVIT Campus" 
+                 class="absolute inset-0 w-full h-full object-cover object-center z-0" />
 
-                <div class="flex items-center gap-4">
-                    <!-- Circular NSS Logo inside Hero -->
-                    <div class="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center overflow-hidden bg-white shrink-0 shadow-lg">
-                        <img src="/static/images/nss-logo.jpg" alt="NSS Logo" class="w-full h-full object-cover">
+            <!-- Soft Overlay for readability -->
+            <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent z-0"></div>
+            
+            <!-- Single HTML Content Layer -->
+            <div class="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 sm:p-10 lg:p-12 items-center">
+                
+                <!-- Left Details (8 cols) -->
+                <div class="lg:col-span-8 space-y-6">
+                    <div class="flex items-start sm:items-center gap-4 sm:gap-6">
+                        <div class="w-16 h-20 sm:w-20 sm:h-24 flex items-center justify-center shrink-0">
+                            <div class="relative w-full h-full flex items-center justify-center">
+                                <svg class="w-full h-full text-red-600 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                                </svg>
+                                <i class="fa-solid fa-heart-pulse text-white absolute text-base sm:text-xl animate-pulse"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h1 class="text-white text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-md">
+                                NSS Emergency <br />
+                                <span class="text-red-600">Blood Network</span> Bihar
+                            </h1>
+                            <p class="text-slate-100 text-xs sm:text-sm font-medium max-w-xl leading-relaxed drop-shadow">
+                                Connecting Blood Donors with People in Need Across Bihar, For a Healthier Tomorrow.
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-slate-350 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-300">National Service Scheme (NSS)</p>
-                        <p class="text-red-500 text-xs sm:text-xs font-extrabold uppercase tracking-widest leading-none mt-0.5">
-                            Vidya Vihar Institute of Technology
-                        </p>
-                        <p class="text-slate-400 text-[9px] font-semibold tracking-wider uppercase mt-1">Purnea, Bihar</p>
+
+                    <!-- CTA Actions -->
+                    <div class="flex flex-wrap gap-4 items-center pt-2 sm:pl-2">
+                        <a href="{% url 'search_donors' %}" class="inline-flex items-center gap-2 bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-md transition-all hover:scale-105 border-0 cursor-pointer">
+                            <i class="fa-solid fa-users"></i> Find a Donor
+                        </a>
+                        <a href="{% url 'request_form' %}" class="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-[#09152b] font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-md transition-all hover:scale-105 border-0 cursor-pointer">
+                            <i class="fa-solid fa-droplet text-red-600"></i> Request Blood
+                        </a>
                     </div>
                 </div>
 
-                <div class="space-y-3">
-                    <h1 class="text-white text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                        NSS Emergency <br />
-                        <span class="text-red-600">Blood Network</span> Bihar
-                    </h1>
-                    <p class="text-slate-300 text-xs sm:text-sm font-medium max-w-xl leading-relaxed">
-                        Connecting verified student volunteers and blood donors from Vidya Vihar Institute of Technology with patients requiring emergency assistance across Bihar.
-                    </p>
+                <!-- Right Card (4 cols) -->
+                <div class="lg:col-span-4 flex justify-center lg:justify-end">
+                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-5 sm:p-6 shadow-2xl border border-white/80 max-w-xs w-full space-y-4 text-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shrink-0">
+                                <i class="fa-solid fa-droplet text-xl"></i>
+                            </div>
+                            <div class="text-left leading-tight">
+                                <span class="text-slate-800 text-xs font-black block">A Single Donation</span>
+                                <span class="text-xs text-slate-600 font-semibold">Can Save Up to <strong class="text-red-600 font-black">3 Lives</strong></span>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'donor_register' %}" class="block w-full text-center py-3 bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold text-xs rounded-xl shadow-sm transition-all hover:scale-105 uppercase tracking-wider border-0 cursor-pointer">
+                            Donate Blood Today
+                        </a>
+                    </div>
                 </div>
 
-                <div class="flex flex-wrap gap-4 items-center pt-2">
-                    <a href="{% url 'search_donors' %}" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-750 text-white font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-xl shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] border-0 cursor-pointer">
-                        <i class="fa-solid fa-magnifying-glass"></i> Find a Donor
-                    </a>
-                    <a href="{% url 'request_form' %}" class="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-blue-950 font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-xl shadow-md border border-slate-200 transition-transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
-                        <i class="fa-solid fa-droplet text-red-600"></i> Request Blood
-                    </a>
-                    <a href="{% url 'donor_register' %}" class="text-white hover:text-red-500 font-bold text-xs uppercase tracking-wider underline px-2 py-1 transition-colors">
-                        Register as Donor
-                    </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 space-y-12">
+        <!-- 4-Feature Bottom Strip Bar -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+            <div class="flex items-center gap-3.5 px-2 pt-2 md:pt-0">
+                <div class="w-11 h-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-users text-base"></i>
+                </div>
+                <div>
+                    <h4 class="text-slate-900 font-black text-xs">Verified Donors</h4>
+                    <p class="text-[10px] text-slate-500 font-semibold leading-tight mt-0.5">NSS Volunteers across Bihar</p>
                 </div>
             </div>
 
-            <!-- Right Widget Card -->
-            <div class="lg:col-span-4 flex justify-center lg:justify-end">
-                <div class="bg-white rounded-3xl p-6 shadow-2xl border border-slate-100 max-w-xs w-full text-center space-y-4">
-                    <div class="flex items-center justify-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600">
-                            <i class="fa-solid fa-heart-pulse text-lg animate-pulse"></i>
-                        </div>
-                        <div class="text-left leading-tight">
-                            <span class="text-slate-500 text-[10px] font-bold block uppercase tracking-wider">Lifesaving Fact</span>
-                            <span class="text-slate-900 text-xs font-black">A Single Donation <br/><span class="text-red-650">Saves Up to 3 Lives</span></span>
-                        </div>
-                    </div>
-                    <div class="text-[10px] text-slate-400 font-semibold leading-relaxed">
-                        Become a proud donor of the VVIT NSS network. Help Bihar fight emergencies.
-                    </div>
-                    <a href="{% url 'donor_register' %}" class="block w-full text-center py-2.5 bg-blue-950 hover:bg-blue-900 text-white font-bold text-xs rounded-xl shadow-sm transition-colors border-0 cursor-pointer uppercase tracking-wider">
-                        Join as Volunteer
-                    </a>
+            <div class="flex items-center gap-3.5 px-2 pt-2 md:pt-0">
+                <div class="w-11 h-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-location-dot text-base"></i>
+                </div>
+                <div>
+                    <h4 class="text-slate-900 font-black text-xs">District Wise Network</h4>
+                    <p class="text-[10px] text-slate-500 font-semibold leading-tight mt-0.5">Connecting communities in every district</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3.5 px-2 pt-2 md:pt-0">
+                <div class="w-11 h-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-clock-rotate-left text-base"></i>
+                </div>
+                <div>
+                    <h4 class="text-slate-900 font-black text-xs">Emergency Response</h4>
+                    <p class="text-[10px] text-slate-500 font-semibold leading-tight mt-0.5">Quick help in critical situations</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3.5 px-2 pt-2 md:pt-0">
+                <div class="w-11 h-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-certificate text-base"></i>
+                </div>
+                <div>
+                    <h4 class="text-slate-900 font-black text-xs">NSS Certificates</h4>
+                    <p class="text-[10px] text-slate-500 font-semibold leading-tight mt-0.5">Appreciation for lifesaving efforts</p>
                 </div>
             </div>
         </div>
@@ -228,7 +266,7 @@
             <div class="space-y-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-sm shrink-0 border border-blue-900">
-                        <img src="/static/images/nss-logo.jpg" alt="NSS Logo" class="w-full h-full object-cover">
+                        <img src="{% static 'images/nss-logo.jpg' %}" alt="NSS Logo" class="w-full h-full object-cover">
                     </div>
                     <div>
                         <h2 class="text-slate-900 font-black text-base tracking-tight leading-tight">An Initiative by National Service Scheme (NSS)</h2>
@@ -314,7 +352,7 @@
             <!-- Card A+ -->
             <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-red-600 transition-all cursor-pointer">
                 <div class="size-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 font-black text-xl">A+</div>
-                <span class="text-[10px] font-bold text-emerald-605 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</span>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</span>
                 <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
                     <div class="bg-red-600 h-full rounded-full w-[85%]"></div>
                 </div>
@@ -323,7 +361,7 @@
             <!-- Card A- -->
             <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-red-600 transition-all cursor-pointer">
                 <div class="size-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 font-black text-xl">A-</div>
-                <span class="text-[10px] font-bold text-orange-655 bg-orange-50 px-2 py-0.5 rounded-full">Low</span>
+                <span class="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">Low</span>
                 <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
                     <div class="bg-red-600 h-full rounded-full w-[30%]"></div>
                 </div>
@@ -332,7 +370,7 @@
             <!-- Card B+ -->
             <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-red-600 transition-all cursor-pointer">
                 <div class="size-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 font-black text-xl">B+</div>
-                <span class="text-[10px] font-bold text-emerald-655 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</span>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</span>
                 <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
                     <div class="bg-red-600 h-full rounded-full w-[70%]"></div>
                 </div>
@@ -341,7 +379,7 @@
             <!-- Card B- -->
             <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-red-600 transition-all cursor-pointer">
                 <div class="size-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 font-black text-xl">B-</div>
-                <span class="text-[10px] font-bold text-red-655 bg-red-50 px-2 py-0.5 rounded-full">Critical</span>
+                <span class="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Critical</span>
                 <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
                     <div class="bg-red-600 h-full rounded-full w-[12%]"></div>
                 </div>
@@ -350,7 +388,7 @@
             <!-- Card O+ -->
             <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-red-600 transition-all cursor-pointer">
                 <div class="size-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 font-black text-xl">O+</div>
-                <span class="text-[10px] font-bold text-emerald-655 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</span>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</span>
                 <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
                     <div class="bg-red-600 h-full rounded-full w-[95%]"></div>
                 </div>
@@ -359,7 +397,7 @@
             <!-- Card O- -->
             <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-red-600 transition-all cursor-pointer">
                 <div class="size-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 font-black text-xl">O-</div>
-                <span class="text-[10px] font-bold text-red-655 bg-red-50 px-2 py-0.5 rounded-full">Critical</span>
+                <span class="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Critical</span>
                 <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
                     <div class="bg-red-600 h-full rounded-full w-[8%]"></div>
                 </div>
@@ -368,7 +406,7 @@
             <!-- Card AB+ -->
             <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-red-600 transition-all cursor-pointer">
                 <div class="size-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 font-black text-xl">AB+</div>
-                <span class="text-[10px] font-bold text-emerald-655 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</span>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</span>
                 <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
                     <div class="bg-red-600 h-full rounded-full w-[60%]"></div>
                 </div>
@@ -377,7 +415,7 @@
             <!-- Card AB- -->
             <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-red-600 transition-all cursor-pointer">
                 <div class="size-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 font-black text-xl">AB-</div>
-                <span class="text-[10px] font-bold text-orange-655 bg-orange-50 px-2 py-0.5 rounded-full">Low</span>
+                <span class="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">Low</span>
                 <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
                     <div class="bg-red-600 h-full rounded-full w-[25%]"></div>
                 </div>
@@ -476,20 +514,20 @@
                     <div class="flex items-center justify-between text-[11px]">
                         <span class="text-slate-400 font-medium">Priority:</span>
                         {% if case.priority == 'CRITICAL' %}
-                        <span class="px-2 py-0.5 rounded bg-red-100 text-red-705 border border-red-250 text-[8px] font-extrabold uppercase animate-pulse inline-flex items-center gap-0.5">Critical</span>
+                        <span class="px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200 text-[8px] font-extrabold uppercase animate-pulse inline-flex items-center gap-0.5">Critical</span>
                         {% else %}
-                        <span class="px-2 py-0.5 rounded bg-amber-55 text-amber-705 border border-amber-250 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5">Urgent</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 text-[8px] font-extrabold uppercase inline-flex items-center gap-0.5">Urgent</span>
                         {% endif %}
                     </div>
                     {% if case.hospital_name %}
                     <div class="text-[10px] text-slate-500 bg-slate-50/50 p-2 rounded-lg border border-slate-100">
-                        <i class="fa-solid fa-hospital text-slate-450 mr-1"></i> <span class="font-bold">{{ case.hospital_name }}</span>
+                        <i class="fa-solid fa-hospital text-slate-400 mr-1"></i> <span class="font-bold">{{ case.hospital_name }}</span>
                     </div>
                     {% endif %}
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-[9px] text-slate-450 font-semibold flex items-center gap-0.5">
+                    <span class="text-[9px] text-slate-400 font-semibold flex items-center gap-0.5">
                         <span class="material-symbols-outlined text-[10px] block">schedule</span> {{ case.requested_at|timesince }} ago
                     </span>
                     <a href="{% url 'request_status' %}?phone={{ case.contact_number }}"
@@ -515,7 +553,7 @@
                     <h2 class="text-slate-900 text-2xl font-bold tracking-tight">Upcoming Camps</h2>
                     <p class="text-slate-500 text-sm mt-1">Join the upcoming NSS blood donation drives</p>
                 </div>
-                <a href="{% url 'camp_list' %}" class="text-red-650 text-sm font-bold flex items-center gap-1 hover:underline">
+                <a href="{% url 'camp_list' %}" class="text-red-600 text-sm font-bold flex items-center gap-1 hover:underline">
                     View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
             </div>
@@ -545,7 +583,7 @@
                     </div>
                 </article>
                 {% empty %}
-                <div class="bg-white border border-slate-200/60 rounded-2xl p-8 text-center text-slate-450 italic text-xs shadow-sm">
+                <div class="bg-white border border-slate-200/60 rounded-2xl p-8 text-center text-slate-400 italic text-xs shadow-sm">
                     No upcoming blood donation camps currently scheduled.
                 </div>
                 {% endfor %}
@@ -559,7 +597,7 @@
                     <h2 class="text-slate-900 text-2xl font-bold tracking-tight">Recent Camps</h2>
                     <p class="text-slate-500 text-sm mt-1">Our impact & completed gallery</p>
                 </div>
-                <a href="{% url 'camp_list' %}" class="text-red-650 text-sm font-bold flex items-center gap-1 hover:underline">
+                <a href="{% url 'camp_list' %}" class="text-red-600 text-sm font-bold flex items-center gap-1 hover:underline">
                     View History <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
             </div>
@@ -589,7 +627,7 @@
                     </div>
                 </article>
                 {% empty %}
-                <div class="bg-white border border-slate-200/60 rounded-2xl p-8 text-center text-slate-455 italic text-xs shadow-sm">
+                <div class="bg-white border border-slate-200/60 rounded-2xl p-8 text-center text-slate-400 italic text-xs shadow-sm">
                     No completed past camps listed yet.
                 </div>
                 {% endfor %}
@@ -647,7 +685,7 @@
                 <p class="text-xs text-slate-500 leading-relaxed font-medium">
                     Have questions about blood donation camps, verified registries, or need urgent help? Connect with the NSS coordinator office directly.
                 </p>
-                <div class="space-y-3 text-xs text-slate-650 font-semibold pt-2">
+                <div class="space-y-3 text-xs text-slate-600 font-semibold pt-2">
                     <div class="flex items-center gap-3">
                         <i class="fa-solid fa-location-dot text-red-600 text-sm"></i>
                         <span>NSS Office, Vidya Vihar Institute of Technology, Purnea, Bihar - 854303</span>
@@ -664,7 +702,7 @@
             </div>
             
             <!-- Right: Alert box -->
-            <div class="bg-red-50 border border-red-150 p-6 rounded-2xl flex flex-col justify-between space-y-3">
+            <div class="bg-red-50 border border-red-100 p-6 rounded-2xl flex flex-col justify-between space-y-3">
                 <div class="flex items-center gap-3">
                     <i class="fa-solid fa-circle-exclamation text-red-600 text-xl animate-pulse"></i>
                     <h4 class="text-slate-900 font-black text-xs uppercase tracking-wider">Are you facing a medical emergency?</h4>
@@ -765,5 +803,6 @@
     </section>
     {% endif %}
 
+    </div>
 </div>
 {% endblock %}

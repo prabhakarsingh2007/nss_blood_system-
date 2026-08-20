@@ -295,7 +295,7 @@
     </nav>
 
     <!-- Core Content Container Injector -->
-    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+    <main class="flex-grow {% if request.resolver_match.url_name == 'home' %}w-full py-0{% else %}max-w-6xl w-full mx-auto px-4 sm:px-6 py-8{% endif %}">
 
         <!-- Live Alert Notification Toast Stack -->
         {% if messages %}
