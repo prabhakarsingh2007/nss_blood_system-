@@ -31,7 +31,8 @@ class RegistrationFormTests(TestCase):
         self.assertEqual(profile.blood_group, "O+")
         self.assertEqual(profile.gender, "Male")
         self.assertEqual(profile.age, 25)
-        self.assertTrue(profile.otp_verified)
+        self.assertFalse(profile.otp_verified)
+        self.assertTrue(bool(profile.otp_code))
 
     def test_invalid_name_fails(self):
         from accounts.forms import UserRegisterForm

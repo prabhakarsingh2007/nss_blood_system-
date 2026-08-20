@@ -1,3 +1,5 @@
+from datetime import timedelta
+from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
@@ -32,6 +34,21 @@ def request_form(request):
         form = BloodRequestForm(request.POST, request.FILES)
         if form.is_valid():
             req = form.save(commit=False)
+            
+            # Check for duplicates (submitted in last 15 minutes)
+            time_limit = timezone.now() - timedelta(minutes=15)
+            duplicate_exists = BloodRequest.objects.filter(
+                contact_number=req.contact_number,
+                blood_group=req.blood_group,
+                city=req.city,
+                hospital_name=req.hospital_name,
+                requested_at__gte=time_limit,
+                status__in=["PENDING", "APPROVED", "ASSIGNED"]
+            ).exists()
+            if duplicate_exists:
+                messages.error(request, "A similar active blood request has already been submitted from this phone number recently. Please wait a few minutes before trying again.")
+                return render(request, "requests/request_form.html", {"form": form})
+
             if request.user.is_authenticated:
                 req.requester = request.user
                 req.otp_verified = True
@@ -132,6 +149,23 @@ def request_status(request):
     phone_verified = False
     requests = []
 
+    # Handle POST verification of OTP
+    if request.method == "POST" and request.POST.get("action") == "verify_search_otp":
+        otp_code = request.POST.get("otp", "").strip()
+        pending_phone = request.session.get('pending_search_phone')
+        pending_otp = request.session.get('pending_search_otp')
+        if pending_phone and pending_otp and pending_otp == otp_code:
+            if 'verified_search_phones' not in request.session:
+                request.session['verified_search_phones'] = []
+            if pending_phone not in request.session['verified_search_phones']:
+                request.session['verified_search_phones'].append(pending_phone)
+            if hasattr(request.session, 'modified'):
+                request.session.modified = True
+            messages.success(request, "Phone number verified successfully!")
+            return redirect(reverse("request_status") + f"?phone={pending_phone}")
+        else:
+            messages.error(request, "Invalid OTP code.")
+
     if code and phone:
         requests = BloodRequest.objects.filter(request_code=code, contact_number=phone).select_related("assigned_donor", "fulfilled_by").order_by("-requested_at")
         phone_verified = True
@@ -148,8 +182,27 @@ def request_status(request):
         requests = BloodRequest.objects.filter(requester=request.user).select_related("assigned_donor", "fulfilled_by").order_by("-requested_at")
         phone_verified = True
     elif phone:
-        phone_verified = True
         requests = BloodRequest.objects.filter(contact_number=phone).select_related("assigned_donor", "fulfilled_by").order_by("-requested_at")
+        
+        # Check if this phone number is verified in session
+        verified_phones = request.session.get('verified_search_phones', [])
+        verified_status_phone = request.session.get('verified_status_phone', '')
+        if phone in verified_phones or phone == verified_status_phone:
+            phone_verified = True
+        else:
+            phone_verified = False
+            # Generate and send OTP if we have requests and haven't sent one yet
+            if requests.exists():
+                if request.session.get('pending_search_phone') != phone or not request.session.get('pending_search_otp'):
+                    otp = generate_secure_otp(6)
+                    request.session['pending_search_phone'] = phone
+                    request.session['pending_search_otp'] = otp
+                    if hasattr(request.session, 'modified'):
+                        request.session.modified = True
+                    
+                    sms_msg = f"NSS Blood: Your search verification OTP is {otp}."
+                    send_sms_async.delay(phone, sms_msg)
+                    messages.info(request, "A verification OTP has been sent to your phone number.")
 
     context = {
         "requests": requests,

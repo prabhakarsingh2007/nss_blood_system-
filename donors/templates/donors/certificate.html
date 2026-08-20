@@ -30,7 +30,7 @@
         <!-- Donor Name -->
         <div class="py-4 relative z-10">
             <h2 class="text-3xl font-black text-slate-900 border-b border-t border-slate-100 py-4 inline-block px-12 tracking-tight font-display">
-                {{ donation.donor.full_name }}
+                {{ donation.donor.full_name|default:"Student Volunteer" }}
             </h2>
         </div>
 
@@ -38,7 +38,7 @@
         <div class="space-y-4 max-w-md mx-auto text-slate-600 text-xs leading-relaxed font-medium relative z-10">
             <p>
                 for voluntarily donating blood on <strong class="text-slate-900 font-bold">{{ donation.date|date:'d F Y' }}</strong>
-                at <strong class="text-slate-900 font-bold">{{ donation.request.hospital_name }}</strong>.
+                at <strong class="text-slate-900 font-bold">{{ donation.camp.title|default:donation.request.hospital_name|default:"VVIT Purnea Camp" }}</strong>.
             </p>
             <p class="text-[10px] text-slate-400 italic">
                 In sincere recognition of this selfless contribution to saving lives in times of emergency.

@@ -12,7 +12,8 @@ def register(request):
             user = form.save()
             login(request, user)
             messages.success(request, "Account created successfully.")
-            return redirect("donor_dashboard")
+            messages.info(request, "Please enter the 6-digit OTP sent to your phone.")
+            return redirect("donor_verify_otp")
     else:
         form = UserRegisterForm()
     return render(request, "accounts/register.html", {"form": form})

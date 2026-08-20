@@ -42,6 +42,12 @@ class DonorProfileForm(forms.ModelForm):
             phone = phone.strip()
             if not phone.isdigit() or len(phone) < 10 or len(phone) > 12:
                 raise forms.ValidationError("Enter a valid 10 to 12 digit phone number.")
+            
+            qs = DonorProfile.objects.filter(phone=phone)
+            if self.instance and self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError("A donor with this phone number is already registered.")
         return phone
 
     def clean_last_donation_date(self):

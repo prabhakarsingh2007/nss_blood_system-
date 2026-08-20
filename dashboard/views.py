@@ -247,12 +247,26 @@ def _handle_admin_broadcast_create(request):
 def _handle_admin_camp_create(request):
     form = BloodCampForm(request.POST, request.FILES)
     if form.is_valid():
+        gallery_images = request.FILES.getlist("gallery_images")
+        from donors.models import validate_camp_image
+        
+        # Pre-validate all gallery images first
+        valid = True
+        for img in gallery_images:
+            try:
+                validate_camp_image(img)
+            except Exception as e:
+                form.add_error(None, f"Gallery Image '{img.name}': {str(e)}")
+                valid = False
+        
+        if not valid:
+            return False
+
         camp = form.save(commit=False)
         camp.created_by = request.user
         camp.save()
 
         # Handle multiple gallery images
-        gallery_images = request.FILES.getlist("gallery_images")
         from donors.models import CampImage
         for img in gallery_images:
             CampImage.objects.create(camp=camp, image=img)

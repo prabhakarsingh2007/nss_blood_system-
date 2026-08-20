@@ -97,6 +97,8 @@ class UserRegisterForm(forms.Form):
             phone = phone.strip()
             if not phone.isdigit() or len(phone) != 10:
                 raise forms.ValidationError("Phone number must be exactly 10 digits.")
+            if DonorProfile.objects.filter(phone=phone).exists():
+                raise forms.ValidationError("A donor with this phone number is already registered.")
         return phone
 
     def clean_age(self):
@@ -139,8 +141,11 @@ class UserRegisterForm(forms.Form):
             first_name=first_name,
             last_name=last_name
         )
+        
+        # Import tasks here to avoid circular imports if any
+        from core.tasks import send_sms_async
 
-        DonorProfile.objects.create(
+        profile = DonorProfile.objects.create(
             user=user,
             full_name=name,
             blood_group=self.cleaned_data["blood_group"],
@@ -148,10 +153,18 @@ class UserRegisterForm(forms.Form):
             age=self.cleaned_data["age"],
             phone=self.cleaned_data["phone"],
             city=self.cleaned_data["city"],
-            otp_verified=True,
+            otp_verified=False,
             verification_status="PENDING",
             available=True
         )
+
+        otp = profile.generate_otp()
+        profile.save(update_fields=["otp_code", "otp_verified", "otp_created_at"])
+
+        # Send SMS
+        otp_msg = f"NSS Blood: Your donor profile verification OTP is {otp}. Expiry: 10 mins."
+        send_sms_async.delay(profile.phone, otp_msg)
+
         return user
 
 

@@ -336,9 +336,14 @@ def donation_certificate(request, history_id):
         pk=history_id,
     )
 
-    if not request.user.is_staff and donation_history.donor.user_id != request.user.id:
-        messages.error(request, "You are not allowed to view this certificate.")
-        return redirect("dashboard_router")
+    if donation_history.donor is None:
+        if not request.user.is_staff:
+            messages.error(request, "You are not allowed to view this certificate.")
+            return redirect("dashboard_router")
+    else:
+        if not request.user.is_staff and donation_history.donor.user_id != request.user.id:
+            messages.error(request, "You are not allowed to view this certificate.")
+            return redirect("dashboard_router")
 
     if not donation_history.has_certificate:
         messages.error(request, "Certificate is not available until NSS verification is completed.")
