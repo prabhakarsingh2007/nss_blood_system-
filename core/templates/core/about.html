@@ -253,7 +253,7 @@
             <p class="text-slate-500 text-xs font-semibold mt-1">Official leadership guides steering volunteer initiatives at Vidya Vihar Institute of Technology.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             
             <!-- Chairman Card -->
             <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col items-center justify-between text-center">
@@ -273,8 +273,9 @@
             <!-- Director Card -->
             <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col items-center justify-between text-center">
                 <div class="space-y-3 w-full flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 shadow-inner">
-                        <i class="fa-solid fa-user-graduate text-4xl"></i>
+                    <!-- Director Image -->
+                    <div class="w-24 h-24 rounded-full overflow-hidden border border-slate-200 shrink-0 shadow-inner bg-slate-50">
+                        <img src="{% static 'images/director.jpg' %}" alt="Prof. (Dr.) Arvind Sharma" class="w-full h-full object-cover">
                     </div>
                     <div class="space-y-1">
                         <h4 class="text-slate-955 font-black text-sm leading-snug">Prof. (Dr.) Arvind Sharma</h4>
@@ -287,8 +288,9 @@
             <!-- Principal Card -->
             <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col items-center justify-between text-center">
                 <div class="space-y-3 w-full flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 shadow-inner">
-                        <i class="fa-solid fa-award text-4xl"></i>
+                    <!-- Principal Image -->
+                    <div class="w-24 h-24 rounded-full overflow-hidden border border-slate-200 shrink-0 shadow-inner bg-slate-50">
+                        <img src="{% static 'images/principal.jpg' %}" alt="Dr. Sujit Kumar" class="w-full h-full object-cover">
                     </div>
                     <div class="space-y-1">
                         <h4 class="text-slate-955 font-black text-sm leading-snug">Dr. Sujit Kumar</h4>
@@ -298,15 +300,31 @@
                 <span class="text-slate-450 text-[10px] font-bold uppercase tracking-wide pt-2 border-t border-slate-50 w-full block">VVIT Purnea</span>
             </article>
 
-            <!-- NSS Programme Officer Card -->
+            <!-- NSS Officer Card - Vivek Ray -->
             <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col items-center justify-between text-center">
                 <div class="space-y-3 w-full flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 shadow-inner">
-                        <i class="fa-solid fa-users text-4xl"></i>
+                    <!-- NSS Officer Image -->
+                    <div class="w-24 h-24 rounded-full overflow-hidden border border-slate-200 shrink-0 shadow-inner bg-slate-50">
+                        <img src="{% static 'images/nss_officer_vivek.jpg' %}" alt="Vivek Ray" class="w-full h-full object-cover">
                     </div>
                     <div class="space-y-1">
-                        <h4 class="text-slate-955 font-black text-sm leading-snug">NSS Programme Officer / Coordinator</h4>
-                        <p class="text-slate-450 text-[10px] font-semibold italic">Official details to be updated</p>
+                        <h4 class="text-slate-955 font-black text-sm leading-snug">Vivek Ray</h4>
+                        <p class="text-red-655 text-[10px] font-bold uppercase tracking-wider">NSS Programme Officer</p>
+                    </div>
+                </div>
+                <span class="text-slate-450 text-[10px] font-bold uppercase tracking-wide pt-2 border-t border-slate-50 w-full block">VVIT Unit</span>
+            </article>
+
+            <!-- NSS Officer Card - Rohit Jha -->
+            <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col items-center justify-between text-center">
+                <div class="space-y-3 w-full flex flex-col items-center">
+                    <!-- NSS Officer Image -->
+                    <div class="w-24 h-24 rounded-full overflow-hidden border border-slate-200 shrink-0 shadow-inner bg-slate-50">
+                        <img src="{% static 'images/nss_officer_rohit.jpg' %}" alt="Rohit Jha" class="w-full h-full object-cover">
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="text-slate-955 font-black text-sm leading-snug">Rohit Jha</h4>
+                        <p class="text-red-655 text-[10px] font-bold uppercase tracking-wider">NSS Programme Officer</p>
                     </div>
                 </div>
                 <span class="text-slate-450 text-[10px] font-bold uppercase tracking-wide pt-2 border-t border-slate-50 w-full block">VVIT Unit</span>
