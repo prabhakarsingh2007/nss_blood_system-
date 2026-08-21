@@ -40,6 +40,21 @@ def home(request):
         )
     ).order_by("priority_order", "-requested_at")[:6]
 
+    # Query verified successful donations and extract unique donors to avoid duplicates
+    all_verified = DonationHistory.objects.filter(
+        status="SUCCESS",
+        nss_verified=True
+    ).select_related('donor', 'camp', 'request').order_by("-date")
+
+    seen_donors = set()
+    verified_donations = []
+    for donation in all_verified:
+        if donation.donor_id and donation.donor_id not in seen_donors:
+            seen_donors.add(donation.donor_id)
+            verified_donations.append(donation)
+            if len(verified_donations) >= 6:
+                break
+
     context = {
         "donor_count": DonorProfile.objects.filter(verification_status="APPROVED", otp_verified=True).count(),
         "active_requests": BloodRequest.objects.filter(status="PENDING").count(),
@@ -52,6 +67,7 @@ def home(request):
         "emergency_cases": emergency_cases,
         "upcoming_camps": upcoming_camps,
         "completed_camps": completed_camps,
+        "verified_donations": verified_donations,
     }
     return render(request, "core/home.html", context)
 

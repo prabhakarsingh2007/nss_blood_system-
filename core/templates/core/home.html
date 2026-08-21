@@ -636,6 +636,91 @@
 
     </div>
 
+    <!-- ================= OUR BLOOD HEROES ================= -->
+    <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-slate-100 pb-3 gap-4">
+            <div>
+                <h2 class="text-slate-900 text-2xl font-black tracking-tight">Our Blood Heroes</h2>
+                <p class="text-slate-500 text-xs font-semibold mt-1">Honouring NSS volunteers who contribute to saving lives through blood donation.</p>
+            </div>
+            <a href="{% url 'donor_list' %}" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all border-0 cursor-pointer shrink-0">
+                <span>View Registered Donors</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for donation in verified_donations %}
+            <article class="bg-white border border-slate-200/60 rounded-3xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 relative group overflow-hidden">
+                <!-- Red top decorative line -->
+                <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-500 to-rose-600"></div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4">
+                        <!-- Clean Default SVG Avatar -->
+                        <div class="w-12 h-12 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shadow-inner shrink-0 relative">
+                            <i class="fa-solid fa-user-shield text-lg"></i>
+                            <span class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-650 text-white border-2 border-white text-[8px]"><i class="fa-solid fa-heart"></i></span>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-slate-950 font-black text-sm leading-snug truncate">{{ donation.donor.full_name }}</h4>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                                <i class="fa-solid fa-calendar-check text-[10px]"></i>
+                                Donated {{ donation.date|date:'d M Y' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-slate-50">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400 font-bold text-[10px] uppercase tracking-wider">Blood Group</span>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-red-50 border border-red-100 font-black text-red-700 text-xs">
+                                {{ donation.donor.blood_group }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400 font-bold text-[10px] uppercase tracking-wider">Donated At</span>
+                            <span class="text-slate-700 font-bold text-xs truncate max-w-[160px] flex items-center gap-1.5">
+                                <i class="fa-solid fa-tent text-[10px] text-slate-400"></i>
+                                {{ donation.camp.title|default:"Direct Donation Support" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+                    <!-- Verified badge -->
+                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-100/60 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                        Donation Verified
+                    </span>
+                    
+                    {% if donation.certificate_id %}
+                    <a href="{% url 'donation_certificate' donation.id %}" target="_blank" class="text-slate-505 hover:text-slate-800 text-[10px] font-extrabold uppercase tracking-wider inline-flex items-center gap-1 transition-colors">
+                        <span>Certificate</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </article>
+            {% empty %}
+            <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-white border border-slate-200/60 rounded-3xl p-12 text-center text-slate-400 font-semibold italic shadow-sm flex flex-col items-center justify-center gap-3">
+                <div class="w-14 h-14 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 shadow-inner">
+                    <i class="fa-solid fa-award text-2xl animate-bounce"></i>
+                </div>
+                <div>
+                    <p class="text-slate-800 font-extrabold text-sm">Be the first to become one of our Blood Heroes.</p>
+                    <p class="text-slate-400 font-bold text-[10px] uppercase tracking-wider mt-0.5">Register as a donor and contribute to save lives.</p>
+                </div>
+                <a href="{% url 'donor_register' %}" class="mt-2 inline-flex items-center gap-1.5 bg-red-650 hover:bg-red-750 bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all border-0 cursor-pointer">
+                    <i class="fa-solid fa-user-plus text-xs"></i>
+                    <span>Register Now</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
     <!-- FAQ SECTION -->
     <section class="bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
         <div class="text-center max-w-sm mx-auto space-y-1">
