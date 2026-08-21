@@ -242,6 +242,10 @@ def _handle_admin_broadcast_create(request):
         messages.success(request, "Mass message published.")
         log_activity(request.user, "BROADCAST_ACTION", f"Published mass message: '{broadcast.message[:50]}...'.")
         return True
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"Broadcast {field.capitalize()}: {error}")
     return False
 
 def _handle_admin_camp_create(request):
@@ -260,6 +264,9 @@ def _handle_admin_camp_create(request):
                 valid = False
         
         if not valid:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Camp {field.capitalize() if field != '__all__' else ''}: {error}")
             return False
 
         camp = form.save(commit=False)
@@ -274,6 +281,10 @@ def _handle_admin_camp_create(request):
         messages.success(request, "Blood camp created successfully.")
         log_activity(request.user, "CAMP_ACTION", f"Scheduled blood camp: '{camp.title}' on {camp.date} at {camp.location}.")
         return True
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"Camp {field.capitalize() if field != '__all__' else ''}: {error}")
     return False
 
 def _handle_admin_camp_update_status(request):
