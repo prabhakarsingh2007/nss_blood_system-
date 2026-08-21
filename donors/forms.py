@@ -87,8 +87,8 @@ class BloodCampForm(forms.ModelForm):
     def clean_date(self):
         date = self.cleaned_data.get("date")
         status = self.cleaned_data.get("status")
-        # Only check future date if creating a new camp
-        if not self.instance.pk and status in {None, "AUTO", "UPCOMING"}:
+        # Only check future date if creating a new camp with UPCOMING or default (None) status
+        if not self.instance.pk and status in {None, "UPCOMING"}:
             if date and date < timezone.localdate():
                 raise forms.ValidationError("Blood camp cannot be scheduled in the past.")
         return date
