@@ -324,6 +324,82 @@ def _handle_admin_nss_verify_donation(request):
         else:
             messages.info(request, f"Already NSS verified. Certificate {donation_history.certificate_id} is available.")
 
+def _handle_admin_log_manual_donation(request):
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    
+    full_name = request.POST.get("full_name")
+    phone = request.POST.get("phone")
+    blood_group = request.POST.get("blood_group")
+    age = request.POST.get("age")
+    city = request.POST.get("city")
+    donation_date = request.POST.get("donation_date")
+    profile_pic = request.FILES.get("profile_pic")
+    
+    if not all([full_name, phone, blood_group, age, city, donation_date]):
+        messages.error(request, "Please fill in all required fields.")
+        return False
+        
+    try:
+        # Create or get dummy user for this donor
+        username = f"manual_{phone}"
+        user, created = User.objects.get_or_create(username=username)
+        if created:
+            user.set_unusable_password()
+            user.save()
+            
+        # Create or update DonorProfile
+        donor, profile_created = DonorProfile.objects.get_or_create(
+            user=user,
+            defaults={
+                "full_name": full_name,
+                "phone": phone,
+                "blood_group": blood_group,
+                "age": age,
+                "city": city,
+                "verification_status": "APPROVED",
+                "otp_verified": True,
+            }
+        )
+        if not profile_created:
+            # Update existing profile
+            donor.full_name = full_name
+            donor.blood_group = blood_group
+            donor.age = age
+            donor.city = city
+            donor.verification_status = "APPROVED"
+            donor.otp_verified = True
+            
+        if profile_pic:
+            donor.profile_pic = profile_pic
+            
+        donor.donation_count += 1
+        donor.last_donation_date = donation_date
+        donor.recalculate_rating()
+        donor.save()
+        
+        # Create DonationHistory
+        dh = DonationHistory.objects.create(
+            donor=donor,
+            status=DonationHistory.STATUS_SUCCESS,
+            nss_verified=True,
+            verified_by=request.user,
+            verified_at=timezone.now()
+        )
+        # Update the donation history date manually since it uses auto_now_add
+        DonationHistory.objects.filter(id=dh.id).update(date=donation_date)
+        
+        # Generate certificate manually
+        dh.refresh_from_db()
+        dh.verify_by_nss(request.user)
+        
+        messages.success(request, f"Manual donation for {full_name} logged successfully.")
+        log_activity(request.user, "DONATION_COMPLETE", f"Manually logged past donation for {full_name}.")
+        return True
+    except Exception as e:
+        messages.error(request, f"Failed to log manual donation: {str(e)}")
+        return False
+
 def _handle_admin_hospital_create(request, form=None):
     if form is None:
         form = HospitalForm(request.POST)
@@ -436,6 +512,10 @@ def admin_dashboard(request):
         elif action == "donor_verify":
             _handle_admin_donor_verify(request)
             return redirect(f"{reverse('admin_dashboard')}#verify-donors")
+
+        elif action == "log_manual_donation":
+            _handle_admin_log_manual_donation(request)
+            return redirect(f"{reverse('admin_dashboard')}#log-manual-donation")
 
         elif action == "broadcast_create":
             broadcast_form = BroadcastMessageForm(request.POST)

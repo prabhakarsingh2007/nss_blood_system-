@@ -657,11 +657,18 @@
                 
                 <div class="space-y-4">
                     <div class="flex items-center gap-4">
+                        {% if donation.donor.profile_pic %}
+                        <div class="w-12 h-12 rounded-2xl border border-slate-200 shadow-inner shrink-0 relative overflow-hidden bg-slate-100">
+                            <img src="{{ donation.donor.profile_pic.url }}" alt="{{ donation.donor.full_name }}" class="w-full h-full object-cover">
+                            <span class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-650 text-white border-2 border-white text-[8px] z-10"><i class="fa-solid fa-heart"></i></span>
+                        </div>
+                        {% else %}
                         <!-- Clean Default SVG Avatar -->
                         <div class="w-12 h-12 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shadow-inner shrink-0 relative">
                             <i class="fa-solid fa-user-shield text-lg"></i>
                             <span class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-650 text-white border-2 border-white text-[8px]"><i class="fa-solid fa-heart"></i></span>
                         </div>
+                        {% endif %}
                         <div class="min-w-0">
                             <h4 class="text-slate-950 font-black text-sm leading-snug truncate">{{ donation.donor.full_name }}</h4>
                             <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
