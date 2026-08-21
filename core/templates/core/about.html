@@ -4,175 +4,508 @@
 <!-- ================= DYNAMIC SEO BLOCKS ================= -->
 {% block title %}About Us | NSS Emergency Blood Network Bihar | VVIT Purnea{% endblock %}
 
-{% block meta_description %}Learn more about the NSS Emergency Blood Network at Vidya Vihar Institute of Technology, Purnea, Bihar. A community initiative to manage verified blood registries and coordinate emergency blood donations.{% endblock %}
+{% block meta_description %}Learn more about the NSS Emergency Blood Network at Vidya Vihar Institute of Technology, Purnea, Bihar. An NSS student welfare initiative facilitating emergency blood matching and donor registration.{% endblock %}
 
 {% block content %}
 <div class="space-y-16 py-4">
 
-    <!-- ===== SECTION 1: HEADER & COLLEGE IDENTITY ===== -->
-    <header class="text-center space-y-6 max-w-4xl mx-auto">
-        <div class="flex items-center justify-center gap-4">
-            <!-- College Logo & NSS Logo side by side -->
-            <div class="flex items-center gap-3">
-                <div class="w-16 h-16 rounded-full overflow-hidden border border-blue-900 shadow-sm shrink-0 bg-white flex items-center justify-center">
-                    <img src="{% static 'images/vvit-logo.png' %}" alt="VVIT Logo" class="w-full h-full object-contain">
-                </div>
-                <div class="w-16 h-16 rounded-full overflow-hidden border border-blue-900 shadow-sm shrink-0 bg-white flex items-center justify-center">
-                    <img src="{% static 'images/nss-logo.jpg' %}" alt="NSS Logo" class="w-full h-full object-cover">
-                </div>
-            </div>
-            <div class="h-8 w-[1px] bg-slate-300"></div>
-            <div class="text-left">
-                <span class="block text-slate-500 text-[10px] font-extrabold uppercase tracking-widest">A Student-led Initiative of</span>
-                <span class="block text-slate-900 font-black text-sm leading-tight uppercase">Vidya Vihar Institute of Technology</span>
-            </div>
-        </div>
+    <!-- ================= 1. ABOUT HERO SECTION ================= -->
+    <header class="bg-white border border-slate-200/60 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8 relative overflow-hidden">
+        <!-- Accent decorative top bar -->
+        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-600 to-rose-600"></div>
 
-        <div class="space-y-3">
-            <h1 class="text-slate-900 dark:text-white text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                About the NSS Emergency <br class="hidden sm:inline"/>
-                <span class="text-[#dc2626]">Blood Network</span> Bihar
-            </h1>
-            <p class="text-slate-500 dark:text-gray-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-                Empowering communities, saving lives, and building a trusted registry of active student volunteers at VVIT, Purnea.
-            </p>
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="space-y-5 max-w-2xl text-left">
+                <!-- Branding badge -->
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full overflow-hidden border border-blue-900 shadow-sm shrink-0 bg-white flex items-center justify-center p-1">
+                        <img src="{% static 'images/vvit-logo.png' %}" alt="VVIT Logo" class="w-full h-full object-contain">
+                    </div>
+                    <div class="w-12 h-12 rounded-full overflow-hidden border border-blue-900 shadow-sm shrink-0 bg-white flex items-center justify-center">
+                        <img src="{% static 'images/nss-logo.jpg' %}" alt="NSS Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div class="h-6 w-[1px] bg-slate-355"></div>
+                    <div>
+                        <span class="block text-slate-800 font-extrabold text-xs uppercase tracking-wide">Vidya Vihar Institute of Technology</span>
+                        <span class="block text-slate-400 text-[10px] font-bold">Purnea, Bihar</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <span class="text-red-600 text-xs font-bold uppercase tracking-wider block">An NSS Initiative for Emergency Blood Support</span>
+                    <h1 class="text-slate-900 font-black text-3xl sm:text-4xl md:text-5xl tracking-tight leading-tight">
+                        About NSS Emergency <br/>
+                        <span class="text-red-600">Blood Network</span> Bihar
+                    </h1>
+                    <p class="text-slate-500 text-xs sm:text-sm leading-relaxed font-semibold">
+                        NSS Emergency Blood Network Bihar is a digital initiative designed to strengthen emergency blood support by connecting verified blood donors with people in need during emergency situations.
+                    </p>
+                </div>
+
+                <!-- CTA buttons -->
+                <div class="flex flex-wrap items-center gap-3 pt-2">
+                    <a href="{% url 'search_donors' %}" class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all border-0 cursor-pointer">
+                        <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
+                        <span>Find a Donor</span>
+                    </a>
+                    <a href="{% url 'request_form' %}" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all border-0 cursor-pointer">
+                        <i class="fa-solid fa-circle-exclamation text-[10px]"></i>
+                        <span>Request Blood</span>
+                    </a>
+                    <a href="{% url 'request_status' %}" class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-xs font-bold transition-all border-0 cursor-pointer">
+                        <i class="fa-solid fa-chart-line text-[10px]"></i>
+                        <span>Track Request</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Side abstract visual vector -->
+            <div class="w-full max-w-[240px] aspect-square flex items-center justify-center shrink-0">
+                <div class="relative w-40 h-40 flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full bg-red-50 border border-red-100 animate-pulse"></div>
+                    <div class="relative w-28 h-28 bg-red-100/50 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-droplet text-red-600 text-5xl drop-shadow-md"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- Campus Image Banner with Identity -->
-    <section class="space-y-3">
-        <div class="relative rounded-3xl overflow-hidden shadow-md border border-slate-200/60 aspect-[16/7] md:aspect-[16/6] bg-slate-900">
-            <img src="{% static 'images/vvit-campus.jpg' %}" alt="Vidya Vihar Institute of Technology Campus" class="w-full h-full object-cover object-center" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-            
-            <div class="absolute bottom-4 left-6 sm:left-10 text-white">
-                <h4 class="font-black text-base sm:text-xl tracking-tight leading-tight">Vidya Vihar Institute of Technology</h4>
-                <p class="text-slate-350 text-[10px] sm:text-xs font-medium">Purnea, Bihar (Approved by AICTE, affiliated to BEU Patna)</p>
-            </div>
-        </div>
-    </section>
-
-
-    <!-- ===== SECTION 2: THE NSS MISSION ===== -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <!-- Text details -->
-        <div class="lg:col-span-7 space-y-5">
-            <div class="inline-flex items-center gap-2 bg-red-50 text-[#dc2626] border border-red-100 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+    <!-- ================= 2. ABOUT NSS SECTION ================= -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-10 shadow-sm">
+        <div class="lg:col-span-7 space-y-4">
+            <span class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-800 border border-blue-150 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
                 <i class="fa-solid fa-flag"></i> National Service Scheme
-            </div>
-            <h2 class="text-slate-900 dark:text-white text-2xl sm:text-3xl font-black tracking-tight leading-tight">
-                Not Me But You: <br/>
-                The Spirit of Community Volunteering
+            </span>
+            <h2 class="text-slate-900 text-2xl sm:text-3xl font-black tracking-tight leading-tight">
+                About National Service Scheme (NSS)
             </h2>
-            <div class="prose text-slate-500 dark:text-gray-400 text-xs sm:text-sm leading-relaxed space-y-4 font-medium">
+            <div class="text-slate-500 text-xs sm:text-sm font-semibold leading-relaxed space-y-3">
                 <p>
-                    The National Service Scheme (NSS) is a public service program sponsored by the Ministry of Youth Affairs and Sports, Government of India. The primary objective of NSS is to develop student personality through community service.
+                    The National Service Scheme (NSS) is a public service program sponsored by the Ministry of Youth Affairs and Sports, Government of India. With the primary focus of "Not Me But You", the objective is to develop students' personalities and character through community services.
                 </p>
                 <p>
-                    At VVIT Purnea, our active NSS unit coordinates a wide variety of social welfare campaigns. The <strong>NSS Emergency Blood Network</strong> is our core welfare initiative, enabling student-volunteers to stand as active guardians of public health.
+                    At Vidya Vihar Institute of Technology, Purnea, our student-volunteers participate actively in clean campaigns, literacy drives, and medical awareness seminars. The **NSS Emergency Blood Network** stands as our premier welfare initiative to connect community blood requirements with eligible volunteers dynamically.
                 </p>
             </div>
         </div>
-        
-        <!-- Clean volunteer graphic placeholder (No fake photos) -->
-        <div class="lg:col-span-5 bg-white border border-slate-200/60 rounded-3xl p-8 shadow-sm flex flex-col items-center justify-center space-y-6 min-h-[300px]">
-            <!-- Custom volunteer graphic SVG -->
-            <svg class="w-40 h-40 text-blue-900/90" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Group circle trust -->
-                <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4" class="opacity-30" />
-                
-                <!-- Hand in Hand graphic elements -->
-                <path d="M50 25C44 25 40 29 40 35C40 40 44 44 47 48L50 51L53 48C56 44 60 40 60 35C60 29 56 25 50 25Z" fill="#dc2626" />
-                <circle cx="50" cy="35" r="3" fill="white" />
-                
-                <!-- Group symbols -->
-                <circle cx="30" cy="55" r="8" fill="currentColor" class="opacity-20" />
-                <circle cx="70" cy="55" r="8" fill="currentColor" class="opacity-20" />
-                <circle cx="50" cy="70" r="10" fill="currentColor" class="opacity-40" />
 
-                <!-- Connecting lines -->
-                <path d="M38 55H62" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40" />
-                <path d="M50 51V60" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40" />
-            </svg>
-            <div class="text-center space-y-1">
-                <span class="block text-slate-800 font-extrabold text-sm uppercase tracking-wider">NSS Unit VVIT Purnea</span>
-                <span class="block text-slate-400 text-[10px] font-semibold">Caring, Volunteering, Supporting 24/7</span>
+        <div class="lg:col-span-5 bg-slate-50 border border-slate-100 rounded-3xl p-8 flex flex-col items-center justify-center text-center space-y-4 min-h-[250px]">
+            <img src="{% static 'images/nss-logo.jpg' %}" alt="NSS Symbol Logo" class="w-24 h-24 rounded-full border border-blue-900 object-cover shadow-sm bg-white" />
+            <div class="space-y-1">
+                <h4 class="text-slate-800 font-extrabold text-xs uppercase tracking-wide">Volunteer-Driven Community Welfare</h4>
+                <p class="text-slate-400 text-[10px] font-bold">Social Responsibility • Community service • Active participation</p>
             </div>
         </div>
     </section>
 
+    <!-- ================= 3 & 15. HOW THE SYSTEM WORKS (TIMELINE) ================= -->
+    <section class="space-y-8 bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-10 shadow-sm">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+            <h2 class="text-slate-900 text-2xl font-black tracking-tight">How the System Works</h2>
+            <p class="text-slate-400 text-xs font-semibold">An organized emergency coordination workflow powered by technology and student volunteers.</p>
+        </div>
 
-    <!-- ===== SECTION 3: BLOOD DONATION SECTION ===== -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center lg:flex-row-reverse">
+        <!-- 8-step visual timeline -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+            
+            <div class="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 relative group">
+                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-black text-xs flex items-center justify-center">1</div>
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Register as Donor</h4>
+                <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">Students and staff register as donors, filling in their blood groups and availability.</p>
+            </div>
+
+            <div class="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 relative group">
+                <div class="w-8 h-8 rounded-full bg-slate-950 text-white font-black text-xs flex items-center justify-center">2</div>
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Donor Verification</h4>
+                <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">NSS Coordinators audit profiles and verify contact details before approving them.</p>
+            </div>
+
+            <div class="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 relative group">
+                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-black text-xs flex items-center justify-center">3</div>
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Blood Request</h4>
+                <p class="text-slate-455 text-[10px] font-semibold leading-relaxed">Patient representatives post emergency blood requests with hospital details.</p>
+            </div>
+
+            <div class="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 relative group">
+                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-black text-xs flex items-center justify-center">4</div>
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Request Verification</h4>
+                <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">Coordinators verify details with medical authorities to ensure genuine necessity.</p>
+            </div>
+
+            <div class="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 relative group">
+                <div class="w-8 h-8 rounded-full bg-slate-905 text-white font-black text-xs flex items-center justify-center">5</div>
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Donor Matching</h4>
+                <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">The algorithm lists verified donors matching the blood group and location.</p>
+            </div>
+
+            <div class="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 relative group">
+                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-black text-xs flex items-center justify-center">6</div>
+                <h4 class="text-slate-905 font-extrabold text-xs uppercase tracking-wide">Donor Contact</h4>
+                <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">The system provides matched donor contacts to verified requesters for coordination.</p>
+            </div>
+
+            <div class="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 relative group">
+                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-black text-xs flex items-center justify-center">7</div>
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Donation Verification</h4>
+                <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">Following successful donation, the Admin panel audits the record to verify completion.</p>
+            </div>
+
+            <div class="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 relative group">
+                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-black text-xs flex items-center justify-center">8</div>
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Certificate Issued</h4>
+                <p class="text-slate-455 text-[10px] font-semibold leading-relaxed">A certified, verified NSS appreciation award is issued to the blood hero.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ================= 4. OUR MISSION SECTION ================= -->
+    <section class="bg-slate-900 rounded-3xl p-8 sm:p-12 text-white text-center space-y-4 relative overflow-hidden">
+        <!-- Decorative abstract glow -->
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-red-600/10 rounded-full filter blur-3xl"></div>
+        <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-blue-900/10 rounded-full filter blur-3xl"></div>
+
+        <div class="max-w-2xl mx-auto space-y-4 relative z-10">
+            <span class="text-red-500 text-xs font-black uppercase tracking-wider block">Our Mission</span>
+            <h2 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+                "To make emergency blood support faster, organized and accessible through NSS volunteers and technology."
+            </h2>
+            <p class="text-slate-450 text-xs sm:text-sm leading-relaxed font-semibold">
+                We believe in community mobilization. By utilizing audited student records and maintaining strict privacy filters, we ensure emergency support remains completely safe, ethical, and instant.
+            </p>
+        </div>
+    </section>
+
+    <!-- ================= 5. HOW NSS VOLUNTEERS CONTRIBUTE ================= -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
         
-        <!-- Clean blood graphic placeholder (No fake photos) -->
-        <div class="lg:col-span-5 lg:order-last bg-white border border-slate-200/60 rounded-3xl p-8 shadow-sm flex flex-col items-center justify-center space-y-6 min-h-[300px]">
-            <!-- Custom blood donation graphic SVG -->
-            <div class="relative w-44 h-44 flex items-center justify-center">
-                <!-- Outer Pulse ring -->
-                <div class="absolute inset-0 rounded-full bg-red-50 border border-red-100 flex items-center justify-center animate-ping" style="animation-duration: 3s;"></div>
-                
-                <div class="relative w-28 h-28 bg-red-50 rounded-full border border-red-100 flex items-center justify-center shadow-inner">
-                    <svg class="w-16 h-20 text-[#dc2626] drop-shadow-md" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
-                    </svg>
-                    <i class="fa-solid fa-heart text-white absolute text-xl animate-pulse"></i>
+        <!-- Coordinator Role Card -->
+        <div class="bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-900">
+                    <i class="fa-solid fa-user-tie text-base"></i>
+                </div>
+                <h3 class="text-slate-905 font-black text-sm uppercase tracking-wide">NSS Coordinator / Programme Officer</h3>
+            </div>
+            <ul class="space-y-2.5 text-xs text-slate-500 font-semibold pl-1">
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-blue-900 mt-0.5 shrink-0"></i>
+                    <span>Verify and audit newly registered blood donors.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-blue-900 mt-0.5 shrink-0"></i>
+                    <span>Verify and approve emergency patient requests.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-blue-900 mt-0.5 shrink-0"></i>
+                    <span>Coordinate direct communication for blood supply.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-blue-900 mt-0.5 shrink-0"></i>
+                    <span>Schedule and manage campus blood donation camps.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-blue-900 mt-0.5 shrink-0"></i>
+                    <span>Verify successful donations and issue appreciation certificates.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Volunteer Donor Role Card -->
+        <div class="bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600">
+                    <i class="fa-solid fa-hands-helping text-base"></i>
+                </div>
+                <h3 class="text-slate-900 font-black text-sm uppercase tracking-wide">NSS Volunteers & Donors</h3>
+            </div>
+            <ul class="space-y-2.5 text-xs text-slate-500 font-semibold pl-1">
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-red-600 mt-0.5 shrink-0"></i>
+                    <span>Register profiles on the network with medical history.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-red-600 mt-0.5 shrink-0"></i>
+                    <span>Maintain availability toggles and follow 90-day cooldown rules.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-red-600 mt-0.5 shrink-0"></i>
+                    <span>Participate in scheduled blood donation camps.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-red-600 mt-0.5 shrink-0"></i>
+                    <span>Donate blood to save lives in critical situations.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-red-600 mt-0.5 shrink-0"></i>
+                    <span>Download authenticated donation verification certificates.</span>
+                </li>
+            </ul>
+        </div>
+
+    </section>
+
+    <!-- ================= 6 & 7. LEADERSHIP & INSTITUTIONAL GUIDANCE ================= -->
+    <section class="space-y-6">
+        <div class="border-b border-slate-100 pb-3">
+            <h2 class="text-slate-905 text-2xl font-black tracking-tight">Leadership & Institutional Guidance</h2>
+            <p class="text-slate-500 text-xs font-semibold mt-1">Official leadership guides steering volunteer initiatives at Vidya Vihar Institute of Technology.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- Chairman Card -->
+            <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col items-center justify-between text-center">
+                <div class="space-y-3 w-full flex flex-col items-center">
+                    <!-- Clean SVG Placeholder representing leadership -->
+                    <div class="w-24 h-24 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 shadow-inner">
+                        <i class="fa-solid fa-user-tie text-4xl"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="text-slate-950 font-black text-sm leading-snug">Er. Rajesh Chandra Mishra</h4>
+                        <p class="text-red-655 text-[10px] font-bold uppercase tracking-wider">Chairman</p>
+                    </div>
+                </div>
+                <span class="text-slate-450 text-[10px] font-bold uppercase tracking-wide pt-2 border-t border-slate-50 w-full block">VVIT Purnea</span>
+            </article>
+
+            <!-- Director Card -->
+            <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col items-center justify-between text-center">
+                <div class="space-y-3 w-full flex flex-col items-center">
+                    <div class="w-24 h-24 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 shadow-inner">
+                        <i class="fa-solid fa-user-graduate text-4xl"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="text-slate-955 font-black text-sm leading-snug">Prof. (Dr.) Arvind Sharma</h4>
+                        <p class="text-red-655 text-[10px] font-bold uppercase tracking-wider">Director</p>
+                    </div>
+                </div>
+                <span class="text-slate-450 text-[10px] font-bold uppercase tracking-wide pt-2 border-t border-slate-50 w-full block">VVIT Purnea</span>
+            </article>
+
+            <!-- Principal Card -->
+            <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col items-center justify-between text-center">
+                <div class="space-y-3 w-full flex flex-col items-center">
+                    <div class="w-24 h-24 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 shadow-inner">
+                        <i class="fa-solid fa-award text-4xl"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="text-slate-955 font-black text-sm leading-snug">Dr. Sujit Kumar</h4>
+                        <p class="text-red-655 text-[10px] font-bold uppercase tracking-wider">Principal</p>
+                    </div>
+                </div>
+                <span class="text-slate-450 text-[10px] font-bold uppercase tracking-wide pt-2 border-t border-slate-50 w-full block">VVIT Purnea</span>
+            </article>
+
+            <!-- NSS Programme Officer Card -->
+            <article class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col items-center justify-between text-center">
+                <div class="space-y-3 w-full flex flex-col items-center">
+                    <div class="w-24 h-24 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 shadow-inner">
+                        <i class="fa-solid fa-users text-4xl"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="text-slate-955 font-black text-sm leading-snug">NSS Programme Officer / Coordinator</h4>
+                        <p class="text-slate-450 text-[10px] font-semibold italic">Official details to be updated</p>
+                    </div>
+                </div>
+                <span class="text-slate-450 text-[10px] font-bold uppercase tracking-wide pt-2 border-t border-slate-50 w-full block">VVIT Unit</span>
+            </article>
+
+        </div>
+    </section>
+
+    <!-- ================= 8. GOVERNMENT & SOCIAL INITIATIVES ================= -->
+    <section class="space-y-6">
+        <div class="border-b border-slate-100 pb-3">
+            <h2 class="text-slate-900 text-2xl font-black tracking-tight">Government & Social Schemes</h2>
+            <p class="text-slate-500 text-xs font-semibold mt-1">Factual details of active campaigns participated in by Vidya Vihar Institute of Technology volunteers.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <article class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-3 flex flex-col justify-between shadow-sm">
+                <div class="space-y-2">
+                    <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">NSS Swachh Bharat Abhiyan</h4>
+                    <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">
+                        Promoting cleanliness, hygiene, and environmental awareness through NSS volunteer-led community cleanliness campaigns and local awareness drives.
+                    </p>
+                </div>
+            </article>
+
+            <article class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-3 flex flex-col justify-between shadow-sm">
+                <div class="space-y-2">
+                    <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Unnat Bharat Abhiyan</h4>
+                    <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">
+                        Connecting institutional knowledge with rural communities, supporting village development, mapping local resources, and volunteering solutions.
+                    </p>
+                </div>
+            </article>
+
+            <article class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-3 flex flex-col justify-between shadow-sm">
+                <div class="space-y-2">
+                    <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Viksit Bharat</h4>
+                    <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">
+                        Volunteering with institutional campaigns targeting nation-building objectives, technology adoption, and active social development.
+                    </p>
+                </div>
+            </article>
+
+            <article class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-3 flex flex-col justify-between shadow-sm">
+                <div class="space-y-2">
+                    <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">Nasha Mukt Bharat Abhiyan</h4>
+                    <p class="text-slate-455 text-[10px] font-semibold leading-relaxed">
+                        Coordinating and participating in student campaigns against substance abuse, promoting healthy life choices, and raising public awareness.
+                    </p>
+                </div>
+            </article>
+
+            <article class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-3 flex flex-col justify-between shadow-sm">
+                <div class="space-y-2">
+                    <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">VVIT Bootcamps</h4>
+                    <p class="text-slate-450 text-[10px] font-semibold leading-relaxed">
+                        Encouraging volunteer skill bootcamps, safety seminars, and student leadership sessions to organize better community service.
+                    </p>
+                </div>
+            </article>
+
+        </div>
+    </section>
+
+    <!-- ================= 9. COLLEGE IDENTITY SECTION ================= -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
+        <div class="lg:col-span-6 h-64 lg:h-full min-h-[300px] w-full bg-slate-900 relative">
+            <img src="{% static 'images/vvit-campus.jpg' %}" alt="Vidya Vihar Institute of Technology Campus" class="w-full h-full object-cover object-center absolute inset-0" />
+            <div class="absolute inset-0 bg-black/40"></div>
+        </div>
+
+        <div class="lg:col-span-6 p-6 sm:p-10 space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full overflow-hidden border border-blue-900 shadow-sm shrink-0 bg-white flex items-center justify-center p-1">
+                    <img src="{% static 'images/vvit-logo.png' %}" alt="VVIT Logo" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h3 class="text-slate-900 font-black text-sm uppercase tracking-wide">Vidya Vihar Institute of Technology</h3>
+                    <span class="text-red-600 text-[10px] font-extrabold uppercase tracking-widest block">Purnea, Bihar</span>
                 </div>
             </div>
-            <div class="text-center space-y-1">
-                <span class="block text-slate-800 font-extrabold text-sm uppercase tracking-wider">Lifesaving Donation</span>
-                <span class="block text-slate-400 text-[10px] font-semibold">1 unit of blood can save up to 3 lives.</span>
-            </div>
-        </div>
 
-        <!-- Text details -->
-        <div class="lg:col-span-7 space-y-5">
-            <div class="inline-flex items-center gap-2 bg-red-50 text-[#dc2626] border border-red-100 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-heart-pulse"></i> Emergency Blood Registry
+            <div class="text-slate-500 text-xs sm:text-sm font-semibold leading-relaxed space-y-3">
+                <p>
+                    Vidya Vihar Institute of Technology (VVIT) Purnea is a premier engineering college in Bihar dedicated to academic excellence, leadership development, and social contributions.
+                </p>
+                <p>
+                    This **NSS Emergency Blood Network Bihar** application is developed as a student-led social service network under our NSS unit, designed to assist residents of Purnea and nearby districts with instant blood matching during critical emergencies.
+                </p>
             </div>
-            <h2 class="text-slate-900 dark:text-white text-2xl sm:text-3xl font-black tracking-tight leading-tight">
-                An Audited, Reliable Registry <br/>
-                of Student & Staff Donors
-            </h2>
-            <div class="prose text-slate-500 dark:text-gray-400 text-xs sm:text-sm leading-relaxed space-y-4 font-medium">
-                <p>
-                    Unlike public commercial directories, this platform is strictly community-managed. Every blood donor registration is scrutinized by authorized NSS coordinators who verify contact details, campus enrollment, and eligibility metrics (such as the 90-day cooldown period).
-                </p>
-                <p>
-                    When emergencies arise, patient representatives can request blood. The network matches and alerts active donors instantly, ensuring swift coordination and direct support inside the local area of Purnea and wider Bihar.
-                </p>
+            
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-450 font-bold uppercase tracking-wider">
+                <span>VVIT NSS Unit Welfare Platform</span>
+                <span class="text-emerald-600"><i class="fa-solid fa-shield-halved"></i> Audited Database</span>
             </div>
         </div>
-        
     </section>
 
-
-    <!-- ===== SECTION 4: BLOOD CAMP GALLERY ===== -->
+    <!-- ================= 10. PLATFORM FEATURES ================= -->
     <section class="space-y-6">
-        <div class="flex items-end justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-            <div class="space-y-1">
-                <h3 class="font-bold text-xl text-slate-900 dark:text-white tracking-tight">Recent Blood Camps</h3>
-                <p class="text-slate-400 text-xs font-medium">Photographs and completed camp records from our database.</p>
+        <div class="border-b border-slate-100 pb-3">
+            <h2 class="text-slate-900 text-2xl font-black tracking-tight">Active Platform Features</h2>
+            <p class="text-slate-500 text-xs font-semibold mt-1">Direct access to the functional modules of the NSS blood network portal.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-2 shadow-sm">
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">🩸 Find a Donor</h4>
+                <p class="text-slate-450 text-[10px] font-semibold">Search for active and eligible local donors matching specific blood groups.</p>
             </div>
-            <a href="{% url 'camp_list' %}" class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition-colors">
-                View Gallery <span class="material-symbols-outlined text-sm">arrow_forward</span>
+
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-2 shadow-sm">
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">🚨 Request Blood</h4>
+                <p class="text-slate-450 text-[10px] font-semibold">Submit emergency patient requests with hospital locations and unit requirements.</p>
+            </div>
+
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-2 shadow-sm">
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">📋 Track Request</h4>
+                <p class="text-slate-450 text-[10px] font-semibold">Monitor approval status, coordinator comments, and assigned volunteer donors.</p>
+            </div>
+
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-2 shadow-sm">
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">👥 Donor Registration</h4>
+                <p class="text-slate-450 text-[10px] font-semibold">Join the network, complete verification, and track personal donation cooldowns.</p>
+            </div>
+
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-2 shadow-sm">
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">🏕️ Blood Donation Camps</h4>
+                <p class="text-slate-450 text-[10px] font-semibold">Participate in organized drives and campus clean/medical volunteer programs.</p>
+            </div>
+
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-2 shadow-sm">
+                <h4 class="text-slate-900 font-extrabold text-xs uppercase tracking-wide">🏆 NSS Certificates</h4>
+                <p class="text-slate-450 text-[10px] font-semibold">Download coordinator-signed certificates verifying life-saving volunteer contributions.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ================= 14. PLATFORM IMPACT STATISTICS ================= -->
+    <section class="bg-slate-900 rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-red-600/10 rounded-full filter blur-3xl"></div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7 space-y-4">
+                <span class="text-red-500 text-xs font-black uppercase tracking-wider block">Live Platform Impact</span>
+                <h3 class="font-black text-2xl sm:text-3xl tracking-tight leading-tight">Audited Portal Performance Statistics</h3>
+                <p class="text-slate-400 text-xs font-semibold leading-relaxed max-w-md">
+                    Computed dynamically in real-time based on database logs, verified donors, and approved donation completions.
+                </p>
+            </div>
+
+            <!-- Stats values grid -->
+            <div class="lg:col-span-5 grid grid-cols-2 gap-6">
+                <div class="border-l-4 border-red-600 pl-4 py-1 space-y-1">
+                    <span class="block text-2xl sm:text-3xl font-black tracking-tight text-white">{{ donor_count }}</span>
+                    <span class="block text-[9px] text-slate-455 font-bold uppercase tracking-wider">Verified Donors</span>
+                </div>
+                <div class="border-l-4 border-red-600 pl-4 py-1 space-y-1">
+                    <span class="block text-2xl sm:text-3xl font-black tracking-tight text-white">{{ successful_donations }}</span>
+                    <span class="block text-[9px] text-slate-455 font-bold uppercase tracking-wider">Success Donations</span>
+                </div>
+                <div class="border-l-4 border-red-600 pl-4 py-1 space-y-1">
+                    <span class="block text-2xl sm:text-3xl font-black tracking-tight text-white">{{ total_requests }}</span>
+                    <span class="block text-[9px] text-slate-455 font-bold uppercase tracking-wider">Total Requests</span>
+                </div>
+                <div class="border-l-4 border-red-600 pl-4 py-1 space-y-1">
+                    <span class="block text-2xl sm:text-3xl font-black tracking-tight text-white">{{ total_districts }}</span>
+                    <span class="block text-[9px] text-slate-455 font-bold uppercase tracking-wider">Districts Covered</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 11. BLOOD DONATION CAMPS ================= -->
+    <section class="space-y-6">
+        <div class="flex items-end justify-between border-b border-slate-100 pb-3">
+            <div>
+                <h2 class="text-slate-900 text-2xl font-black tracking-tight">Our Blood Donation Camps</h2>
+                <p class="text-slate-500 text-xs font-semibold mt-1">Factual records of volunteer-led campus blood donation drives.</p>
+            </div>
+            <a href="{% url 'camp_list' %}" class="text-red-600 text-xs font-bold flex items-center gap-1 hover:underline">
+                View All Camps <span class="material-symbols-outlined text-sm">arrow_forward</span>
             </a>
         </div>
 
-        <!-- Camps Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for camp in completed_camps %}
-            <article class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+            <article class="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
                 <div>
-                    <!-- Camp cover image or fallback clean placeholder -->
-                    <div class="h-44 w-full bg-slate-900 relative">
+                    <div class="h-44 w-full bg-slate-100 relative">
                         {% if camp.cover_image %}
-                        <img src="{{ camp.cover_image.url }}" alt="{{ camp.title }}" class="w-full h-full object-cover object-center" />
+                        <img src="{{ camp.cover_image.url }}" alt="{{ camp.title }}" class="w-full h-full object-cover">
                         {% else %}
-                        <!-- Clean Graphic Fallback Placeholder -->
                         <div class="w-full h-full bg-slate-950 flex flex-col items-center justify-center text-slate-400 p-6 space-y-3">
                             <span class="material-symbols-outlined text-4xl text-red-600">blood_type</span>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-center text-slate-500">NSS Blood Camp</span>
+                            <span class="text-[9px] font-bold uppercase tracking-wider text-center text-slate-500">NSS Blood Camp</span>
                         </div>
                         {% endif %}
                         <div class="absolute top-3 right-3 bg-emerald-600 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shadow-sm">
@@ -180,11 +513,10 @@
                         </div>
                     </div>
 
-                    <!-- Details -->
                     <div class="p-5 space-y-2">
-                        <span class="inline-block text-[9px] font-extrabold uppercase text-[#dc2626] tracking-wider">{{ camp.date|date:'d M Y' }}</span>
-                        <h4 class="text-slate-900 text-sm font-black tracking-tight leading-snug">{{ camp.title }}</h4>
-                        <p class="text-slate-400 text-[10px] font-medium leading-relaxed line-clamp-2">{{ camp.description }}</p>
+                        <span class="inline-block text-[9px] font-extrabold uppercase text-red-600 tracking-wider">{{ camp.date|date:'d M Y' }}</span>
+                        <h4 class="text-slate-900 text-xs font-black tracking-tight leading-snug">{{ camp.title }}</h4>
+                        <p class="text-slate-450 text-[10px] font-semibold leading-relaxed line-clamp-2">{{ camp.description }}</p>
                     </div>
                 </div>
 
@@ -194,107 +526,158 @@
                 </div>
             </article>
             {% empty %}
-            <!-- No camps empty state placeholder -->
-            <div class="col-span-full bg-white border border-slate-200/60 rounded-3xl p-10 text-center space-y-4">
-                <span class="material-symbols-outlined text-4xl text-slate-300">event_note</span>
-                <p class="text-slate-400 text-xs font-semibold">No completed blood donation camps available in the registry yet.</p>
+            <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-white border border-slate-200/60 rounded-3xl p-10 text-center text-slate-400 font-semibold italic shadow-sm">
+                No blood donation camps listed yet.
             </div>
             {% endfor %}
         </div>
     </section>
 
-
-    <!-- ===== SECTION 5: OUR IMPACT ===== -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-900 rounded-3xl p-6 sm:p-10 lg:p-12 text-white relative overflow-hidden">
-        <!-- Soft Background Shapes -->
-        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-red-600/10 rounded-full filter blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-20 -top-20 w-80 h-80 bg-blue-900/15 rounded-full filter blur-3xl pointer-events-none"></div>
-
-        <!-- Left: Stats Grid (7 cols) -->
-        <div class="lg:col-span-7 space-y-8 relative z-10">
-            <div class="space-y-2">
-                <span class="text-red-500 text-[10px] font-extrabold uppercase tracking-widest">Platform Metrics</span>
-                <h3 class="font-black text-2xl sm:text-3xl tracking-tight leading-tight">Our Real-time Database Impact</h3>
-                <p class="text-slate-400 text-xs leading-relaxed max-w-md font-medium">
-                    Calculated dynamically from verified active records and official coordinator entries on this portal.
-                </p>
-            </div>
-
-            <!-- Stats Boxes -->
-            <div class="grid grid-cols-2 gap-6">
-                <div class="border-l-4 border-red-600 pl-4 py-1 space-y-1">
-                    <span class="block text-3xl sm:text-4xl font-black tracking-tight text-white">{{ donor_count }}</span>
-                    <span class="block text-[10px] text-slate-450 font-bold uppercase tracking-wider">Active Registries</span>
-                </div>
-                <div class="border-l-4 border-red-600 pl-4 py-1 space-y-1">
-                    <span class="block text-3xl sm:text-4xl font-black tracking-tight text-white">{{ successful_donations }}</span>
-                    <span class="block text-[10px] text-slate-450 font-bold uppercase tracking-wider">Successful Donations</span>
-                </div>
-                <div class="border-l-4 border-red-600 pl-4 py-1 space-y-1">
-                    <span class="block text-3xl sm:text-4xl font-black tracking-tight text-white">{{ total_requests }}</span>
-                    <span class="block text-[10px] text-slate-450 font-bold uppercase tracking-wider">Requests Handled</span>
-                </div>
-                <div class="border-l-4 border-red-600 pl-4 py-1 space-y-1">
-                    <span class="block text-3xl sm:text-4xl font-black tracking-tight text-white">{{ total_camps }}</span>
-                    <span class="block text-[10px] text-slate-450 font-bold uppercase tracking-wider">Donation Camps</span>
-                </div>
-            </div>
+    <!-- ================= 12. CAMP GALLERY ================= -->
+    <section class="space-y-6">
+        <div class="border-b border-slate-100 pb-3">
+            <h2 class="text-slate-900 text-2xl font-black tracking-tight">Blood Donation Camp Gallery</h2>
+            <p class="text-slate-500 text-xs font-semibold mt-1">Real photographs uploaded from our completed drives and volunteer actions.</p>
         </div>
 
-        <!-- Right: Visually attractive clean graphic (5 cols) -->
-        <div class="lg:col-span-5 relative z-10 flex items-center justify-center">
-            <!-- Custom Graphic SVG reflecting health/lifesaving trust chart -->
-            <svg class="w-full max-w-[280px] h-auto text-red-600/85" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Outer Ring Grid -->
-                <circle cx="100" cy="100" r="85" stroke="currentColor" stroke-width="2" class="opacity-10" />
-                <circle cx="100" cy="100" r="60" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" class="opacity-15" />
-                
-                <!-- Heartline / Growth Path -->
-                <path d="M30 110H65L75 70L88 150L100 40L112 120L120 90L130 110H170" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="animate-pulse" />
-                
-                <!-- Heart Icon in Center Background -->
-                <path d="M100 85C95 78 85 78 80 83C75 88 75 98 100 120C125 98 125 88 120 83C115 78 105 78 100 85Z" fill="currentColor" class="opacity-20" />
-            </svg>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for g_img in recent_gallery %}
+            <div class="bg-white border border-slate-200/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group">
+                <div class="h-36 w-full bg-slate-900 overflow-hidden">
+                    <img src="{{ g_img.image.url }}" alt="Gallery Image from {{ g_img.camp.title }}" class="w-full h-full object-cover group-hover:scale-102 transition-transform">
+                </div>
+                <div class="p-3">
+                    <h5 class="text-slate-905 text-[10px] font-extrabold truncate">{{ g_img.camp.title }}</h5>
+                    <p class="text-slate-400 text-[9px] font-semibold">{{ g_img.uploaded_at|date:'d M Y' }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-2 md:col-span-3 lg:col-span-4 bg-white border border-slate-200/60 rounded-3xl p-10 text-center text-slate-400 font-semibold italic shadow-sm">
+                No camp gallery images uploaded yet.
+            </div>
+            {% endfor %}
         </div>
     </section>
 
-
-    <!-- ===== SECTION 6: COLLEGE + NSS INITIATIVE SECTION ===== -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
-        
-        <!-- Left: College campus image (6 cols) -->
-        <div class="lg:col-span-6 h-64 lg:h-full min-h-[300px] w-full bg-slate-900 relative">
-            <img src="{% static 'images/vvit-campus.jpg' %}" alt="VVIT Campus sunset building" class="w-full h-full object-cover object-center absolute inset-0" />
-            <div class="absolute inset-0 bg-black/30"></div>
+    <!-- ================= 13. OUR BLOOD HEROES ================= -->
+    <section class="space-y-6">
+        <div class="border-b border-slate-100 pb-3">
+            <h2 class="text-slate-900 text-2xl font-black tracking-tight">Our Blood Heroes</h2>
+            <p class="text-slate-500 text-xs font-semibold mt-1">Honouring NSS volunteers whose life-saving blood donations have been verified by the coordinator.</p>
         </div>
 
-        <!-- Right: Details (6 cols) -->
-        <div class="lg:col-span-6 p-6 sm:p-10 space-y-6">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-full overflow-hidden border border-blue-900 shadow-sm shrink-0 bg-white flex items-center justify-center">
-                    <img src="{% static 'images/vvit-logo.png' %}" alt="VVIT Logo" class="w-full h-full object-contain">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for donation in verified_donations %}
+            <article class="bg-white border border-slate-200/60 rounded-3xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 relative group overflow-hidden">
+                <!-- Red top decorative line -->
+                <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-500 to-rose-600"></div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shadow-inner shrink-0 relative">
+                            <i class="fa-solid fa-user-shield text-lg"></i>
+                            <span class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-white border-2 border-white text-[8px]"><i class="fa-solid fa-heart"></i></span>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-slate-950 font-black text-sm leading-snug truncate">{{ donation.donor.full_name }}</h4>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                                <i class="fa-solid fa-calendar-check text-[10px]"></i>
+                                Donated {{ donation.date|date:'d M Y' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-slate-50">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400 font-bold text-[10px] uppercase tracking-wider">Blood Group</span>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-red-50 border border-red-100 font-black text-red-600 text-xs">
+                                {{ donation.donor.blood_group }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400 font-bold text-[10px] uppercase tracking-wider">Donated At</span>
+                            <span class="text-slate-700 font-bold text-xs truncate max-w-[160px] flex items-center gap-1.5">
+                                <i class="fa-solid fa-tent text-[10px] text-slate-400"></i>
+                                {{ donation.camp.title|default:"Direct Donation Support" }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="w-12 h-12 rounded-full overflow-hidden border border-blue-900 shadow-sm shrink-0 bg-white flex items-center justify-center">
-                    <img src="{% static 'images/nss-logo.jpg' %}" alt="NSS Logo" class="w-full h-full object-cover">
+
+                <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-100/60 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                        Donation Verified
+                    </span>
+                    
+                    {% if donation.certificate_id %}
+                    <a href="{% url 'donation_certificate' donation.id %}" target="_blank" class="text-slate-500 hover:text-slate-800 text-[10px] font-extrabold uppercase tracking-wider inline-flex items-center gap-1 transition-colors">
+                        <span>Certificate</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </article>
+            {% empty %}
+            <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-white border border-slate-200/60 rounded-3xl p-12 text-center text-slate-400 font-semibold italic shadow-sm flex flex-col items-center justify-center gap-3">
+                <div class="w-14 h-14 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 shadow-inner">
+                    <i class="fa-solid fa-award text-2xl animate-bounce"></i>
                 </div>
                 <div>
-                    <h4 class="text-slate-900 font-black text-sm tracking-tight uppercase leading-none">National Service Scheme (NSS)</h4>
-                    <span class="text-[10px] text-red-600 font-extrabold uppercase tracking-widest mt-1 block">VVIT, Purnea, Bihar</span>
+                    <p class="text-slate-800 font-extrabold text-sm">Be the first to become one of our Blood Heroes.</p>
+                </div>
+                <a href="{% url 'donor_register' %}" class="mt-2 inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all border-0 cursor-pointer">
+                    <i class="fa-solid fa-user-plus text-xs"></i>
+                    <span>Register Now</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ================= 16. PRIVACY & RESPONSIBLE DATA USE ================= -->
+    <section class="bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+        <h3 class="text-slate-900 font-black text-sm uppercase tracking-wide">Privacy & Responsible Blood Support</h3>
+        <div class="text-slate-500 text-xs font-semibold leading-relaxed space-y-2">
+            <p>
+                We prioritize donor privacy and data protection above all. Public directory lists never expose direct donor phone numbers, personal email addresses, or specific residential coordinates.
+            </p>
+            <p>
+                Matched donor contact coordinates are shared exclusively with patient representatives who have submitted verified, approved blood requests. All patient details remain fully secure and are audited directly by the coordinators to prevent spam or misuse.
+            </p>
+        </div>
+    </section>
+
+    <!-- ================= 17. CONTACT SECTION ================= -->
+    <section id="contact" class="bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+                <h3 class="text-slate-900 font-black text-sm uppercase tracking-wide">Contact / NSS Coordination</h3>
+                <p class="text-xs text-slate-500 leading-relaxed font-semibold">
+                    Have questions about blood donation camps, verified registries, or need urgent help? Connect with the NSS coordinator office directly.
+                </p>
+                <div class="space-y-3 text-xs text-slate-600 font-semibold pt-2">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-location-dot text-red-600 text-sm"></i>
+                        <span>NSS Office, Vidya Vihar Institute of Technology, Purnea, Bihar - 854303</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-phone text-slate-400 text-sm"></i>
+                        <span>Emergency Helpline: +91 9876543210</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-regular fa-envelope text-slate-400 text-sm"></i>
+                        <span>Official Email: nssbloodnetwork@gmail.com</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="prose text-slate-500 dark:text-gray-400 text-xs sm:text-sm font-medium leading-relaxed space-y-3">
-                <p>
-                    This Emergency Blood Network portal is designed, hosted, and audited strictly as a non-commercial, public welfare project by the student-volunteers of the <strong>National Service Scheme (NSS) at Vidya Vihar Institute of Technology, Purnea</strong>.
+            <!-- Supporting card note -->
+            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col justify-center space-y-2">
+                <h4 class="text-slate-800 font-extrabold text-xs uppercase tracking-wide">Need Immediate Verification?</h4>
+                <p class="text-[10px] text-slate-505 font-semibold leading-relaxed">
+                    If you have submitted a blood request and require immediate coordinator verification, please contact the helpline or visit the NSS office on campus.
                 </p>
-                <p>
-                    Our registry coordinates active volunteer donors within the campus community of students, faculty, and administrative staff. Through direct verification and cooldown audits, we ensure that every donor is healthy, available, and ready to contribute to saving lives.
-                </p>
-            </div>
-            
-            <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <span class="text-[10px] text-slate-450 font-semibold tracking-wider uppercase">VVIT NSS Unit • Purnea, Bihar</span>
-                <span class="inline-flex items-center gap-1 text-emerald-600 font-black text-[10px] uppercase tracking-widest"><i class="fa-solid fa-shield-halved"></i> Verified registry</span>
             </div>
         </div>
     </section>

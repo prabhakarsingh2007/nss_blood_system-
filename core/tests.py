@@ -19,6 +19,11 @@ class CoreViewsTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "core/about.html")
+        self.assertIn("upcoming_camps", response.context)
+        self.assertIn("completed_camps", response.context)
+        self.assertIn("verified_donations", response.context)
+        self.assertIn("recent_gallery", response.context)
+        self.assertIn("total_districts", response.context)
 
     def test_blood_heroes_section(self):
         from django.contrib.auth import get_user_model
