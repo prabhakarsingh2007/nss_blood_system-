@@ -964,6 +964,10 @@
     const adminPanels = document.querySelectorAll('.admin-panel');
 
     const getActivePanelName = () => {
+        const contextPanel = "{{ active_panel }}";
+        if (contextPanel) {
+            return contextPanel;
+        }
         const hashValue = (window.location.hash || '#overview').slice(1);
         const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'verify-donations', 'manage-hospitals', 'manage-blood-banks', 'blood-groups', 'activity-history'];
         return knownPanels.includes(hashValue) ? hashValue : 'overview';

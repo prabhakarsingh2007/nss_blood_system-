@@ -232,8 +232,9 @@ def _handle_admin_donor_verify(request):
         messages.success(request, "Donor verification updated.")
         log_activity(request.user, "DONOR_VERIFICATION", f"Updated donor {donor.full_name} verification status to {decision}.")
 
-def _handle_admin_broadcast_create(request):
-    form = BroadcastMessageForm(request.POST)
+def _handle_admin_broadcast_create(request, form=None):
+    if form is None:
+        form = BroadcastMessageForm(request.POST)
     if form.is_valid():
         broadcast = form.save(commit=False)
         broadcast.created_by = request.user
@@ -248,8 +249,9 @@ def _handle_admin_broadcast_create(request):
                 messages.error(request, f"Broadcast {field.capitalize()}: {error}")
     return False
 
-def _handle_admin_camp_create(request):
-    form = BloodCampForm(request.POST, request.FILES)
+def _handle_admin_camp_create(request, form=None):
+    if form is None:
+        form = BloodCampForm(request.POST, request.FILES)
     if form.is_valid():
         gallery_images = request.FILES.getlist("gallery_images")
         from donors.models import validate_camp_image
@@ -322,8 +324,9 @@ def _handle_admin_nss_verify_donation(request):
         else:
             messages.info(request, f"Already NSS verified. Certificate {donation_history.certificate_id} is available.")
 
-def _handle_admin_hospital_create(request):
-    form = HospitalForm(request.POST)
+def _handle_admin_hospital_create(request, form=None):
+    if form is None:
+        form = HospitalForm(request.POST)
     if form.is_valid():
         h = form.save()
         messages.success(request, "Hospital added successfully.")
@@ -361,8 +364,9 @@ def _handle_admin_hospital_toggle(request):
     return True
 
 
-def _handle_admin_blood_bank_create(request):
-    form = BloodBankForm(request.POST)
+def _handle_admin_blood_bank_create(request, form=None):
+    if form is None:
+        form = BloodBankForm(request.POST)
     if form.is_valid():
         b = form.save()
         messages.success(request, "Blood Bank added successfully.")
@@ -421,6 +425,8 @@ def admin_dashboard(request):
     activity_type = request.GET.get("activity_type", "")
     activity_search = request.GET.get("activity_search", "")
 
+    active_panel = ""
+
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "request_status":
@@ -432,12 +438,18 @@ def admin_dashboard(request):
             return redirect(f"{reverse('admin_dashboard')}#verify-donors")
 
         elif action == "broadcast_create":
-            if _handle_admin_broadcast_create(request):
+            broadcast_form = BroadcastMessageForm(request.POST)
+            if _handle_admin_broadcast_create(request, broadcast_form):
                 return redirect(f"{reverse('admin_dashboard')}#mass-message")
+            else:
+                active_panel = "mass-message"
 
         elif action == "camp_create":
-            if _handle_admin_camp_create(request):
+            camp_form = BloodCampForm(request.POST, request.FILES)
+            if _handle_admin_camp_create(request, camp_form):
                 return redirect(f"{reverse('admin_dashboard')}#manage-camps")
+            else:
+                active_panel = "manage-camps"
 
         elif action == "camp_update_status":
             _handle_admin_camp_update_status(request)
@@ -452,24 +464,34 @@ def admin_dashboard(request):
             return redirect(f"{reverse('admin_dashboard')}#verify-donations")
 
         elif action == "hospital_create":
-            if _handle_admin_hospital_create(request):
+            hospital_form = HospitalForm(request.POST)
+            if _handle_admin_hospital_create(request, hospital_form):
                 return redirect(f"{reverse('admin_dashboard')}#manage-hospitals")
+            else:
+                active_panel = "manage-hospitals"
 
         elif action == "hospital_update":
             if _handle_admin_hospital_update(request):
                 return redirect(f"{reverse('admin_dashboard')}#manage-hospitals")
+            else:
+                active_panel = "manage-hospitals"
 
         elif action == "hospital_toggle":
             _handle_admin_hospital_toggle(request)
             return redirect(f"{reverse('admin_dashboard')}#manage-hospitals")
 
         elif action == "blood_bank_create":
-            if _handle_admin_blood_bank_create(request):
+            blood_bank_form = BloodBankForm(request.POST)
+            if _handle_admin_blood_bank_create(request, blood_bank_form):
                 return redirect(f"{reverse('admin_dashboard')}#manage-blood-banks")
+            else:
+                active_panel = "manage-blood-banks"
 
         elif action == "blood_bank_update":
             if _handle_admin_blood_bank_update(request):
                 return redirect(f"{reverse('admin_dashboard')}#manage-blood-banks")
+            else:
+                active_panel = "manage-blood-banks"
 
         elif action == "blood_bank_toggle":
             _handle_admin_blood_bank_toggle(request)
@@ -595,6 +617,7 @@ def admin_dashboard(request):
     ]
 
     context = {
+        "active_panel": active_panel,
         "total_donors": approved_donor_queryset.count(),
         "total_requests": request_queryset.count(),
         "pending_requests": request_queryset.filter(status="PENDING").count(),
