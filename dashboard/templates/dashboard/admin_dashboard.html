@@ -333,7 +333,7 @@
                                     </td>
                                     <td class="px-6 py-4 text-right whitespace-nowrap">
                                         {% with camp_desc=camp.description|escapejs camp_loc=camp.location|escapejs camp_dist=camp.district|escapejs camp_org=camp.organizer_name|escapejs camp_cont=camp.organizer_contact|escapejs %}
-                                        <button type="button" onclick="editCamp('{{ camp.id }}', '{{ camp.title|escapejs }}', '{{ camp_desc }}', '{{ camp.date|date:'Y-m-d' }}', '{{ camp.start_time|time:'H:i'|default:'' }}', '{{ camp.end_time|time:'H:i'|default:'' }}', '{{ camp_loc }}', '{{ camp_dist }}', '{{ camp_org }}', '{{ camp_cont }}', '{{ camp.status }}', '{{ camp.manual_donation_count }}')" class="text-slate-600 hover:text-slate-900 bg-transparent border-0 cursor-pointer p-0 font-bold hover:underline inline-flex items-center gap-1 text-[11px] mr-3">
+                                        <button type="button" onclick="editCamp('{{ camp.id }}', '{{ camp.title|escapejs }}', '{{ camp_desc }}', '{{ camp.date|date:\"Y-m-d\" }}', '{{ camp.start_time|time:\"H:i\"|default:\"\" }}', '{{ camp.end_time|time:\"H:i\"|default:\"\" }}', '{{ camp_loc }}', '{{ camp_dist }}', '{{ camp_org }}', '{{ camp_cont }}', '{{ camp.status }}', '{{ camp.manual_donation_count }}')" class="text-slate-600 hover:text-slate-900 bg-transparent border-0 cursor-pointer p-0 font-bold hover:underline inline-flex items-center gap-1 text-[11px] mr-3">
                                             <i class="fa-solid fa-pen-to-square"></i> Edit
                                         </button>
                                         {% endwith %}
