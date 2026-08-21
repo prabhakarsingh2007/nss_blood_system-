@@ -1049,7 +1049,7 @@
             return contextPanel;
         }
         const hashValue = (window.location.hash || '#overview').slice(1);
-        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'verify-donations', 'manage-hospitals', 'manage-blood-banks', 'blood-groups', 'activity-history'];
+        const knownPanels = ['overview', 'mass-message', 'manage-camps', 'verify-donors', 'verify-requests', 'verify-donations', 'log-manual-donation', 'manage-hospitals', 'manage-blood-banks', 'blood-groups', 'activity-history'];
         return knownPanels.includes(hashValue) ? hashValue : 'overview';
     };
 
@@ -1081,10 +1081,11 @@
             'verify-donors': 'Approve Registered Donors',
             'verify-requests': 'Verify & Approve Emergency Requests',
             'verify-donations': 'Audit Donations & Generate Certificates',
+            'log-manual-donation': 'Log Manual Donation',
             'manage-hospitals': 'Manage Hospitals Directory',
             'manage-blood-banks': 'Manage Sourced Blood Banks',
-            'blood-groups': 'Blood Directory Summary',
-            'activity-history': 'Admin & System Activity History'
+            'blood-groups': 'System Blood Directory',
+            'activity-history': 'Administrator Activity Logs'
         };
         const activeTitle = titleMap[panelName] || 'Overview Dashboard';
         document.getElementById('active-panel-title').innerText = activeTitle;
