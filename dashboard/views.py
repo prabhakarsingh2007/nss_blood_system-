@@ -530,7 +530,13 @@ def admin_dashboard(request):
                 active_panel = "mass-message"
 
         elif action == "camp_create":
-            camp_form = BloodCampForm(request.POST, request.FILES)
+            camp_id = request.POST.get("camp_id")
+            if camp_id:
+                camp_instance = get_object_or_404(BloodCamp, pk=camp_id)
+                camp_form = BloodCampForm(request.POST, request.FILES, instance=camp_instance)
+            else:
+                camp_form = BloodCampForm(request.POST, request.FILES)
+
             if _handle_admin_camp_create(request, camp_form):
                 return redirect(f"{reverse('admin_dashboard')}#manage-camps")
             else:
