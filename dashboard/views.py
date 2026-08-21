@@ -251,7 +251,12 @@ def _handle_admin_broadcast_create(request, form=None):
 
 def _handle_admin_camp_create(request, form=None):
     if form is None:
-        form = BloodCampForm(request.POST, request.FILES)
+        camp_id = request.POST.get("camp_id")
+        if camp_id:
+            camp_instance = get_object_or_404(BloodCamp, pk=camp_id)
+            form = BloodCampForm(request.POST, request.FILES, instance=camp_instance)
+        else:
+            form = BloodCampForm(request.POST, request.FILES)
     if form.is_valid():
         gallery_images = request.FILES.getlist("gallery_images")
         from donors.models import validate_camp_image
@@ -280,8 +285,8 @@ def _handle_admin_camp_create(request, form=None):
         for img in gallery_images:
             CampImage.objects.create(camp=camp, image=img)
 
-        messages.success(request, "Blood camp created successfully.")
-        log_activity(request.user, "CAMP_ACTION", f"Scheduled blood camp: '{camp.title}' on {camp.date} at {camp.location}.")
+        messages.success(request, f"Blood camp {'updated' if request.POST.get('camp_id') else 'created'} successfully.")
+        log_activity(request.user, "CAMP_ACTION", f"{'Updated' if request.POST.get('camp_id') else 'Scheduled'} blood camp: '{camp.title}' on {camp.date} at {camp.location}.")
         return True
     else:
         for field, errors in form.errors.items():

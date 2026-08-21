@@ -250,16 +250,20 @@
             <!-- CREATE CAMPS PANEL -->
             <div class="space-y-6 admin-panel" data-admin-panel="manage-camps" hidden>
                 <section id="manage-camps" class="bg-white border border-slate-200/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
-                    <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-tent text-red-500 text-lg"></i>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-950">Schedule Blood Camp</h3>
-                            <p class="text-[10px] text-slate-400 font-semibold">Coordinate and schedule a blood camp in Bihar districts.</p>
+                    <div class="border-b border-slate-100 pb-3 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-tent text-red-500 text-lg"></i>
+                            <div>
+                                <h3 id="camp-form-title" class="text-lg font-bold text-slate-950">Schedule Blood Camp</h3>
+                                <p class="text-[10px] text-slate-400 font-semibold">Coordinate and schedule a blood camp in Bihar districts.</p>
+                            </div>
                         </div>
+                        <button id="camp-cancel-btn" type="button" onclick="resetCampForm()" class="hidden text-slate-400 hover:text-red-500 transition-colors text-[10px] font-bold uppercase">Cancel</button>
                     </div>
-                    <form method="post" enctype="multipart/form-data" class="space-y-4 admin-form-p">
+                    <form id="camp-form" method="post" enctype="multipart/form-data" class="space-y-4 admin-form-p">
                         {% csrf_token %}
-                        <input type="hidden" name="action" value="camp_create">
+                        <input type="hidden" name="action" id="camp-action-input" value="camp_create">
+                        <input type="hidden" name="camp_id" id="camp-id-input" value="">
                         {{ camp_form.as_p }}
                         
                         <div class="flex flex-col gap-1.5 mb-3">
@@ -327,7 +331,12 @@
                                             </select>
                                         </form>
                                     </td>
-                                    <td class="px-6 py-4 text-right">
+                                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                                        {% with camp_desc=camp.description|escapejs camp_loc=camp.location|escapejs camp_dist=camp.district|escapejs camp_org=camp.organizer_name|escapejs camp_cont=camp.organizer_contact|escapejs %}
+                                        <button type="button" onclick="editCamp('{{ camp.id }}', '{{ camp.title|escapejs }}', '{{ camp_desc }}', '{{ camp.date|date:'Y-m-d' }}', '{{ camp.start_time|time:'H:i'|default:'' }}', '{{ camp.end_time|time:'H:i'|default:'' }}', '{{ camp_loc }}', '{{ camp_dist }}', '{{ camp_org }}', '{{ camp_cont }}', '{{ camp.status }}', '{{ camp.manual_donation_count }}')" class="text-slate-600 hover:text-slate-900 bg-transparent border-0 cursor-pointer p-0 font-bold hover:underline inline-flex items-center gap-1 text-[11px] mr-3">
+                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                        </button>
+                                        {% endwith %}
                                         <form method="post" class="inline-block animate-none" style="margin: 0;" onsubmit="return confirm('Are you sure you want to delete this camp? This will delete all registrations and photos.');">
                                             {% csrf_token %}
                                             <input type="hidden" name="action" value="camp_delete">
@@ -1161,6 +1170,40 @@
         document.getElementById('blood-bank-form-title').innerText = 'Add New Blood Bank';
         document.getElementById('blood-bank-submit-btn').innerText = 'Save Blood Bank';
         document.getElementById('blood-bank-cancel-btn').classList.add('hidden');
+    }
+
+    window.editCamp = function(id, title, desc, date, start_time, end_time, loc, dist, org_name, org_contact, status, count) {
+        document.getElementById('camp-action-input').value = 'camp_create'; // Note: handled in backend with camp_id
+        document.getElementById('camp-id-input').value = id;
+        document.getElementById('id_title').value = title;
+        document.getElementById('id_description').value = desc;
+        document.getElementById('id_date').value = date;
+        document.getElementById('id_start_time').value = start_time;
+        document.getElementById('id_end_time').value = end_time;
+        document.getElementById('id_location').value = loc;
+        document.getElementById('id_district').value = dist;
+        document.getElementById('id_organizer_name').value = org_name;
+        document.getElementById('id_organizer_contact').value = org_contact;
+        document.getElementById('id_status').value = status;
+        document.getElementById('id_manual_donation_count').value = count;
+        
+        document.getElementById('camp-form-title').innerText = 'Edit Blood Camp';
+        const submitBtn = document.querySelector('#camp-form button[type="submit"]');
+        if (submitBtn) submitBtn.innerText = 'Update Camp';
+        document.getElementById('camp-cancel-btn').classList.remove('hidden');
+        document.getElementById('id_title').focus();
+        window.scrollTo({ top: document.getElementById('manage-camps').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    window.resetCampForm = function() {
+        document.getElementById('camp-action-input').value = 'camp_create';
+        document.getElementById('camp-id-input').value = '';
+        document.getElementById('camp-form').reset(); // reset all fields
+        
+        document.getElementById('camp-form-title').innerText = 'Schedule Blood Camp';
+        const submitBtn = document.querySelector('#camp-form button[type="submit"]');
+        if (submitBtn) submitBtn.innerText = 'Schedule Camp';
+        document.getElementById('camp-cancel-btn').classList.add('hidden');
     }
 </script>
 {% endblock %}
