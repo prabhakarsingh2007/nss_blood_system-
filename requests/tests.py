@@ -213,12 +213,11 @@ class RequestStatusTests(TestCase):
         hospital_inactive = Hospital.objects.create(name="Inactive Hospital", city="Patna", is_active=False)
 
         # Instantiate form
-        form = BloodRequestForm()
+        from requests.forms import BloodRequestForm
 
-        # Check queryset of hospital_name field
-        queryset_hosp = form.fields["hospital_name"].queryset
-        self.assertIn(hospital_active, queryset_hosp)
-        self.assertNotIn(hospital_inactive, queryset_hosp)
+        # Default init should be normal text input now
+        form = BloodRequestForm()
+        self.assertIn("hospital_name", form.fields)
 
     def test_request_verify_otp_flow(self):
         from django.urls import reverse
@@ -440,16 +439,11 @@ class PrescriptionAndStateTests(TestCase):
 
         # 5. Check dynamic hospital filtering
         from requests.forms import BloodRequestForm
-        from requests.models import Hospital
-        # Create active hospitals in Patna and Gaya
-        h_patna = Hospital.objects.create(name="Patna General", city="Patna", is_active=True)
-        h_gaya = Hospital.objects.create(name="Gaya General", city="Gaya", is_active=True)
-
+        
+        # The form should initialize with the given city
         form_patna = BloodRequestForm(initial={"city": "Patna"})
-        self.assertIn(h_patna, form_patna.fields["hospital_name"].queryset)
-        self.assertNotIn(h_gaya, form_patna.fields["hospital_name"].queryset)
+        self.assertEqual(form_patna.initial.get("city"), "Patna")
 
-
-
-
-
+        # In the past we filtered hospitals by city, but now it's a CharField.
+        # We just verify it renders as a CharField.
+        self.assertIn("hospital_name", form_patna.fields)

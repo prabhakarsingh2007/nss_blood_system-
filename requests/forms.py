@@ -13,12 +13,11 @@ class BloodRequestForm(forms.ModelForm):
         widget=forms.HiddenInput(),
         required=True
     )
-    hospital_name = forms.ModelChoiceField(
-        queryset=Hospital.objects.filter(is_active=True),
+    hospital_name = forms.CharField(
+        max_length=180,
         required=True,
         label="Deliver to Hospital",
-        to_field_name="name",
-        empty_label="Select Hospital"
+        widget=forms.TextInput(attrs={'placeholder': 'e.g., Patna Medical College & Hospital'})
     )
     city = forms.CharField(
         widget=forms.HiddenInput(),
@@ -31,17 +30,7 @@ class BloodRequestForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        city_val = kwargs.get('initial', {}).get('city')
-        if not city_val and kwargs.get('data'):
-            city_val = kwargs.get('data', {}).get('city')
-            
         super().__init__(*args, **kwargs)
-        
-        if city_val:
-            city_val = city_val.strip()
-            self.fields["hospital_name"].queryset = Hospital.objects.filter(is_active=True, city__iexact=city_val)
-        else:
-            self.fields["hospital_name"].queryset = Hospital.objects.filter(is_active=True)
 
 
     class Meta:
