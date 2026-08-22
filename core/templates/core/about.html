@@ -510,7 +510,7 @@
                 <p class="text-slate-500 text-xs font-semibold mt-1">Factual records of volunteer-led campus blood donation drives.</p>
             </div>
             <a href="{% url 'camp_list' %}" class="text-red-600 text-xs font-bold flex items-center gap-1 hover:underline">
-                View All Camps <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                View All Camps <i class="fa-solid fa-arrow-right text-sm"></i>
             </a>
         </div>
 
@@ -523,7 +523,7 @@
                         <img src="{{ camp.cover_image.url }}" alt="{{ camp.title }}" class="w-full h-full object-cover">
                         {% else %}
                         <div class="w-full h-full bg-slate-950 flex flex-col items-center justify-center text-slate-400 p-6 space-y-3">
-                            <span class="material-symbols-outlined text-4xl text-red-600">blood_type</span>
+                            <i class="fa-solid fa-droplet text-4xl text-red-600"></i>
                             <span class="text-[9px] font-bold uppercase tracking-wider text-center text-slate-500">NSS Blood Camp</span>
                         </div>
                         {% endif %}
