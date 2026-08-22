@@ -40,8 +40,8 @@ def request_form(request):
         if form.is_valid():
             req = form.save(commit=False)
             
-            # Check for duplicates (submitted in last 15 minutes)
-            time_limit = timezone.now() - timedelta(minutes=15)
+            # Check for duplicates (submitted in last 5 seconds to allow quick demo testing)
+            time_limit = timezone.now() - timedelta(seconds=5)
             duplicate_exists = BloodRequest.objects.filter(
                 contact_number=req.contact_number,
                 blood_group=req.blood_group,
@@ -51,7 +51,7 @@ def request_form(request):
                 status__in=["PENDING", "APPROVED", "ASSIGNED"]
             ).exists()
             if duplicate_exists:
-                messages.error(request, "A similar active blood request has already been submitted from this phone number recently. Please wait a few minutes before trying again.")
+                messages.error(request, "A similar active blood request has already been submitted from this phone number recently. Please wait a few seconds before trying again.")
                 return render(request, "requests/request_form.html", {"form": form})
 
             if request.user.is_authenticated:
@@ -70,19 +70,24 @@ def request_form(request):
                 messages.success(request, f"Request submitted successfully. Status is Pending.")
                 return redirect(reverse("request_status") + f"?code={req.request_code}&phone={req.contact_number}")
             
-            # For guests, generate OTP and redirect to verification view
-            req.otp_verified = False
-            req.save()
-            otp = req.generate_otp()
-            req.save(update_fields=["otp_code", "otp_verified", "otp_created_at"])
+            # OTP verification is skipped for demo purposes
+            req.otp_verified = True
+            req.save(update_fields=["otp_verified"])
             
-            # Send OTP SMS
-            submit_msg = f"NSS Blood: Your request verification OTP is {otp}. Expiry: 10 mins."
+            # Send confirmation SMS (since we skipped OTP)
+            submit_msg = f"NSS Blood: Your request #{req.request_code} has been received and is Pending Approval."
             send_sms_async.delay(req.contact_number, submit_msg)
             
-            request.session['pending_request_code'] = req.request_code
-            messages.info(request, "Please verify the 6-digit OTP sent to your phone.")
-            return redirect("request_verify_otp")
+            # Authorize in session so they can track it
+            if 'authorized_requests' not in request.session:
+                request.session['authorized_requests'] = []
+            if req.request_code not in request.session['authorized_requests']:
+                request.session['authorized_requests'].append(req.request_code)
+                if hasattr(request.session, 'modified'):
+                    request.session.modified = True
+                    
+            messages.success(request, f"Request submitted successfully! Status is Pending.")
+            return redirect(reverse("request_status") + f"?code={req.request_code}&phone={req.contact_number}")
     else:
         blood_group = request.GET.get("blood_group", "").strip().replace(" ", "+")
         city = request.GET.get("city", "").strip()
