@@ -22,8 +22,13 @@ import os
 
 def request_form(request):
     if request.method == "POST":
-        blood_group = request.POST.get("blood_group", "").strip()
+        blood_group = request.POST.get("blood_group", "").strip().replace(" ", "+")
         city = request.POST.get("city", "").strip()
+        
+        # Update POST data to fix validation
+        request.POST = request.POST.copy()
+        request.POST["blood_group"] = blood_group
+        
         if not blood_group:
             messages.error(request, "Please select a Blood Group first.")
             return redirect("search_donors")
@@ -79,7 +84,7 @@ def request_form(request):
             messages.info(request, "Please verify the 6-digit OTP sent to your phone.")
             return redirect("request_verify_otp")
     else:
-        blood_group = request.GET.get("blood_group", "").strip()
+        blood_group = request.GET.get("blood_group", "").strip().replace(" ", "+")
         city = request.GET.get("city", "").strip()
         if not blood_group:
             messages.error(request, "Please select a Blood Group first.")
